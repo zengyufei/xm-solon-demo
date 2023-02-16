@@ -1,0 +1,9 @@
+
+#分页组件的配置
+pagehelper:
+  offsetAsPageNum: true
+  rowBoundsWithCount: true
+  pageSizeZero: true
+  reasonable: true
+  params: pageNum=pageNo;
+  supportMethodsArguments: false

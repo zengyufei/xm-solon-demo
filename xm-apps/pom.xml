@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.xunmo</groupId>
+        <artifactId>xm-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>xm-apps</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>./xm-biz-base</module>
+        <module>./xm-exception-record</module>
+        <module>./xm-exception</module>
+        <module>./xm-orm-mp-mysql</module>
+        <module>./xm-p6spy</module>
+        <module>./xm-health</module>
+        <module>./xm-rabbitmq-util</module>
+        <module>./xm-core-web</module>
+    </modules>
+
+</project>

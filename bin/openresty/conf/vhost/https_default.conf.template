@@ -1,0 +1,195 @@
+# localhost
+# location 符号优先级顺序为： = > ^~ > ~* > ~ > /
+#先进行普通匹配中的精准匹配 =, 如果命中了立马返回.
+#然后进行普通匹配中的精准开头匹配 ^~, 如果命中则立马返回.
+#进行普通匹配中的 无匹配符号 匹配, 如果命中继续匹配, 直到普通匹配全部完成, 并保存路径最长的匹配.
+#由上自下进行正则匹配 ~(区分大小写)|~*(不区分大小写), 如果命中立即返回.
+#如果正则匹配全部失败, 则返回普通匹配中存放的匹配.
+
+server {
+		client_max_body_size    1000m;
+		client_body_buffer_size 1000M;
+
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        access_log  logs/localhost.log;
+
+
+		location /railway-bureau-test {
+			alias ../../xm-biz-front/dist/railway-bureau-test;
+			if (-e $request_filename) {
+				expires 7d;
+				add_header "Access-Control-Allow-Origin" "*";
+			}
+		}
+
+
+		# 禁止GIT或SVN目录输出
+		location ~ /\.(git|svn)$ {
+			deny all;
+		}
+
+
+        location ~ /file_service_test/upload {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            add_header Cache-Control no-store;
+            proxy_connect_timeout  600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffer_size 2m;
+            proxy_buffers 4 2m;
+            proxy_busy_buffers_size 2m;
+            proxy_temp_file_write_size 2m;
+            proxy_max_temp_file_size 128m;
+            client_max_body_size 150m;
+            client_body_buffer_size 2m;
+            proxy_pass http://file_up_load_test;
+        }
+
+        location ~ /file_service_test/download {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            add_header Cache-Control no-store;
+            proxy_connect_timeout  600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffer_size 2m;
+            proxy_buffers 4 2m;
+            proxy_busy_buffers_size 2m;
+            proxy_temp_file_write_size 2m;
+            proxy_max_temp_file_size 128m;
+            client_max_body_size 150m;
+            client_body_buffer_size 2m;
+            proxy_buffering off;
+            proxy_pass http://file_down_load_test;
+        }
+
+        # image
+        location ~ /file_service_dev/image {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            add_header Cache-Control no-store;
+            proxy_connect_timeout  600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffer_size 2m;
+            proxy_buffers 4 2m;
+            proxy_busy_buffers_size 2m;
+            proxy_temp_file_write_size 2m;
+            proxy_max_temp_file_size 128m;
+            client_max_body_size 150m;
+            client_body_buffer_size 2m;
+            proxy_pass http://view_image_test;
+        }
+
+        # websocket-test
+        location ~ /InstantMessage-TEST/ws {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            add_header Cache-Control no-store;
+            proxy_connect_timeout  600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffer_size 2m;
+            proxy_buffers 4 2m;
+            proxy_busy_buffers_size 2m;
+            proxy_temp_file_write_size 2m;
+            proxy_max_temp_file_size 128m;
+            client_max_body_size 150m;
+            client_body_buffer_size 2m;
+            proxy_pass http://im_ws_test;
+
+        }
+
+		# 禁止任务脚本输出
+		location ~* \.(sql|sh|md)$ {
+			deny all;
+		}
+
+		# 禁止证书文件输出
+		location ~* \.(p12|pem|key|crt|sql|md|gitignore|htaccess)$ {
+			deny all;
+		}
+
+
+        # 动态请求路径映射
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_next_upstream error timeout http_500 http_502 http_503 http_504;
+            add_header Cache-Control no-store;
+            #proxy_set_header Crm-Static-Header-Token '123';
+            #set $limitedHeaderName 'Crm-Static-Header-Token';
+            #set $headerValue '123';
+            set $rCode '';
+            set $proxyUrl '';
+            #请求转发
+            set_by_lua_file $proxyUrl "/lualib/custome/proxyRequest.lua";
+            proxy_connect_timeout  600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffer_size 2m;
+            proxy_buffers 4 2m;
+            proxy_busy_buffers_size 2m;
+            proxy_temp_file_write_size 2m;
+            proxy_max_temp_file_size 128m;
+            client_max_body_size 150m;
+            client_body_buffer_size 2m;
+            if ($rCode = '403') {
+                return 403;
+            }
+            proxy_pass http://$proxyUrl;
+        }
+
+
+        location = /favicon.ico {
+            root   html;
+        }
+
+        location = / {
+            index  index.html
+            root   html;
+        }
+
+        location = /50x.html {
+            root   html;
+        }
+
+        error_page  403              /403.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        #error_page   500 502 503 504  /50x.html;
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }

@@ -1,0 +1,19 @@
+
+xm:
+  web:
+    cors:
+      enable: true
+    args:
+      trim:
+        enable: true
+    json:
+      decode-datetime:
+        enable: true
+      trim:
+        enable: true
+    # 支持扫描父类接口信息
+    scan:
+      super-controller:
+        enable: true
+      generic-bind:
+        enable: true

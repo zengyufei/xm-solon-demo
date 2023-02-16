@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  openresty:
+    image: "openresty/openresty:${OPENRESTY_SERVICE_VERSION}"
+    container_name: "${OPENRESTY_SERVICE_CONTAINER_NAME}"
+    network_mode: "${OPENRESTY_SERVICE_NETWORK_MODE}"
+    restart: always
+    privileged: true
+    ports:
+      - "${OPENRESTY_SERVICE_PORT_80}:80"
+      - "${OPENRESTY_SERVICE_PORT_443}:443"
+    volumes:
+      - ./nginx/conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./nginx/conf/vhost:/etc/nginx/conf.d
+      - ./nginx/conf/ssl_certs:/usr/local/openresty/nginx/conf/ssl_certs
+      - ./nginx/html:/usr/local/openresty/nginx/html
+      - ./nginx/logs:/usr/local/openresty/nginx/logs
+      - ./lualib/custome:/usr/local/openresty/lualib/custome

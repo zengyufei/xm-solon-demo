@@ -1,0 +1,167 @@
+solon.app:
+    name: xm-biz
+    group: com.xunmo
+server.port: 8667
+server.contextPath: "/xunmo-TEST"
+
+#应用环境配置（主要用于切换包内不同的配置文件）
+solon.env: dev
+
+#应用元信息输出开启（输出每个插件的信息）
+solon.output.meta: 1
+
+page:
+    pageNumName: pageNo
+    pageSizeName: pageSize
+    orderByName: orderBy
+
+sa-token-dao: #名字可以随意取
+    redis:
+        server: "localhost:6379"
+        #password: 123456
+        db: 3
+        maxTotal: 200
+
+xm:
+    web:
+        cors:
+            enable: true
+        args:
+            trim:
+                enable: true
+        json:
+            decode-datetime:
+                enable: true
+            trim:
+                enable: true
+        # 支持扫描父类接口信息
+        scan:
+            super-controller:
+                enable: true
+            generic-bind:
+                enable: false
+        cache:
+            enable: true
+            db: 2
+            server: localhost:6379
+            #password: ""
+        xss:
+            enable: true
+        console:
+            args:
+                enable: true
+                type: handler #handler or filter
+            requestTimes:
+                enable: true
+                type: handler #handler or filter
+    log:
+        mappers: com.xunmo.webs
+        traceId:
+            enable: true
+            thread:
+                enable: true
+    tran:
+        enable: true
+        method:
+            prefix:
+                - "add"
+                - "insert"
+                - "create"
+                - "save"
+                - "delete"
+                - "edit"
+                - "modify"
+                - "update"
+                - "remove"
+                - "del"
+                - "move"
+                - "change"
+    exception:
+        enable: true
+    mq:
+        host: localhost
+        port: 5672
+        username: root
+        password: root
+        vhost: /
+        max-conn: 30
+
+    # 微信
+    wx:
+        # 小程序的配置([mp.appid;mp.app-secret] 与 [mp.multi-default-name;mp.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
+        mp:
+            appid: '微信小程序appid'
+            app-secret: '微信小程序appsecret'
+            multi-default-name: '默认使用的小程序配置名'
+            # 多配置
+            multi:
+                # 小程序配置1, 名为 first
+                first:
+                    appid: '微信小程序appid.1'
+                    app-secret: '微信小程序appsecret.1'
+                # 小程序配置2, 名为 second
+                second:
+                    appid: '微信小程序appid.2'
+                    app-secret: '微信小程序appsecret.2'
+        # 公众号的配置([official-account.appid;official-account.app-secret] 与 [official-account.multi-default-name;official-account.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
+        official-account:
+            appid: "微信公众号appid"
+            app-secret: "微信公众号appsecret"
+            multi-default-name: '默认使用的微信公众号配置名'
+            multi:
+                # 公众号配置1, 名为 first
+                first:
+                    appid: '微信公众号appid.1'
+                    app-secret: '微信公众号appsecret.1'
+                # 公众号配置2, 名为 second
+                second:
+                    appid: '微信公众号appid.2'
+                    app-secret: '微信公众号appsecret.2'
+    alipay:
+        appid: '应用ID'
+        app-private-key: '应用密钥'
+        app-public-key: '应用公钥'
+        public-key: '支付宝公钥'
+
+
+#默认
+mybatis.db:
+    typeAliases:    #支持包名 或 类名（.class 结尾）
+        - "com.xunmo.webs.*.entity"
+    mappers:        #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
+        - "mybatis/xm/*.xml"
+        - "mybatis/db1/*.xml"
+#        - "com.xunmo.webs"
+    globalConfig:
+        metaObjectHandler: com.xunmo.config.XmMetaObjectHandlerImpl
+
+# sa-token配置
+sa-token:
+    # token名称 (同时也是cookie名称)
+    token-name: TOKEN
+    # token有效期，单位s 默认30天, -1代表永不过期
+    timeout: 2592000
+    # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+    activity-timeout: -1
+    # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+    allow-concurrent-login: true
+    # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+    is-share: true
+    # token风格
+    token-style: uuid
+    # 是否输出操作日志
+    is-log: false
+
+
+
+solon.serialization.json:
+    dateAsFormat: 'yyyy-MM-dd HH:mm:ss' #配置日期格式（默认输出为时间戳）
+    dateAsTimeZone: 'GMT+8' #配置时区
+    #dateAsTicks: false #将date转为毫秒数（和 dateAsFormat 二选一）
+    #longAsString: true #将long型转为字符串输出 （默认为false）
+    #boolAsInt: false   #将bool型转为字符串输出 （默认为false）
+    nullStringAsEmpty: false
+    nullBoolAsFalse: false
+    nullNumberAsZero: false
+    nullArrayAsEmpty: false
+    nullAsWriteable: true #输出所有null值

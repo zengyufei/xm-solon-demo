@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: "rabbitmq:${RABBITMQ_SERVICE_VERSION}"
+    container_name: "${RABBITMQ_SERVICE_CONTAINER_NAME}"
+    hostname: "${RABBITMQ_SERVICE_HOSTNAME}"
+    restart: always
+    ports:
+      - "${RABBITMQ_SERVICE_PORT_5672}:5672"
+      - "${RABBITMQ_SERVICE_PORT_15672}:15672"
+      - "${RABBITMQ_SERVICE_PORT_25672}:25672"
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - /home/rabbitmq:/var/lib/rabbitmq
+      - ./plugins/rabbitmq_delayed_message_exchange-3.8.0.ez:/plugins/rabbitmq_delayed_message_exchange-3.8.0.ez 
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_SERVICE_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_SERVICE_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_SERVICE_DEFAULT_VHOST}

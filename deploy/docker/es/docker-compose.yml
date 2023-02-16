@@ -1,0 +1,22 @@
+version: '3'
+services:
+  es:
+    image: davyinsa/elasticsearch-ik:7.16.3
+    container_name: es
+    environment:
+      - discovery.type=single-node
+      - node.name=es
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=*!Xunmo@AiQing68951@zyf!*
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /home/es/data:/usr/share/elasticsearch/data
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
+    ports:
+      - 9200:9200

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.xunmo</groupId>
+        <artifactId>xm-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>xm-common</artifactId>
+    <packaging>pom</packaging>
+
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>./xm-bom</module>
+        <module>./xm-constant</module>
+        <module>./xm-solon</module>
+        <module>./xm-annotation</module>
+        <module>./xm-core</module>
+        <module>./xm-web</module>
+        <module>./xm-auto-tran</module>
+        <module>./xm-package-util</module>
+        <module>./xm-request-trace-id</module>
+<!--        <module>./xm-log-sync</module>-->
+        <module>./xm-request-times-console</module>
+        <module>./xm-request-args-console</module>
+        <module>./xm-request-xss-filter</module>
+        <module>./xm-test</module>
+    </modules>
+
+</project>

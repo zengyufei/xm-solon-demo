@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:${MYSQL_SERVICE_VERSION}
+    container_name: ${MYSQL_SERVICE_CONTAINER_NAME}
+    hostname: ${MYSQL_SERVICE_HOSTNAME}
+    command: --skip-name-resolve --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --log-bin=my
+    restart: always
+    ports:
+      - "${MYSQL_SERVICE_PORT_3306}:3306"
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+      - /home/mysql/data:/var/lib/mysql
+      - /home/mysql/tmp:/home/tmp
+      - /home/backup/mysql:/home/backup/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_SERVICE_ROOT_PASSWORD}

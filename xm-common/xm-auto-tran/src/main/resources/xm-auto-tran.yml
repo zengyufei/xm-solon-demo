@@ -1,0 +1,15 @@
+xm.tran:
+  enable: false
+  method:
+    prefix:
+      - "add"
+      - "insert"
+      - "create"
+      - "save"
+      - "delete"
+      - "edit"
+      - "modify"
+      - "update"
+      - "remove"
+      - "del"
+    suffix:

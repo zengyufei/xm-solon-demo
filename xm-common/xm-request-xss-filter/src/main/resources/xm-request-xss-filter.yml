@@ -1,0 +1,5 @@
+xm:
+  web:
+    xss:
+      enable: true
+      type: filter

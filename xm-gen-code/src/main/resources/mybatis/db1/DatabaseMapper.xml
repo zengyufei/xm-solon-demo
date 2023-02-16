@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmo.biz.database.DataBaseMapper">
+
+
+    <!-- 数据源 -->
+    <select id="queryAllDatabases" resultType="com.xunmo.biz.database.Database">
+        select id,name,type,username,password,conType,host,port,dataSchema,jdbcUrl,createTime
+        from t_database
+    </select>
+
+    <insert id="addDatabase"  useGeneratedKeys="true" keyProperty="id">
+        insert into t_database (name, type, username, password, conType, host, port, dataSchema, jdbcUrl)
+        values (#{name}, #{type}, #{username}, #{password}, #{conType}, #{host}, #{port}, #{dataSchema}, #{jdbcUrl})
+    </insert>
+    <delete id="delDatabase">
+        delete from t_database where id = #{id}
+    </delete>
+    <update id="updateDatabase">
+        update  t_database set
+               name = #{name},
+               type =  #{type},
+               username =  #{username},
+               password =  #{password},
+               conType =  #{conType},
+               host =  #{host},
+               port =  #{port},
+               dataSchema =  #{dataSchema},
+               jdbcUrl =  #{jdbcUrl}
+        where id = #{id}
+    </update>
+    <select id="getDatabaseById" resultType="com.xunmo.biz.database.Database">
+        select id,name,type,username,password,conType,host,port,dataSchema,jdbcUrl,createTime
+        from t_database where id = #{id}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,6 @@
+xm:
+  log:
+    traceId:
+      enable: true
+      thread:
+        enable: true

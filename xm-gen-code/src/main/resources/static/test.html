@@ -1,0 +1,79 @@
+<!--
+ * @Author: zengyufei
+ * @LastEditors: zengyufei
+ * @Description: 
+ * 惠州市寻墨科技有限公司
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>代码生成气</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link rel="stylesheet" href="./element.css" />
+        <script src="./vue.js"></script>
+        <script src="./element.js"></script>
+    </head>
+    <body>
+        <div class="vue-box" style="overflow-x: hidden">
+            <div v-for="item in templateTree">
+                <template v-for="(iitem, index) in item.children">
+                    <div class="span-150">{{iitem.name}}{{downloadSetting[iitem.name]}}</div>
+                    <el-radio-group v-model="downloadSetting[iitem.name]">
+                        <el-radio-button label="1">生成</el-radio-button>
+                        <el-radio-button label="0">忽略</el-radio-button>
+                    </el-radio-group>
+                </template>
+            </div>
+        </div>
+        <script>
+            var app = new Vue({
+                el: ".vue-box",
+                data: {
+                    downloadSetting: {},
+                    templateTree: [
+                        {
+                            name: "前端",
+                            children: [
+                                {
+                                    name: "add",
+                                },
+                            ],
+                        },
+                        {
+                            name: "后端",
+                            children: [
+                                {
+                                    name: "controller",
+                                },
+                                {
+                                    name: "mapperXml",
+                                },
+                                {
+                                    name: "service",
+                                },
+                                {
+                                    name: "mapper",
+                                },
+                                {
+                                    name: "entity",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                created: function () {
+                    this.templateTree.forEach((item) => {
+                        item.children.forEach((iitem) => {
+                            this.$set(this.downloadSetting, iitem.name, '1')
+                        })
+                    })
+                },
+                computed: {},
+                mounted() {},
+                methods: {},
+                components: {},
+            })
+        </script>
+    </body>
+</html>

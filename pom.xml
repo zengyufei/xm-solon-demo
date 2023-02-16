@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xunmo</groupId>
+    <artifactId>xm-parent</artifactId>
+    <version>1.0.0</version>
+
+    <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <xm.version>1.0.0</xm.version>
+        <solon.version>1.12.3</solon.version>
+    </properties>
+
+    <modules>
+        <module>xm-common</module>
+        <module>xm-apps</module>
+        <module>xm-gen-code</module>
+        <module>xm-biz</module>
+    </modules>
+
+    <dependencies>
+        <!-- 基础常量 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-constant</artifactId>
+        </dependency>
+        <!--hutool-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.15</version>
+        </dependency>
+        <!--Lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>logback-solon-plugin</artifactId>
+        </dependency>
+    </dependencies>
+
+
+
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 公共版本定义-->
+            <dependency>
+                <groupId>com.xunmo</groupId>
+                <artifactId>xm-bom</artifactId>
+                <version>${xm.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <!-- boot 公共版本定义-->
+            <dependency>
+                <groupId>org.noear</groupId>
+                <artifactId>solon-parent</artifactId>
+                <version>${solon.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+
+    <build>
+        <finalName>${project.name}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <pluginManagement>
+            <plugins>
+
+                <!-- 配置编译插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <compilerArgument>-parameters</compilerArgument>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+
+                <!-- 配置打包插件（设置主类，并打包成胖包） -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <!--
+   使用时，可以项目的 pom.xml 里添加 repositories 内容
+   -->
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>tencent</id>
+            <name>tencent maven</name>
+            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>repo1</id>
+            <name>repo1 maven</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>tencent</id>
+            <name>tencent maven</name>
+            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo1</id>
+            <name>repo1 maven</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

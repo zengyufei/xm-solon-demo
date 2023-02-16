@@ -1,0 +1,6 @@
+xm:
+  web:
+    console:
+      requestTimes:
+        enable: true
+        type: handler

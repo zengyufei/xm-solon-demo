@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.xunmo</groupId>
+        <artifactId>xm-common</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>xm-web</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.cache.jedis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-orm-mp-mysql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-solon</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-trace-id</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-times-console</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-args-console</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-xss-filter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-web</artifactId>
+        </dependency>
+
+        <!-- 7z 依赖 begin -->
+        <dependency>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.opensagres.xdocreport</groupId>
+            <artifactId>xdocreport</artifactId>
+        </dependency>
+        <!-- 7z 依赖 end -->
+        <!-- zip 依赖 -->
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+        </dependency>
+        <!-- rar 依赖 begin -->
+        <dependency>
+            <groupId>net.sf.sevenzipjbinding</groupId>
+            <artifactId>sevenzipjbinding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.sevenzipjbinding</groupId>
+            <artifactId>sevenzipjbinding-all-platforms</artifactId>
+        </dependency>
+        <!-- rar 依赖 end -->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 配置编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmo.biz.table.GenTableMapper">
+
+    <!-- mysql 表管理 -->
+    <select id="queryAllTables" resultType="com.xunmo.biz.table.TableInfo" parameterType="java.util.Map">
+        SELECT table_name    AS tableName,
+               ENGINE        AS engine,
+               table_comment AS tableComment,
+               create_time   AS createTime
+        FROM information_schema.TABLES
+        WHERE table_schema = ((SELECT DATABASE()))
+        <if test="tableName != null and '' != tableName">
+            and table_name like concat(#{tableName}, '%')
+        </if>
+        <if test="tableComment != null and '' != tableComment">
+            and table_comment like concat(#{tableComment}, '%')
+        </if>
+        <if test="beginCreateTime != null and '' != beginCreateTime">
+            and create_time &gt; #{beginCreateTime}
+        </if>
+        <if test="endCreateTime != null and '' != endCreateTime">
+            and create_time &lt; #{endCreateTime}
+        </if>
+        order by table_name desc, create_time desc
+        <if test="pageNo != null and pageSize != null">
+            limit #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="countAllTables" resultType="java.lang.Long">
+        SELECT count(*)
+        FROM information_schema.TABLES
+        WHERE table_schema = ((SELECT DATABASE()))
+        order by table_name desc, create_time desc
+    </select>
+
+    <select id="queryTable" resultType="com.xunmo.biz.table.TableInfo">
+        SELECT table_name    AS tableName,
+               ENGINE        AS engine,
+               table_comment AS tableComment,
+               create_time   AS createTime
+        FROM information_schema.TABLES
+        WHERE table_schema = ((SELECT DATABASE()))
+          and table_name = #{tableName} limit 1
+    </select>
+
+    <!--  查询所有字段 -->
+    <select id="getAllFieldByTableName" resultType="map">
+        SELECT
+            table_name as tableName,
+            column_name as columnName,
+            ordinal_position as ordinalPosition,
+            column_default as columnDefault,
+            is_nullable as isNullable,
+            data_type as dataType,
+            character_maximum_length as length,
+            numeric_precision as numericPrecision,
+            numeric_scale as numericScale,
+            column_type as columnType,
+            column_key as columnKey,
+            extra as extra,
+            column_comment as columnComment
+        FROM
+            information_schema.COLUMNS
+        WHERE
+            table_name = #{tableName} and table_schema = ((SELECT DATABASE())) order by ordinal_position
+    </select>
+
+    <!-- 生成表 -->
+    <insert id="addGenTable" parameterType="com.xunmo.biz.table.GenTable" useGeneratedKeys="true" keyProperty="id">
+        insert into t_table (dataId, tableName, tableComment, entityName, varName, authorName, serviceName, packageName,swaggerComment,
+        moduleName, subPackageName, entitySuperClassName, mapperSuperClassName, serviceSuperClassName,
+        serviceImplSuperClassName, dsFlag, tenderFlag, lombokFlag,
+		 chainFlag, constFlag, genFlag, prefixPath, suffixPath, remark,
+         appPackageName,appModuleName,appPopupType,appTemplateType,appAddBtnFlag,appUpdateBtnFlag,appDelBtnFlag,appCopyBtnFlag,appShowBtnFlag,
+         appAddBtnCode,appUpdateBtnCode,appDelBtnCode,appCopyBtnCode,appShowBtnCode,
+         parentSystemId,parentMenuId,menuName,menuIcon,parentIdName,slaveTalbeName,slaveFieldName
+        ) values
+        <foreach collection="tables" item="table" index="index" separator=",">
+            (#{table.dataId}, #{table.tableName}, #{table.tableComment}, #{table.entityName}, #{table.varName}, #{table.authorName},
+             #{table.serviceName},#{table.packageName},#{table.swaggerComment},
+            #{table.moduleName}, #{table.subPackageName}, #{table.entitySuperClassName}, #{table.mapperSuperClassName},#{table.serviceSuperClassName},
+            #{table.serviceImplSuperClassName}, #{table.dsFlag}, #{table.tenderFlag}, #{table.lombokFlag},
+            #{table.chainFlag},#{table.constFlag}, #{table.genFlag}, #{table.prefixPath}, #{table.suffixPath}, #{table.remark},
+            #{table.appPackageName},#{table.appModuleName},#{table.appPopupType},#{table.appTemplateType},#{table.appAddBtnFlag},
+             #{table.appUpdateBtnFlag},#{table.appDelBtnFlag},#{table.appCopyBtnFlag},#{table.appShowBtnFlag},#{table.appAddBtnCode},
+             #{table.appUpdateBtnCode},#{table.appDelBtnCode},#{table.appCopyBtnCode},#{table.appShowBtnCode},#{table.parentSystemId},
+             #{table.parentMenuId},#{table.menuName},#{table.menuIcon}, #{table.parentIdName},#{table.slaveTalbeName},#{table.slaveFieldName}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="delGenTable">
+        delete
+        from t_table
+        where id = #{id}
+    </delete>
+
+    <update id="updateGenTable">
+        update t_table
+        set tableName = #{tableName},
+            tableComment = #{tableComment},
+            entityName = #{entityName},
+            varName = #{varName},
+            authorName = #{authorName},
+            swaggerComment = #{swaggerComment},
+            serviceName = #{serviceName},
+            packageName = #{packageName},
+            moduleName = #{moduleName},
+            subPackageName = #{subPackageName},
+            entitySuperClassName = #{entitySuperClassName},
+            mapperSuperClassName = #{mapperSuperClassName},
+            serviceSuperClassName = #{serviceSuperClassName},
+            serviceImplSuperClassName = #{serviceImplSuperClassName},
+            dsFlag = #{dsFlag},
+            tenderFlag = #{tenderFlag},
+            lombokFlag = #{lombokFlag},
+            chainFlag = #{chainFlag},
+            constFlag = #{constFlag},
+            genFlag = #{genFlag},
+            prefixPath = #{prefixPath},
+            suffixPath = #{suffixPath},
+            remark = #{remark},
+            appPackageName = #{appPackageName},
+            appModuleName = #{appModuleName},
+            appPopupType = #{appPopupType},
+            appTemplateType = #{appTemplateType},
+            appAddBtnFlag = #{appAddBtnFlag},
+            appUpdateBtnFlag = #{appUpdateBtnFlag},
+            appDelBtnFlag = #{appDelBtnFlag},
+            appCopyBtnFlag = #{appCopyBtnFlag},
+            appShowBtnFlag = #{appShowBtnFlag},
+            appAddBtnCode = #{appAddBtnCode},
+            appUpdateBtnCode = #{appUpdateBtnCode},
+            appDelBtnCode = #{appDelBtnCode},
+            appCopyBtnCode = #{appCopyBtnCode},
+            appShowBtnCode = #{appShowBtnCode},
+            parentSystemId = #{parentSystemId},
+            parentMenuId = #{parentMenuId},
+            menuName = #{menuName},
+            menuIcon = #{menuIcon},
+            parentIdName = #{parentIdName},
+            slaveTalbeName = #{slaveTalbeName},
+            slaveFieldName = #{slaveFieldName}
+        where id = #{id}
+    </update>
+
+    <sql id="genTableField">
+       select id,dataId,tableName,tableComment,entityName,varName,authorName,serviceName,packageName,swaggerComment,
+       moduleName,subPackageName,entitySuperClassName,mapperSuperClassName,serviceSuperClassName,
+       serviceImplSuperClassName,dsFlag,tenderFlag,lombokFlag,chainFlag,constFlag,genFlag,prefixPath,suffixPath,
+       remark, appPackageName,appModuleName,appPopupType,appTemplateType,appAddBtnFlag,appUpdateBtnFlag,appDelBtnFlag,
+       appCopyBtnFlag,appShowBtnFlag,appAddBtnCode,appUpdateBtnCode,appDelBtnCode,appCopyBtnCode,appShowBtnCode,
+       parentSystemId,parentMenuId,menuName,menuIcon,parentIdName,slaveTalbeName,slaveFieldName
+    </sql>
+
+    <select id="getGenTableById" resultType="com.xunmo.biz.table.GenTable">
+        <include refid="genTableField"></include>
+        from t_table
+        where id = #{id}
+    </select>
+    <select id="countGenTable" resultType="java.lang.Long">
+        select count(*)
+        from t_table
+    </select>
+
+    <select id="getGenTable" resultType="com.xunmo.biz.table.GenTable">
+        <include refid="genTableField"></include>
+        from t_table
+        <where>
+            <if test="tableName != null and '' != tableName">
+                and tableName like concat(#{tableName}, '%')
+            </if>
+            <if test="tableComment != null and '' != tableComment">
+                and tableComment like concat(#{tableComment}, '%')
+            </if>
+        </where>
+        <if test="pageNo != null and pageSize != null">
+            limit #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+
+
+</mapper>

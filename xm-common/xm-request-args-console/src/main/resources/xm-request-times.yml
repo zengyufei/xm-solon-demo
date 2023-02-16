@@ -1,0 +1,6 @@
+xm:
+  web:
+    console:
+      args:
+        enable: true
+        type: handler

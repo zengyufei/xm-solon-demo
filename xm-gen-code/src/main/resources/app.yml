@@ -1,0 +1,23 @@
+solon.app:
+    name: xm-gen-code
+    group: com.xunmo
+server.port: 8099
+
+test.db:
+    type: "com.zaxxer.hikari.HikariDataSource"
+    strict: true
+    default: #default 或 master ，会做为动态源的默认源
+        jdbcUrl: jdbc:mysql://localhost:3306/sp-dev?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
+        driverClassName: com.mysql.cj.jdbc.Driver
+        username: root
+        password: root
+
+#默认
+mybatis.db:
+    typeHandlersPackage:
+        - "com.xunmo.config.mybatis"
+    typeAliases:    #支持包名 或 类名（.class 结尾）
+        - "com.xunmo.biz.*"
+    mappers:        #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
+        - "mybatis/db1/*.xml"
+#        - "com.xunmo.webs.*.mapper"

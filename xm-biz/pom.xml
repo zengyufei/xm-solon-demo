@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>xm-biz</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>java project for solon demo</description>
+
+    <parent>
+        <groupId>com.xunmo</groupId>
+        <artifactId>xm-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.boot.smarthttp</artifactId>
+        </dependency>
+
+        <!-- 异常自动记录入库，可关闭依赖，停止该功能 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-exception-record</artifactId>
+        </dependency>
+
+        <!-- mq 封装工具类，纯工具类依赖 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-rabbitmq-util</artifactId>
+        </dependency>
+
+        <!-- 业务项目基础类包，与具体项目绑定 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-biz-base</artifactId>
+        </dependency>
+
+        <!-- 业务项目基础web包，与具体项目绑定 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-core-web</artifactId>
+        </dependency>
+
+        <!-- p6spy，可关闭依赖，修改配置，停止该功能 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-p6spy</artifactId>
+        </dependency>
+
+        <!-- 自动添加事务，可关闭依赖，停止该功能 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-auto-tran</artifactId>
+        </dependency>
+
+        <!-- 回归 springboot 统一异常处理器写法，可关闭依赖，停止该功能 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-exception</artifactId>
+        </dependency>
+
+        <!-- 通用web包，可关闭依赖，停止该功能 -->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>sa-token-solon-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>redisx</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>quartz-solon-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cola</groupId>
+            <artifactId>cola-component-statemachine</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <!-- easyexcel begin -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jaxb-runtime</artifactId>
+                    <groupId>org.glassfish.jaxb</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- easyexcel end -->
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-test</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+
+            <!-- 配置编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 配置打包插件（设置主类，并打包成胖包） -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <!-- 此处，要改成自己的程序入口（即 main 函数类） -->
+                        <manifest>
+                            <mainClass>com.xunmo.BizApp</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly2</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>make-assembly3</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

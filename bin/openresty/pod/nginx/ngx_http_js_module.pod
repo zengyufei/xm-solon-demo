@@ -1,0 +1,227 @@
+=encoding utf-8
+
+=head1 NAME
+
+ngx_http_js_module - Module ngx_http_js_module
+
+
+
+
+=head1
+
+
+
+The C<ngx_http_js_module> module is used to implement
+location and variable handlers
+in L<njs|index> —
+a subset of the JavaScript language.
+
+
+
+
+
+This module is not built by default.
+Download and install instructions are available
+L<here|install>.
+
+
+
+
+=head1 Example Configuration
+
+
+
+
+    
+    load_module modules/ngx_http_js_module.so;
+    ...
+    
+    http {
+        js_include http.js;
+    
+        js_set $foo     foo;
+        js_set $summary summary;
+    
+        server {
+            listen 8000;
+    
+            location / {
+                add_header X-Foo $foo;
+                js_content baz;
+            }
+    
+            location = /summary {
+                return 200 $summary;
+            }
+    
+            location = /hello {
+                js_content hello;
+            }
+        }
+    }
+
+
+
+
+
+
+
+The F<http.js> file:
+
+    
+    function foo(r) {
+        r.log("hello from foo() handler");
+        return "foo";
+    }
+    
+    function summary(r) {
+        var a, s, h;
+    
+        s = "JS summary\n\n";
+    
+        s += "Method: " + r.method + "\n";
+        s += "HTTP version: " + r.httpVersion + "\n";
+        s += "Host: " + r.headersIn.host + "\n";
+        s += "Remote Address: " + r.remoteAddress + "\n";
+        s += "URI: " + r.uri + "\n";
+    
+        s += "Headers:\n";
+        for (h in r.headersIn) {
+            s += "  header '" + h + "' is '" + r.headersIn[h] + "'\n";
+        }
+    
+        s += "Args:\n";
+        for (a in r.args) {
+            s += "  arg '" + a + "' is '" + r.args[a] + "'\n";
+        }
+    
+        return s;
+    }
+    
+    function baz(r) {
+        r.status = 200;
+        r.headersOut.foo = 1234;
+        r.headersOut['Content-Type'] = "text/plain; charset=utf-8";
+        r.headersOut['Content-Length'] = 15;
+        r.sendHeader();
+        r.send("nginx");
+        r.send("java");
+        r.send("script");
+    
+        r.finish();
+    }
+    
+    function hello(r) {
+        r.return(200, "Hello world!");
+    }
+
+
+
+
+
+
+=head1 Directives
+
+=head2 js_content
+
+
+B<syntax:> js_content I<I<C<function>>>
+
+
+
+B<context:> I<location>
+
+
+B<context:> I<limit_except>
+
+
+
+
+
+Sets an njs function as a location content handler.
+
+
+
+
+
+
+
+=head2 js_include
+
+
+B<syntax:> js_include I<I<C<file>>>
+
+
+
+B<context:> I<http>
+
+
+
+
+
+Specifies a file that implements location and variable handlers in njs.
+
+
+
+
+
+
+
+=head2 js_path
+
+
+B<syntax:> js_path I<
+I<C<path>>>
+
+
+
+B<context:> I<http>
+
+
+
+This directive appeared in version 0.3.0.
+
+
+
+
+
+Sets an additional path for njs modules.
+
+
+
+
+
+
+
+=head2 js_set
+
+
+B<syntax:> js_set I<
+I<C<$variable>> I<C<function>>>
+
+
+
+B<context:> I<http>
+
+
+
+
+
+Sets an njs function for the specified variable.
+
+
+
+
+
+
+
+=head1 Request Argument
+
+
+
+Each HTTP njs handler receives one argument, a request
+L<object|reference>.
+
+
+
+

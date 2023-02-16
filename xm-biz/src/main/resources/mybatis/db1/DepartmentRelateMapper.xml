@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmo.webs.department.mapper.DepartmentRelateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xunmo.webs.department.entity.DepartmentRelate">
+        <result column="id" property="id" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="app_id" property="appId" />
+        <result column="disabled" property="disabled" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="create_user_nick_name" property="createUserName" />
+        <result column="last_update_time" property="updateTime" />
+        <result column="last_update_user" property="updateUser" />
+        <result column="last_update_user_nick_name" property="updateUserName" />
+        <result column="parent_code" property="parentCode" />
+        <result column="child_code" property="childCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        tenant_id,
+        app_id,
+        disabled,
+        create_time,
+        create_user,
+        create_user_nick_name,
+        last_update_time,
+        last_update_user,
+        last_update_user_nick_name,
+        parent_code, child_code
+    </sql>
+
+    <!-- 删除节点关系	-->
+    <delete id="deleteDeptRelations">
+        DELETE FROM t_department_relate
+        WHERE
+                child_code IN ( SELECT temp.child_code FROM
+                    ( SELECT child_code FROM t_department_relate WHERE parent_code = #{childCode} ) temp )
+          AND parent_code IN ( SELECT temp.parent_code FROM ( SELECT parent_code FROM
+            t_department_relate WHERE child_code = #{childCode} AND parent_code != child_code ) temp )
+    </delete>
+
+    <!-- 新增节点关系	-->
+    <select id="getDeptRelations" resultMap="BaseResultMap">
+        SELECT a.parent_code, b.child_code
+        FROM t_department_relate a
+                 CROSS JOIN t_department_relate b
+        WHERE a.child_code = #{parentCode}
+          AND b.parent_code = #{childCode}
+    </select>
+
+    <!-- 新增节点关系	-->
+<!--    <insert id="insertDeptRelations">-->
+<!--        INSERT INTO t_department_relate (parent_code, child_code)-->
+<!--        SELECT a.parent_code, b.child_code-->
+<!--        FROM t_department_relate a-->
+<!--                 CROSS JOIN t_department_relate b-->
+<!--        WHERE a.child_code = #{parentCode}-->
+<!--          AND b.parent_code = #{childCode}-->
+<!--    </insert>-->
+
+    <!--删除部门 > 删除所有关联此部门子节点的闭包关系-->
+    <delete id="deleteDeptRelationsByDeptId">
+        DELETE FROM t_department_relate
+        WHERE child_code IN (SELECT temp.child_code FROM (SELECT child_code FROM t_department_relate WHERE parent_code = #{code}) temp)
+    </delete>
+
+</mapper>

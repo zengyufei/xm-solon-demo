@@ -1,0 +1,20 @@
+
+local urlStr = ngx.var.document_uri
+ngx.log(ngx.INFO, ">>>Request URL: "..urlStr.." <<<")
+
+urlStr = string.sub(urlStr, 2)
+
+local i, j = string.find(urlStr, [[/]])
+
+if i then
+urlStr=string.sub(urlStr, 1,i-1)
+end
+
+ngx.log(ngx.INFO, ">>>Request forward to upstream: "..urlStr.."  <<<")
+return urlStr
+
+
+
+
+
+

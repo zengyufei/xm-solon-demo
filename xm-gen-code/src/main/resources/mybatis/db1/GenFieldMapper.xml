@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunmo.biz.field.GenFieldMapper">
+
+
+    <!-- 生成字段 -->
+    <insert id="addGenField" useGeneratedKeys="true" keyProperty="id">
+        insert into t_field (genTableId, tableName, columnName, columnComment, swaggerComment, columnType, javaType, javaField, tsType,
+        sort, pkFlag, incFlag, mustFlag, logicDeleteFlag, versionFlag, fillType, addFlag, editFlag, listFlag, queryFlag,
+        defaultValue, isNullable, dataType, `length`, width, component, dictType, queryType, enumStr, editHelpMessage,
+        listHelpMessage, numericPrecision, numericScale, columnKey, extra, createTime, updateTime
+        ) values
+        <foreach collection="fields" item="field" index="index" separator=",">
+            (#{field.genTableId}, #{field.tableName}, #{field.columnName}, #{field.columnComment}, #{field.swaggerComment}, #{field.columnType},
+            #{field.javaType}, #{field.javaField}, #{field.tsType}, #{field.sort}, #{field.pkFlag}, #{field.incFlag}, #{field.mustFlag},
+            #{field.logicDeleteFlag}, #{field.versionFlag}, #{field.fillType}, #{field.addFlag}, #{field.editFlag}, #{field.listFlag}, #{field.queryFlag},
+            #{field.defaultValue}, #{field.isNullable}, #{field.dataType}, #{field.length}, #{field.width}, #{field.component}, #{field.dictType},
+            #{field.queryType}, #{field.enumStr}, #{field.editHelpMessage}, #{field.listHelpMessage}, #{field.numericPrecision},
+            #{field.numericScale}, #{field.columnKey}, #{field.extra}, #{field.createTime}, #{field.updateTime}
+            )
+        </foreach>
+    </insert>
+    <delete id="delGenField">
+        delete
+        from t_field
+        where genTableId = #{genTableId}
+    </delete>
+
+    <select id="countGenField" resultType="java.lang.Long">
+        select count(*)
+        from t_field where genTableId = #{genTableId}
+    </select>
+
+    <select id="getGenField" resultType="com.xunmo.biz.field.GenField">
+        select id,genTableId, tableName, columnName, columnComment, swaggerComment, columnType, javaType, javaField, tsType,
+        sort, pkFlag, incFlag, mustFlag, logicDeleteFlag, versionFlag, fillType, addFlag, editFlag, listFlag, queryFlag,
+        defaultValue, isNullable, dataType, length, width, component, dictType, queryType, enumStr, editHelpMessage,
+        listHelpMessage, numericPrecision, numericScale, columnKey, extra, createTime, updateTime
+        from t_field
+        where genTableId = #{genTableId}
+        <if test="columnName != null and '' != columnName">
+            and columnName like concat(#{columnName}, '%')
+        </if>
+        <if test="columnComment != null and '' != columnComment">
+            and columnComment like concat(#{columnComment}, '%')
+        </if>
+        <if test="pageNo != null and pageSize != null">
+            limit #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+    <update id="updateGenField">
+        update t_field
+        set tableName = #{tableName} ,
+            columnName = #{columnName} ,
+            columnComment = #{columnComment} ,
+            swaggerComment = #{swaggerComment} ,
+            columnType = #{columnType} ,
+            javaType = #{javaType} ,
+            javaField = #{javaField} ,
+            tsType = #{tsType} ,
+            sort = #{sort} ,
+            pkFlag = #{pkFlag} ,
+            incFlag = #{incFlag} ,
+            mustFlag = #{mustFlag} ,
+            logicDeleteFlag = #{logicDeleteFlag} ,
+            versionFlag = #{versionFlag} ,
+            fillType = #{fillType} ,
+            addFlag = #{addFlag} ,
+            editFlag = #{editFlag} ,
+            listFlag = #{listFlag} ,
+            queryFlag = #{queryFlag} ,
+            defaultValue = #{defaultValue} ,
+            isNullable = #{isNullable} ,
+            dataType = #{dataType} ,
+            length = #{length} ,
+            width = #{width} ,
+            component = #{component} ,
+            dictType = #{dictType} ,
+            queryType = #{queryType} ,
+            enumStr = #{enumStr} ,
+            editHelpMessage = #{editHelpMessage} ,
+            listHelpMessage = #{listHelpMessage} ,
+            numericPrecision = #{numericPrecision} ,
+            numericScale = #{numericScale} ,
+            columnKey = #{columnKey} ,
+            extra = #{extra} ,
+            createTime = #{createTime} ,
+            updateTime = #{updateTime}
+        where id = #{id}
+    </update>
+
+
+
+</mapper>

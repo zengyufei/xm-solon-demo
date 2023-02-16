@@ -1,0 +1,424 @@
+=encoding utf-8
+
+=head1 NAME
+
+ngx_http_auth_jwt_module - Module ngx_http_auth_jwt_module
+
+
+
+
+=head1
+
+
+
+The C<ngx_http_auth_jwt_module> module (1.11.3)
+implements client authorization by validating the provided
+L<JSON Web Token|https://tools.ietf.org/html/rfc7519> (JWT)
+using the specified keys.
+JWT claims must be encoded in a
+L<JSON Web Signature|https://tools.ietf.org/html/rfc7515> (JWS)
+structure.
+The module can be used for
+L<OpenID Connect|http://openid.net/specs/openid-connect-core-1_0.html>
+authentication.
+
+
+
+
+
+The module may be combined with
+other access modules, such as
+L<ngx_http_access_module|ngx_http_access_module>,
+L<ngx_http_auth_basic_module|ngx_http_auth_basic_module>,
+and
+L<ngx_http_auth_request_module|ngx_http_auth_request_module>,
+via the L<ngx_http_core_module> directive.
+
+
+
+
+
+The module supports the following cryptographic
+L<algorithms|https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms>:
+
+
+=over
+
+
+
+
+=item *
+
+HS256, HS384, HS512
+
+
+
+=item *
+
+RS256, RS384, RS512
+
+
+
+=item *
+
+ES256, ES384, ES512
+
+
+
+=item *
+
+EdDSA (Ed25519 and Ed448 signatures) (1.15.7)
+
+
+
+=back
+
+
+
+Prior to version 1.13.7,
+only HS256, RS256, ES256 algorithms were supported.
+
+
+
+
+
+
+B<NOTE>
+
+This module is available as part of our
+commercial subscription.
+
+
+
+
+
+=head1 Example Configuration
+
+
+
+
+    
+    location / {
+        auth_jwt          "closed site";
+        auth_jwt_key_file conf/keys.json;
+    }
+
+
+
+
+
+
+=head1 Directives
+
+=head2 auth_jwt
+
+
+B<syntax:> auth_jwt I<
+    I<C<string>>
+    [C<token=>I<C<$variable>>] E<verbar>
+    C<off>>
+
+
+B<default:> I<off>
+
+
+B<context:> I<http>
+
+
+B<context:> I<server>
+
+
+B<context:> I<location>
+
+
+B<context:> I<limit_except>
+
+
+
+
+
+Enables validation of JSON Web Token.
+The specified I<C<string>> is used as a C<realm>.
+Parameter value can contain variables.
+
+
+
+
+
+The optional C<token> parameter specifies a variable
+that contains JSON Web Token.
+By default, JWT is passed in the C<Authorization> header
+as a
+L<Bearer Token|https://tools.ietf.org/html/rfc6750>.
+JWT may be also passed as a cookie or a part of a query string:
+
+    
+    auth_jwt "closed site" token=$cookie_auth_token;
+
+
+
+
+
+
+
+The special value C<off> cancels the effect
+of the C<auth_jwt> directive
+inherited from the previous configuration level.
+
+
+
+
+
+
+
+=head2 auth_jwt_claim_set
+
+
+B<syntax:> auth_jwt_claim_set I<I<C<$variable>> I<C<name>> ...>
+
+
+
+B<context:> I<http>
+
+
+
+This directive appeared in version 1.11.10.
+
+
+
+
+
+Sets the I<C<variable>> to a JWT claim parameter
+identified by key names.
+Name matching starts from the top level of the JSON tree.
+For arrays, the variable keeps a list of array elements separated by commas.
+
+    
+    location / {
+        auth_jwt           "closed site";
+        auth_jwt_key_file  conf/keys.json;
+        auth_jwt_claim_set $email info e-mail;
+        auth_jwt_claim_set $job info "job title";
+    }
+
+
+
+B<NOTE>
+
+Prior to version 1.13.7, only one key name could be specified,
+and the result was undefined for arrays.
+
+
+
+
+
+
+
+
+=head2 auth_jwt_header_set
+
+
+B<syntax:> auth_jwt_header_set I<I<C<$variable>> I<C<name>> ...>
+
+
+
+B<context:> I<http>
+
+
+
+This directive appeared in version 1.11.10.
+
+
+
+
+
+Sets the I<C<variable>> to a JOSE header parameter
+identified by key names.
+Name matching starts from the top level of the JSON tree.
+For arrays, the variable keeps a list of array elements separated by commas.
+
+B<NOTE>
+
+Prior to version 1.13.7, only one key name could be specified,
+and the result was undefined for arrays.
+
+
+
+
+
+
+
+
+=head2 auth_jwt_key_file
+
+
+B<syntax:> auth_jwt_key_file I<I<C<file>>>
+
+
+
+B<context:> I<http>
+
+
+B<context:> I<server>
+
+
+B<context:> I<location>
+
+
+B<context:> I<limit_except>
+
+
+
+
+
+Specifies a I<C<file>> in
+L<JSON Web Key Set|https://tools.ietf.org/html/rfc7517#section-5>
+format for validating JWT signature.
+Parameter value can contain variables.
+
+
+
+
+
+
+
+=head2 auth_jwt_key_request
+
+
+B<syntax:> auth_jwt_key_request I<I<C<uri>>>
+
+
+
+B<context:> I<http>
+
+
+B<context:> I<server>
+
+
+B<context:> I<location>
+
+
+B<context:> I<limit_except>
+
+
+
+This directive appeared in version 1.15.6.
+
+
+
+
+
+Allows retrieving a
+L<JSON Web Key Set|https://tools.ietf.org/html/rfc7517#section-5>
+file from a subrequest for validating JWT signature and
+sets the URI where the subrequest will be sent to.
+To avoid validation overhead,
+it is recommended to cache the key file:
+
+    
+    proxy_cache_path /data/nginx/cache levels=1 keys_zone=foo:10m;
+    
+    server {
+        ...
+    
+        location / {
+            auth_jwt             "closed site";
+            auth_jwt_key_request /jwks_uri;
+        }
+    
+        location = /jwks_uri {
+            internal;
+            proxy_cache foo;
+            proxy_pass  http://idp.example.com/keys;
+        }
+    }
+
+
+
+
+
+
+
+
+
+=head2 auth_jwt_leeway
+
+
+B<syntax:> auth_jwt_leeway I<I<C<time>>>
+
+
+B<default:> I<0s>
+
+
+B<context:> I<http>
+
+
+B<context:> I<server>
+
+
+B<context:> I<location>
+
+
+
+This directive appeared in version 1.13.10.
+
+
+
+
+
+Sets the maximum allowable leeway to compensate
+clock skew when verifying the
+L<exp|https://tools.ietf.org/html/rfc7519#section-4.1.4>
+and
+L<nbf|https://tools.ietf.org/html/rfc7519#section-4.1.5>
+JWT claims.
+
+
+
+
+
+
+
+=head1 Embedded Variables
+
+
+
+The C<ngx_http_auth_jwt_module> module
+supports embedded variables:
+
+
+
+
+
+
+=over
+
+
+=item C<$jwt_header_>I<C<name>>
+
+
+
+
+returns the value of a specified
+L<JOSE header|https://tools.ietf.org/html/rfc7515#section-4>
+
+
+
+=item C<$jwt_claim_>I<C<name>>
+
+
+
+
+returns the value of a specified
+L<JWT claim|https://tools.ietf.org/html/rfc7519#section-4>
+
+
+
+
+=back
+
+
+
+
+
+

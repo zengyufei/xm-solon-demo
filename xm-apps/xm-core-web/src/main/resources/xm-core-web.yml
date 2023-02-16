@@ -1,0 +1,12 @@
+
+xm:
+  web:
+    cache:
+      driverType: "redis" #驱动类型
+      #keyHeader: "demo" #默认为 ${solon.app.name} ，可不配置
+      defSeconds: 30 #默认为 30，可不配置
+      server: "localhost:6379"
+      db: 2 #默认为 0，可不配置
+      #password: ""
+      idleConnectionTimeout: 10000
+      connectTimeout: 10000
