@@ -1,6 +1,18 @@
 # 基于 Solon 开发的脚手架
 
-#### 进度 80%
+
+## 食用方式
+
+`
+1. 运行 mysql
+2. 创建 xunmo 库 utf8mb4
+3. 导入 xm-biz/db/xunmo.sql
+4. 运行 redis
+5. 启动 xm-biz 的 BizApp主类
+6. 访问 http://localhost:8667
+`
+
+#### 进度 90%
 
 ## 项目定制功能:
     1. xm-biz-base 插件包提供: 
@@ -160,3 +172,16 @@
     2. 提供复制模块并重命名 CopyAndRenameTest 类,可以快速拷贝Dict文件夹变成其他文件夹
     3. bin/ 目录下 windows 开发使用.
     4. deploy/ 目录下 linux 部署使用.
+
+
+## 未来计划
+`
+1. mp-join 接入
+2. mp-dataScope 接入
+3. easy_tran 接入
+4. sa-token 接入
+5. 流程框架 接入
+6. 用户操作日志 接入
+7. execl 改造
+8. 代码生成器改造
+`
