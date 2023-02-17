@@ -3,14 +3,14 @@
 
 ## 食用方式
 
-`
+```
 1. 运行 mysql
 2. 创建 xunmo 库 utf8mb4
 3. 导入 xm-biz/db/xunmo.sql
 4. 运行 redis
 5. 启动 xm-biz 的 BizApp主类
 6. 访问 http://localhost:8667
-`
+```
 
 #### 进度 90%
 
@@ -175,7 +175,8 @@
 
 
 ## 未来计划
-`
+
+```
 1. mp-join 接入
 2. mp-dataScope 接入
 3. easy_tran 接入
@@ -184,4 +185,4 @@
 6. 用户操作日志 接入
 7. execl 改造
 8. 代码生成器改造
-`
+```
