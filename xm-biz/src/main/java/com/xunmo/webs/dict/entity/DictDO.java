@@ -22,6 +22,7 @@ public abstract class DictDO<T> extends XmDO<T> {
     private Integer valueType;
 
     private String parentId;
+    private String parentName;
     private Integer sort;
 
 }

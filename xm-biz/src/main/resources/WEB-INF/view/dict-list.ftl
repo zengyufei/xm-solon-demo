@@ -125,11 +125,12 @@
             <div>
                 <input type="button" v-if="page.pageNo>1" value="上一页" @click="toPage(page.pageNo-1);">
                 <span>第</span>
-                <input type="button" :value="page.pageNo>0?page.pageNo:1" @click="toPage(1);">
-                <input type="button" :value="page.pageNo>1?page.pageNo+1:2" @click="toPage(2);">
-                <input type="button" :value="page.pageNo>1?page.pageNo+2:3" @click="toPage(3);">
-                <input type="button" :value="page.pageNo>1?page.pageNo+3:4" @click="toPage(4);">
-                <input type="button" :value="page.pageNo>1?page.pageNo+4:5" @click="toPage(5);">
+                <span>{{page.pageNo}}</span>
+                <input type="button" v-if="page.pageNo + 1 <= page.totalPages" :value="page.pageNo>1?page.pageNo+1:2" @click="toPage(page.pageNo+1);">
+                <input type="button" v-if="page.pageNo + 2 <= page.totalPages" :value="page.pageNo>1?page.pageNo+2:3" @click="toPage(page.pageNo+2);">
+                <input type="button" v-if="page.pageNo + 3 <= page.totalPages" :value="page.pageNo>1?page.pageNo+3:4" @click="toPage(page.pageNo+3);">
+                <input type="button" v-if="page.pageNo + 4 <= page.totalPages" :value="page.pageNo>1?page.pageNo+4:5" @click="toPage(page.pageNo+4);">
+                <input type="button" v-if="page.pageNo + 5 <= page.totalPages" :value="page.pageNo>1?page.pageNo+5:6" @click="toPage(page.pageNo+5);">
                 <span>页</span>
                 <input type="button" value="下一页" @click="toPage(page.pageNo+1);">
             </div>
@@ -195,7 +196,9 @@
 
         page: {
             pageNo: 1,
-            pageSize: 10
+            pageSize: 10,
+            total: 0,
+            totalPages: 0,
         }
 
       },
@@ -228,6 +231,8 @@
             if (res) {
                 // this.showMsg('查询成功!')
                 let dataList = res.data
+                this.page.total = res.total
+                this.page.totalPages = res.totalPages
                 this.list = dataList
             }
         },

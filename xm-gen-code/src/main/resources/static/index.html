@@ -1726,7 +1726,7 @@
 
                         this.ajax("/gen/table/getAllTables", this.tableSearch, (res) => {
                             this.tables = res.data
-                            this.tableCount = res.dataCount
+                            this.tableCount = res.total
                             if (fun && res.data) {
                                 fun(res)
                             }
@@ -1760,7 +1760,7 @@
                             delete this.genTableSearcher.tableName
                         }
                         this.ajax("/gen/genTable/getGenTable", this.genTableSearcher, (res) => {
-                            this.genTableCount = res.dataCount
+                            this.genTableCount = res.total
                             this.genTables = res.data
                         }, { contentType: "json" })
                     },
@@ -1898,7 +1898,7 @@
                                     d.listFlag = d.listFlag === "1" ? true : false
                                     d.queryFlag = d.queryFlag === "1" ? true : false
                                 })
-                                this.genFieldCount = res.dataCount
+                                this.genFieldCount = res.total
                                 this.genField = res.data
                                 if (func) {
                                     func(res)

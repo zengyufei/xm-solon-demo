@@ -122,6 +122,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             final Dict parentDict = this.checkAndGet(parentId);
             Integer parentLevel = parentDict.getDicLevel();
             dict.setDicLevel(++parentLevel);
+            dict.setParentName(parentDict.getParentName());
         }
         this.baseMapper.insert(dict);
         TranAfterUtil.execute(() -> {
@@ -159,6 +160,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
                 final Dict parentDict = this.checkAndGet(inputParentId);
                 Integer parentLevel = parentDict.getDicLevel();
                 inputDict.setDicLevel(++parentLevel);
+                inputDict.setParentName(parentDict.getParentName());
             }
         }
         this.baseMapper.updateNotNullById(inputDict);
@@ -236,9 +238,9 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         Set<String> codeSet = new HashSet<>();
         for (DictImportExecl dictImportExecl : excelList) {
             dataLine++;
-            String parentId = dictImportExecl.getParentId();
+            String parentName = dictImportExecl.getParentName();
             String code = dictImportExecl.getDicCode();
-            final String key = parentId + "_" + code;
+            final String key = parentName + "_" + code;
             if (StrUtil.isBlank(code)) {
                 errorList.add(dataLine);
             } else {
@@ -257,7 +259,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         }
 
         // 根据现有容量，判断走轻量方案
-        final long allDictCount = baseMapper.selectCount(Wrappers.emptyWrapper());
+//        final long allDictCount = baseMapper.selectCount(Wrappers.emptyWrapper());
         // 需要处理 parentId 问题， sort 问题， dicLevel 问题
 
 
@@ -272,7 +274,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
 //        }
 
 
-        final Map<String, Dict> codeByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicCode);
+        final Map<String, Dict> oldCodeByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicCode);
 
         // 获取所有父子结构的最大值 sort
         final Map<String, Integer> parentIdByMaxSortMap = LamUtil.listFilterToMap(allDict,
@@ -281,26 +283,30 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
                 (t1, t2) -> t1.compareTo(t2) > 0 ? t1 : t2);
 
         // 获取 root 节点 sort 最大值
-        Integer levelFirstMaxSort = Convert.toInt(parentIdByMaxSortMap.get("-1"), 0);
+        int rootMaxSort = allDict.stream()
+                .filter(dict -> dict.getParentId().equals("-1"))
+                .map(Dict::getSort)
+                .max(Integer::compareTo)
+                .orElse(0);
 
         // 导入的数据没有上级，就是 root 节点
-        List<Dict> levelFirstDictList = LamUtil.filterToList(readDictList, readDict -> StrUtil.isBlank(readDict.getParentId()));
+        List<Dict> levelFirstByInputDictList = LamUtil.filterToList(readDictList, readDict -> StrUtil.isBlank(readDict.getParentName()));
         // 给 root 节点设置上级 -1，设置最大 sort 值
-        for (Dict levelFirstDict : levelFirstDictList) {
-            final String code = levelFirstDict.getDicCode();
+        for (Dict levelFirstInputDict : levelFirstByInputDictList) {
+            final String levelFirstInputCode = levelFirstInputDict.getDicCode();
             // 已存在则不改变其三个问题
-            if (codeByDictMap.containsKey(code)) {
-                final Dict oldDict = codeByDictMap.get(code);
-                levelFirstDict.setParentId("-1");
-                levelFirstDict.setDicLevel(oldDict.getDicLevel());
-                levelFirstDict.setSort(oldDict.getSort());
+            if (oldCodeByDictMap.containsKey(levelFirstInputCode)) {
+                final Dict oldDict = oldCodeByDictMap.get(levelFirstInputCode);
+                levelFirstInputDict.setParentId("-1");
+                levelFirstInputDict.setDicLevel(oldDict.getDicLevel());
+                levelFirstInputDict.setSort(oldDict.getSort());
                 continue;
             }
             // 全新增则处理三个问题
-            levelFirstDict.setParentId("-1");
-            levelFirstDict.setDicLevel(1);
-            levelFirstMaxSort = levelFirstMaxSort + 1;
-            levelFirstDict.setSort(levelFirstMaxSort);
+            levelFirstInputDict.setParentId("-1");
+            levelFirstInputDict.setDicLevel(1);
+            rootMaxSort = rootMaxSort + 1;
+            levelFirstInputDict.setSort(rootMaxSort);
         }
 
 
@@ -312,9 +318,11 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         for (Dict readDict : readDictList) {
             final String readDicCode = readDict.getDicCode();
             // 已存在
-            if (codeByDictMap.containsKey(readDicCode)) {
-                final Dict oldDict = codeByDictMap.get(readDicCode);
+            if (oldCodeByDictMap.containsKey(readDicCode)) {
+                final Dict oldDict = oldCodeByDictMap.get(readDicCode);
                 readDict.setId(oldDict.getId());
+                readDict.setParentId(oldDict.getParentId());
+                readDict.setParentName(oldDict.getParentName());
                 stayUpdateDictList.add(readDict);
             } else {
                 // 全新增
@@ -331,22 +339,23 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
 
         // 因为全部值有了id， 这里把所有中文上级转化为id
         for (Dict readDict : readDictList) {
-            final String parentName = readDict.getParentId();
+            final String parentName = readDict.getParentName();
             // 根据名字找到上级
             if (nameByDictMap.containsKey(parentName)) {
                 final Dict parentDict = nameByDictMap.get(parentName);
                 final String parentId = parentDict.getId();
                 readDict.setParentId(parentId);
+                readDict.setParentName(parentName);
             }
         }
 
         // 从level==1开始设置level和sort
         final Map<String, List<Dict>> parentIdGroupByDictMap = LamUtil.groupByToMap(allDict, Dict::getParentId);
-        handlerAllOrderByLevelAsc(levelFirstDictList, parentIdGroupByDictMap, Dict::getId, levelFirstDict -> {
+        handlerAllOrderByLevelAsc(LamUtil.filterToList(allDict,  dict -> dict.getParentId().equals("-1")), parentIdGroupByDictMap, Dict::getId, levelFirstDict -> {
             final String id = levelFirstDict.getId();
-            if (!addIds.contains(id)) {
-                return;
-            }
+//            if (!addIds.contains(id)) {
+//                return;
+//            }
             // 处理上级sort
             if (levelFirstDict.getSort() == null) {
                 final String parentId = levelFirstDict.getParentId();
@@ -359,9 +368,9 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             // 处理下级sort
             for (Dict dict : levelSecondDictList) {
                 final String id = dict.getId();
-                if (!addIds.contains(id)) {
-                    continue;
-                }
+//                if (!addIds.contains(id)) {
+//                    continue;
+//                }
                 dict.setDicLevel(levelFirstDict.getDicLevel() + 1);
                 final String parentId = dict.getParentId();
                 final Integer maxSort = Convert.toInt(parentIdByMaxSortMap.get(parentId), 0);

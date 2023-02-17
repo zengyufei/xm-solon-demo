@@ -4,18 +4,11 @@ solon.app:
 server.port: 8667
 server.contextPath: "/xunmo-TEST"
 
-sa-token-dao: #名字可以随意取
-    redis:
-        server: "localhost:6379"
-        #password: 123456
-        db: 3
-        maxTotal: 200
-
 xm:
     exception:
         enable: false
     cache:
-        #        enable: true
+        enable: false
         db: 2 #默认为 0，可不配置
         server: "localhost:6379"
         #password: ""

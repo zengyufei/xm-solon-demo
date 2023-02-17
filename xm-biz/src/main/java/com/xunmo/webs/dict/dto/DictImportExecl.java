@@ -1,7 +1,6 @@
 package com.xunmo.webs.dict.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.xunmo.webs.dict.convert.FindDictParentIdConvert;
 import lombok.Data;
 
 @Data
@@ -13,7 +12,7 @@ public class DictImportExecl {
     private String dicValue;
     @ExcelProperty(value = "字典编码", index = 2)
     private String dicCode;
-    @ExcelProperty(value = "上级字典", index = 3)
-    private String parentId;
+    @ExcelProperty(value = "上级字典名", index = 3)
+    private String parentName;
 
 }

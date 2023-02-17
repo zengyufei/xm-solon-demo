@@ -39,6 +39,8 @@ public class Dict extends XmSimpleMoveEntity {
     @SortUni(isNull = true)
     private String parentId;
 
+    private String parentName;
+
     private Integer valueType;
 
 }

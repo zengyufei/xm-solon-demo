@@ -25,7 +25,7 @@ import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.solon.annotation.Db;
+import org.noear.solon.annotation.Inject;
 import org.noear.solon.data.annotation.Tran;
 
 import java.io.Serializable;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class XmServiceImpl<M extends XmMapper<T>, T> implements XmService<T> {
     protected Log log = LogFactory.getLog(this.getClass());
 
-    @Db
+    @Inject
     protected M baseMapper;
 
     protected Class<T> entityClass = this.currentModelClass();
