@@ -103,7 +103,7 @@ public class DepartmentService extends XmSimpleMoveServiceImpl<DepartmentMapper,
         final String inputCode = inputDepartment.getCode();
         final Long existsCode = this.baseMapper.selectCount(Wrappers.<Department>lambdaQuery()
                 .eq(Department::getCode, inputCode));
-        XmUtil.throwParamError(existsCode > 0, () -> "code 已经被占用, 请重新填写一个");
+        XmUtil.throwError(existsCode > 0, () -> "code 已经被占用, 请重新填写一个");
 
         final String rootName = "root";
         final String inputParentCode = StrUtil.blankToDefault(inputDepartment.getParentCode(), rootName);
@@ -181,7 +181,7 @@ public class DepartmentService extends XmSimpleMoveServiceImpl<DepartmentMapper,
         if (isChangeCode) {
             final Long existsCode = this.baseMapper.selectCount(Wrappers.<Department>lambdaQuery()
                     .eq(Department::getCode, inputCode));
-            XmUtil.throwParamError(existsCode > 0, () -> "code 已经被占用, 请重新填写一个");
+            XmUtil.throwError(existsCode > 0, () -> "code 已经被占用, 请重新填写一个");
         }
 
         if (isChangeCode && isChangeParentCode) {

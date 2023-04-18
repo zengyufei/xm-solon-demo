@@ -324,7 +324,7 @@ public class ImportExcelHelper<T> {
      * @throws CustomException 自定义异常
      */
     public static void checkFile(UploadedFile file) throws CustomException {
-        XmUtil.throwParamError(Objects.isNull(file), SystemStatus.NO_MULTIPART_FILE::getMsg);
+        XmUtil.throwError(Objects.isNull(file), SystemStatus.NO_MULTIPART_FILE::getMsg);
         String fileExtension = file.getExtension();
         if (StrUtil.isBlank(fileExtension)) {
             throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "只能上传有后缀的文件");

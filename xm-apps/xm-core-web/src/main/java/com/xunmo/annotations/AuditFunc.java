@@ -1,5 +1,6 @@
 package com.xunmo.annotations;
 
+import org.javers.core.Changes;
 import org.javers.core.diff.changetype.ValueChange;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface AuditFunc {
      *
      * @param changes 变化
      */
-    void audit(List<ValueChange> changes);
+    void audit(Changes changes);
 }
