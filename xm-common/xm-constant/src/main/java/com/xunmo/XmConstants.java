@@ -9,6 +9,7 @@ public interface XmConstants {
 	String default_tenant_id = "1";
 	String default_create_user = "admin";
 	String default_create_user_name = "admin";
+	String default_source_type = "system";
 
 	//数据库记录状态：0-启用 1-删除
 	Integer ENABLED = 0;

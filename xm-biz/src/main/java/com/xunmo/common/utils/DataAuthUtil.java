@@ -26,7 +26,9 @@ import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.update.Update;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataAuthUtil {
 
@@ -238,64 +240,20 @@ public class DataAuthUtil {
     }
 
     protected static Expression getExpression(String columnName, List<String> values) {
-        Expression expression = null;
-        if (CollUtil.isNotEmpty(values) && values.size() <= 1000) {
-            // projectId in (1,2,3,4,5)
-            ItemsList itemsList = new ExpressionList(LamUtil.filterBlankDistinctToMapList(values, StringValue::new));
-            expression = new InExpression(new Column(columnName), itemsList);
-        } else if (CollUtil.isNotEmpty(values) && values.size() > 1000) {
-            final List<List<String>> split = CollUtil.split(values, 1000);
-            int size = split.size();
-            int newSize = split.size();
-            if (size % 2 != 0) {
-                // 除不尽,留有单数
-                newSize -= 1;
-            }
-            OrExpression lastExpression = null;
-            for (int i = 0; i < newSize; i++) {
-                final List<String> strings = split.get(i);
-                // projectId in (1,2,3,4,5)
-                ItemsList itemsList = new ExpressionList(LamUtil.filterBlankDistinctToMapList(strings, StringValue::new));
-                final InExpression inExpression = new InExpression(new Column(columnName), itemsList);
+            Expression expression = null;
+        List<ExpressionList> expressionListList = new ArrayList<>(); // 创建一个空的ExpressionList列表，用于存储后面需要构建的ExpressionList
 
-                if (i % 2 != 0) {
-                    if ((i+1)==newSize && size % 2 == 0) {
-                        lastExpression.setRightExpression(inExpression);
-                    } else {
-                        lastExpression.setRightExpression(inExpression);
-                        OrExpression orExpression = new OrExpression();
-                        orExpression.setLeftExpression(lastExpression);
-                        lastExpression = orExpression;
-
-                        expression = lastExpression;
-                    }
-                    continue;
-                }
-                if (lastExpression == null) {
-                    OrExpression orExpression = new OrExpression();
-                    orExpression.setLeftExpression(inExpression);
-                    lastExpression = orExpression;
-
-                    expression = lastExpression;
-                } else {
-                    lastExpression.setRightExpression(inExpression);
-                    OrExpression orExpression = new OrExpression();
-                    orExpression.setLeftExpression(lastExpression);
-                    lastExpression = orExpression;
-
-                    expression = lastExpression;
-                }
-            }
-            if (size % 2 != 0) {
-                final List<String> strings = split.get(size - 1);
-                // projectId in (1,2,3,4,5)
-                ItemsList itemsList = new ExpressionList(LamUtil.filterBlankDistinctToMapList(strings, StringValue::new));
-                final InExpression inExpression = new InExpression(new Column(columnName), itemsList);
-                final OrExpression orExpression = (OrExpression) expression;
-                orExpression.setRightExpression(inExpression);
+        if (CollUtil.isNotEmpty(values)) { // 如果values不为空
+            // 使用CollUtil.split方法将原有的values拆分成长度不超过1000的多个子数组，遍历这些子数组，将每个子数组构建成ExpressionList并添加进expressionListList中
+            CollUtil.split(values, 1000).forEach(list -> expressionListList.add(new ExpressionList(XmUtil.listFiltersBlankDistinctMapToList(list, StringValue::new))));
+            if (CollUtil.isNotEmpty(expressionListList)) { // 如果 expressionListList 不为空
+                List<Expression> inExpressionList = expressionListList.stream() // 将 expressionListList 转换成 Expression 列表
+                        .map(expressionList -> new InExpression(new Column(columnName), expressionList)) // 针对每个 ExpressionList 新建 InExpression
+                        .collect(Collectors.toList()); // 将上一步操作得到的 InExpression 列表转换成 List<Expression> 类型
+                expression = inExpressionList.stream().reduce(OrExpression::new).orElse(null); // 将 InExpression 列表使用 OrExpression 进行合并
             }
         }
-        return new Parenthesis(expression);
+        return new Parenthesis(expression); // 返回构建完成的条件表达式加上圆括号
     }
 
     public static void setOr(PlainSelect plainSelect, Expression expression, boolean isPack) {

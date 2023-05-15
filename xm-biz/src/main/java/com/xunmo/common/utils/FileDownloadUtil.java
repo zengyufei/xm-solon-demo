@@ -122,7 +122,10 @@ public class FileDownloadUtil {
         if (userAgent != null) {
             userAgent = userAgent.toLowerCase();
             // IE浏览器，只能采用URLEncoder编码
-            if (userAgent.contains("msie")) {
+            if (userAgent.contains("edg")) {
+                rtn = "filename=\"" + newFileName + "\"";
+            }
+            else if (userAgent.contains("msie")) {
                 rtn = "filename=\"" + newFileName + "\"";
             }
             // Opera浏览器只能采用filename*
@@ -130,9 +133,9 @@ public class FileDownloadUtil {
                 rtn = "filename*=UTF-8'zh_cn'" + newFileName;
             }
             // Safari浏览器，只能采用ISO编码的中文输出
-            else if (userAgent.contains("safari")) {
-                rtn = "filename=\"" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + "\"";
-            }
+            //            else if (userAgent.contains("safari")) {
+            //                rtn = "filename=\"" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + "\"";
+            //            }
             // FireFox浏览器，可以使用MimeUtility或filename*或ISO编码的中文输出
             else if (userAgent.contains("mozilla")) {
                 rtn = "filename*=UTF-8'zh_cn'" + newFileName;

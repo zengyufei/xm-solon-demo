@@ -17,14 +17,17 @@ import java.util.Date;
 public class XmEntity extends XmTenantEntity implements Serializable {
 
     private static final long serialVersionUID = 3310210074346282868L;
+
     @TableField(fill = FieldFill.INSERT)
     private int disabled;
+
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     @TableField(fill = FieldFill.INSERT)
     private String createUser;
     @TableField(fill = FieldFill.INSERT)
     private String createUserName;
+
     @TableField(fill = FieldFill.UPDATE)
     private Date lastUpdateTime;
     @TableField(fill = FieldFill.UPDATE)

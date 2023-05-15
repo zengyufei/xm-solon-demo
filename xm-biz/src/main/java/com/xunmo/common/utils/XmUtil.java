@@ -12,12 +12,7 @@ import com.github.pagehelper.Page;
 import com.xunmo.annotations.AuditFunc;
 import com.xunmo.annotations.AuditMapFunc;
 import com.xunmo.common.CustomException;
-import com.xunmo.core.utils.AjaxError;
-import com.xunmo.core.utils.CheckUtil;
-import com.xunmo.core.utils.LamUtil;
-import com.xunmo.core.utils.LambdaBuilder;
-import com.xunmo.core.utils.SFunctionUtil;
-import com.xunmo.core.utils.XmMap;
+import com.xunmo.core.utils.*;
 import com.xunmo.ext.SFunction;
 import com.xunmo.utils.XmPageUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,19 +26,8 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +95,6 @@ public class XmUtil extends CheckUtil {
         }
         return null;
     }
-
 
 
     private final static Javers javers = JaversBuilder.javers()
@@ -190,6 +173,9 @@ public class XmUtil extends CheckUtil {
     }
 
 
+    // =================================================================================================================
+    // =================================================================================================================
+    // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
@@ -303,7 +289,8 @@ public class XmUtil extends CheckUtil {
                 Integer w2 = WEIGHTS_MAP.getOrDefault(c2, Integer.MAX_VALUE);
                 if (!Objects.equals(w1, w2)) {
                     return Integer.compare(w1, w2);
-                } else {
+                }
+                else {
                     if (w1 % 10 == 0) {// w1 是0123456789中的一个
                         return Integer.compare(c1, c2);
                     }
@@ -314,6 +301,7 @@ public class XmUtil extends CheckUtil {
         });
     }
 
+
     // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
@@ -323,10 +311,21 @@ public class XmUtil extends CheckUtil {
      *
      * @param originList 源列表
      * @param delimiter  分隔符
+     * @return {@link String}
+     */
+    public static String listJoinToStr(List<String> originList, String delimiter) {
+        return LamUtil.join(originList, delimiter);
+    }
+
+    /**
+     * 拼接
+     *
+     * @param originList 源列表
+     * @param delimiter  分隔符
      * @param mapper     方法
      * @return {@link String}
      */
-    public static <T> String join(List<T> originList, String delimiter, Function<T, String> mapper) {
+    public static <T> String listJoinToStr(List<T> originList, String delimiter, Function<T, String> mapper) {
         return LamUtil.join(originList, delimiter, mapper);
     }
 
@@ -335,100 +334,115 @@ public class XmUtil extends CheckUtil {
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
     @SafeVarargs
-    public static <T> List<T> filterToList(List<T> originList,
-                                           Predicate<T>... mappers) {
-        return LamUtil.filterToList(originList, mappers);
+    public static <T> List<T> listFiltersToList(List<T> originList,
+                                                Predicate<T>... filters) {
+        return LamUtil.filterToList(originList, filters);
     }
 
     /**
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
     @SafeVarargs
-    public static <T> List<T> filterToDistinctList(List<T> originList,
-                                                   Predicate<T>... mappers) {
-        return LamUtil.filterToDistinctList(originList, mappers);
+    public static <T> List<T> listFilterDistinctToList(List<T> originList,
+                                                       Predicate<T>... filters) {
+        return LamUtil.filterDistinctToList(originList, filters);
     }
 
     /**
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
     @SafeVarargs
-    public static <T, R> List<R> filtersToMapList(List<T> originList,
-                                                  Function<T, R> function,
-                                                  Predicate<T>... mappers) {
-        return LamUtil.filtersToMapList(originList, function, mappers);
+    public static <T, R> List<R> listFiltersMapToList(List<T> originList,
+                                                      Function<T, R> function,
+                                                      Predicate<T>... filters) {
+        return LamUtil.filtersMapToList(originList, function, filters);
     }
 
     /**
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
     @SafeVarargs
-    public static <T, R> List<R> filtersMapToDistinctList(List<T> originList,
-                                                          Function<T, R> function,
-                                                          Predicate<T>... mappers) {
-        return LamUtil.filtersMapToDistinctList(originList, function, mappers);
+    public static <T, R> List<R> listFiltersDistinctMapToList(List<T> originList,
+                                                              Function<T, R> function,
+                                                              Predicate<T>... filters) {
+        return LamUtil.filtersDistinctMapToList(originList, function, filters);
     }
 
     /**
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
-     * @return List<T>
-     */
-    @SafeVarargs
-    public static <R> List<R> filterBlankDistinctToMapList(List<String> originList,
-                                                           Function<String, R> function,
-                                                           Predicate<String>... mappers) {
-        return LamUtil.filterBlankDistinctToMapList(originList, function, mappers);
-    }
-
-    /**
-     * 将List映射为List，比如List<Person> personList转为List<String> nameList
-     *
-     * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
     @SafeVarargs
-    public static <T> List<String> mapToFiltersBlankDistinctList(List<T> originList,
-                                                                 Function<T, String> function,
-                                                                 Predicate<String>... mappers) {
-        return LamUtil.mapToFiltersBlankDistinctList(originList, function, mappers);
+    public static <T, R> List<R> listFiltersMapDistinctToList(List<T> originList,
+                                                              Function<T, R> function,
+                                                              Predicate<T>... filters) {
+        return LamUtil.filtersMapDistinctToList(originList, function, filters);
     }
 
     /**
      * 将List映射为List，比如List<Person> personList转为List<String> nameList
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @return List<T>
      */
     @SafeVarargs
-    public static List<String> filterBlankToDistinctList(List<String> originList,
-                                                         Predicate<String>... mappers) {
-        return LamUtil.filterBlankToDistinctList(originList, mappers);
+    public static <R> List<R> listFiltersBlankDistinctMapToList(List<String> originList,
+                                                                Function<String, R> function,
+                                                                Predicate<String>... filters) {
+        return LamUtil.filterBlankDistinctMapToList(originList, function, filters);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param filters    映射规则集合
+     * @param <T>        原数据的元素类型
+     * @return List<T>
+     */
+    @SafeVarargs
+    public static <T> List<String> listMapFiltersBlankDistinctToList(List<T> originList,
+                                                                     Function<T, String> function,
+                                                                     Predicate<String>... filters) {
+        return LamUtil.mapFiltersBlankDistinctToList(originList, function, filters);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param filters    映射规则集合
+     * @return List<T>
+     */
+    @SafeVarargs
+    public static List<String> listFiltersBlankDistinctToList(List<String> originList,
+                                                              Predicate<String>... filters) {
+        return LamUtil.filterBlankDistinctToList(originList, filters);
     }
 
     /**
@@ -438,8 +452,8 @@ public class XmUtil extends CheckUtil {
      * @param keyExtractor:   去重属性
      * @return List<T>
      */
-    public static <T> List<T> distinctBy(List<T> list, Function<? super T, ?> keyExtractor) {
-        return LamUtil.distinctBy(list, keyExtractor);
+    public static <T> List<T> listDistinctTolist(List<T> list, Function<? super T, ?> keyExtractor) {
+        return LamUtil.distinctToList(list, keyExtractor);
     }
 
     /**
@@ -448,7 +462,7 @@ public class XmUtil extends CheckUtil {
      * @param list 列表
      * @return {@link List}<{@link T}>
      */
-    public static <T> List<T> removeNull(List<T> list) {
+    public static <T> List<T> listRemoveNullToList(List<T> list) {
         return LamUtil.removeNull(list);
     }
 
@@ -460,7 +474,7 @@ public class XmUtil extends CheckUtil {
      * @return {@link List}<{@link T}>
      */
     @SafeVarargs
-    public static <T> List<T> removeFilter(List<T> originList, Predicate<? super T>... removeConditions) {
+    public static <T> List<T> listRemoveFiltersToList(List<T> originList, Predicate<? super T>... removeConditions) {
         return LamUtil.removeFilter(originList, removeConditions);
     }
 
@@ -468,27 +482,27 @@ public class XmUtil extends CheckUtil {
      * 找到
      *
      * @param originList 原数据
-     * @param mappers    映射规则集合
+     * @param filters    映射规则集合
      * @param <T>        原数据的元素类型
      * @return Optional<T>
      */
     @SafeVarargs
-    public static <T> Optional<T> findFirst(List<T> originList,
-                                            Predicate<T>... mappers) {
-        return LamUtil.findFirst(originList, mappers);
+    public static <T> Optional<T> listFiltersToFindFirstOptional(List<T> originList,
+                                                                 Predicate<T>... filters) {
+        return LamUtil.filtersToFindFirstOptional(originList, filters);
     }
 
     @SafeVarargs
-    public static <T> T findFirstToFilter(List<T> originList,
-                                          Predicate<T>... mappers) {
-        return LamUtil.findFirstToFilter(originList, mappers);
+    public static <T> T listFiltersToFindFirst(List<T> originList,
+                                               Predicate<T>... filters) {
+        return LamUtil.filtersToFindFirst(originList, filters);
     }
 
     @SafeVarargs
-    public static <T, U> U findFirstMapToFilter(List<T> originList,
-                                                Function<T, U> mapper,
-                                                Predicate<U>... mappers) {
-        return LamUtil.findFirstMapToFilter(originList, mapper, mappers);
+    public static <T, U> U listMapFiltersToFindFirst(List<T> originList,
+                                                     Function<T, U> mapper,
+                                                     Predicate<U>... filters) {
+        return LamUtil.mapFiltersToFindFirst(originList, mapper, filters);
     }
 
 
@@ -500,8 +514,8 @@ public class XmUtil extends CheckUtil {
      * @param <T>        原数据的元素类型
      * @return boolean
      */
-    public static <T> boolean anyMatch(List<T> originList,
-                                       Predicate<T> mapper) {
+    public static <T> boolean listAnyMatch(List<T> originList,
+                                           Predicate<T> mapper) {
         return LamUtil.anyMatch(originList, mapper);
     }
 
@@ -514,8 +528,8 @@ public class XmUtil extends CheckUtil {
      * @param <T>        原数据的元素类型
      * @return boolean
      */
-    public static <T> boolean noneMatch(List<T> originList,
-                                        Predicate<T> mapper) {
+    public static <T> boolean listNoneMatch(List<T> originList,
+                                            Predicate<T> mapper) {
         return LamUtil.noneMatch(originList, mapper);
     }
 
@@ -531,9 +545,8 @@ public class XmUtil extends CheckUtil {
     @SafeVarargs
     public static <T> boolean strNotInList(String str,
                                            SFunction<T, ?>... fns) {
-        return strInList(str, fns);
+        return !strInList(str, fns);
     }
-
 
     /**
      * 匹配
@@ -558,10 +571,10 @@ public class XmUtil extends CheckUtil {
      * @param <R>        新数据的元素类型
      * @return boolean
      */
-    public static <T, R> boolean mapAfterAnyMatch(List<T> originList,
-                                                  Function<T, R> mapper,
-                                                  Predicate<R> predicate) {
-        return LamUtil.mapAfterAnyMatch(originList, mapper, predicate);
+    public static <T, R> boolean listMapAnyMatch(List<T> originList,
+                                                 Function<T, R> mapper,
+                                                 Predicate<R> predicate) {
+        return LamUtil.mapAnyMatch(originList, mapper, predicate);
     }
 
     /**
@@ -573,51 +586,49 @@ public class XmUtil extends CheckUtil {
      * @param <R>        新数据的元素类型
      * @return boolean
      */
-    public static <T, R> boolean mapAfterDistinctAnyMatch(List<T> originList,
-                                                          Function<T, R> mapper,
-                                                          Predicate<R> predicate) {
-        return LamUtil.mapAfterDistinctAnyMatch(originList, mapper, predicate);
-    }
-
-    /**
-     * 将List映射为List，比如List<Person> personList转为List<String> nameList
-     *
-     * @param originList 原数据
-     * @param mappers    映射规则
-     * @param <T>        原数据的元素类型
-     * @param <R>        新数据的元素类型
-     * @return List<R>
-     */
-    @SafeVarargs
-    public static <T, R> List<R> mapToList(List<T> originList,
-                                           Function<T, R>... mappers) {
-        return LamUtil.mapToList(originList, mappers);
-    }
-
-    /**
-     * 将List映射为List，比如List<Person> personList转为List<String> nameList
-     *
-     * @param originList 原数据
-     * @param mappers    映射规则
-     * @param <T>        原数据的元素类型
-     * @param <R>        新数据的元素类型
-     * @return List<R>
-     */
-    @SafeVarargs
-    public static <T, R> List<R> mapToDistinctList(List<T> originList,
-                                                   Function<T, R>... mappers) {
-        return LamUtil.mapToDistinctList(originList, mappers);
-    }
-
-    public static <T> List<T> toDistinctList(List<T> originList) {
-        return LamUtil.toDistinctList(originList);
-    }
-
-    @SafeVarargs
-    public static <T, R> List<R> mapFilterToDistinctList(List<T> originList,
+    public static <T, R> boolean listMapDistinctAnyMatch(List<T> originList,
                                                          Function<T, R> mapper,
-                                                         Predicate<R>... filters) {
-        return LamUtil.mapFilterToDistinctList(originList, mapper, filters);
+                                                         Predicate<R> predicate) {
+        return LamUtil.mapDistinctAnyMatch(originList, mapper, predicate);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param filters    映射规则
+     * @param <T>        原数据的元素类型
+     * @param <R>        新数据的元素类型
+     * @return List<R>
+     */
+    @SafeVarargs
+    public static <T, R> List<R> listMapToList(List<T> originList, Function<T, R>... filters) {
+        return LamUtil.mapToList(originList, filters);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param filters    映射规则
+     * @param <T>        原数据的元素类型
+     * @param <R>        新数据的元素类型
+     * @return List<R>
+     */
+    @SafeVarargs
+    public static <T, R> List<R> listMapDistinctToList(List<T> originList, Function<T, R>... filters) {
+        return LamUtil.mapDistinctToList(originList, filters);
+    }
+
+    public static <T> List<T> listDistinctToList(List<T> originList) {
+        return LamUtil.distinctToList(originList);
+    }
+
+    @SafeVarargs
+    public static <T, R> List<R> listMapFiltersDistinctToList(List<T> originList,
+                                                              Function<T, R> mapper,
+                                                              Predicate<R>... filters) {
+        return LamUtil.mapDistinctFiltersToList(originList, mapper, filters);
     }
 
     /**
@@ -630,26 +641,42 @@ public class XmUtil extends CheckUtil {
      * @return List<R>
      */
     @SuppressWarnings({"all"})
-    public static <T, R> List<R> mapToFiltersList(List<T> originList,
-                                                  Function<T, R> mapper,
-                                                  Predicate<R>... filters) {
-        return LamUtil.mapToFiltersList(originList, mapper, filters);
-    }
-
-    /**
-     * 将List映射为List，比如List<Person> personList转为List<String> nameList
-     *
-     * @param originList 原数据
-     * @param mapper     映射规则
-     * @param <T>        原数据的元素类型
-     * @param <R>        新数据的元素类型
-     * @return List<R>
-     */
-    @SuppressWarnings({"all"})
-    public static <T, R> List<R> mapDistinctToFiltersList(List<T> originList,
+    public static <T, R> List<R> mapFiltersDistinctToList(List<T> originList,
                                                           Function<T, R> mapper,
                                                           Predicate<R>... filters) {
-        return LamUtil.mapDistinctToFiltersList(originList, mapper, filters);
+        return LamUtil.mapFiltersDistinctToList(originList, mapper, filters);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param mapper     映射规则
+     * @param <T>        原数据的元素类型
+     * @param <R>        新数据的元素类型
+     * @return List<R>
+     */
+    @SuppressWarnings({"all"})
+    public static <T, R> List<R> listMapFiltersToList(List<T> originList,
+                                                      Function<T, R> mapper,
+                                                      Predicate<R>... filters) {
+        return LamUtil.mapFiltersToList(originList, mapper, filters);
+    }
+
+    /**
+     * 将List映射为List，比如List<Person> personList转为List<String> nameList
+     *
+     * @param originList 原数据
+     * @param mapper     映射规则
+     * @param <T>        原数据的元素类型
+     * @param <R>        新数据的元素类型
+     * @return List<R>
+     */
+    @SuppressWarnings({"all"})
+    public static <T, R> List<R> listMapDistinctFiltersToList(List<T> originList,
+                                                              Function<T, R> mapper,
+                                                              Predicate<R>... filters) {
+        return LamUtil.mapDistinctFiltersToList(originList, mapper, filters);
     }
 
     /**
@@ -663,7 +690,13 @@ public class XmUtil extends CheckUtil {
      */
     public static <K, V> Map<K, V> listToBeanMap(List<V> originList,
                                                  Function<V, K> keyExtractor) {
-        return LamUtil.listToBeanMap(originList, keyExtractor);
+        return LamUtil.toBeanMap(originList, keyExtractor);
+    }
+
+    public static <K, V> Map<K, V> listToBeanLinkedMap(List<V> originList,
+                                                       Function<V, K> keyExtractor) {
+
+        return LamUtil.toBeanLinkedMap(originList, keyExtractor);
     }
 
     /**
@@ -678,57 +711,49 @@ public class XmUtil extends CheckUtil {
     public static <K, V, S> Map<K, S> listToMap(List<V> originList,
                                                 Function<V, K> keyExtractor,
                                                 Function<V, S> valueExtractor) {
-        return LamUtil.listToMap(originList, keyExtractor, valueExtractor);
+        return LamUtil.toMap(originList, keyExtractor, valueExtractor);
     }
 
-    /**
-     * 将List转为Map
-     *
-     * @param originList   原数据
-     * @param keyExtractor Key的抽取规则
-     * @param <K>          Key
-     * @param <V>          Value
-     * @return Map<K, V>
-     */
-    public static <K, V, S> Map<K, S> listToMap(List<V> originList,
-                                                Function<V, K> keyExtractor,
-                                                Function<V, S> valueExtractor,
-                                                BinaryOperator<S> operator) {
-        return LamUtil.listToMap(originList, keyExtractor, valueExtractor);
-    }
-
-
-    /**
-     * 将List转为Map
-     *
-     * @param originList   原数据
-     * @param keyExtractor Key的抽取规则
-     * @param <K>          Key
-     * @param <V>          Value
-     * @return Map<K, V>
-     */
-    public static <K, V> Map<K, V> listToBeanMap(List<V> originList,
-                                                 Function<V, K> keyExtractor,
-                                                 BinaryOperator<V> operator) {
-        return LamUtil.listToBeanMap(originList, keyExtractor, operator);
-    }
-
-
-    /**
-     * 将List转为Map
-     *
-     * @param originList   原数据
-     * @param keyExtractor Key的抽取规则
-     * @param <K>          Key
-     * @param <V>          Value
-     * @return Map<K, V>
-     */
     public static <K, V, S> Map<K, S> listFilterToMap(List<V> originList,
                                                       Predicate<V> filter,
                                                       Function<V, K> keyExtractor,
-                                                      Function<V, S> valueExtractor,
-                                                      BinaryOperator<S> operator) {
-        return LamUtil.listFilterToMap(originList, filter, keyExtractor, valueExtractor, operator);
+                                                      Function<V, S> valueExtractor) {
+        return LamUtil.filterToMap(originList, filter, keyExtractor, valueExtractor);
+    }
+
+    public static <K, V> Map<K, V> listFilterToBeanMap(List<V> originList,
+                                                       Predicate<V> filter,
+                                                       Function<V, K> keyExtractor) {
+        return LamUtil.filterToBeanMap(originList, filter, keyExtractor);
+    }
+
+    public static <K, V> Map<K, V> listFilterToBeanMergeMap(List<V> originList,
+                                                            Predicate<V> filter,
+                                                            Function<V, K> keyExtractor,
+                                                            BinaryOperator<V> mergeExtractor) {
+        return LamUtil.filterToBeanMergeMap(originList, filter, keyExtractor, mergeExtractor);
+    }
+
+    public static <K, V, S> Map<K, S> listFilterToBeanMergeMap(List<V> originList,
+                                                            Predicate<V> filter,
+                                                            Function<V, K> keyExtractor,
+                                                            Function<V, S> valueExtractor,
+                                                            BinaryOperator<S> mergeExtractor) {
+        return LamUtil.filterToBeanMergeMap(originList, filter, keyExtractor, valueExtractor, mergeExtractor);
+    }
+
+    public static <K, V> Map<K, V> listFiltersToBeanMap(List<V> originList,
+                                                        Function<V, K> keyExtractor,
+                                                        Predicate<V>... filters) {
+        return LamUtil.filtersToBeanMap(originList, keyExtractor, filters);
+
+    }
+
+    public static <K, V, S> Map<K, S> listToLinkedMap(List<V> originList,
+                                                      Function<V, K> keyExtractor,
+                                                      Function<V, S> valueExtractor) {
+        return LamUtil.toLinkedMap(originList, keyExtractor, valueExtractor);
+
     }
 
     /**
@@ -740,12 +765,93 @@ public class XmUtil extends CheckUtil {
      * @param <V>          Value
      * @return Map<K, V>
      */
-    public static <K, V, S> Map<K, S> listFiltersToMap(List<V> originList,
-                                                       Function<V, K> keyExtractor,
-                                                       Function<V, S> valueExtractor,
-                                                       BinaryOperator<S> operator,
-                                                       Predicate<V>... mappers) {
-        return LamUtil.listFiltersToMap(originList, keyExtractor, valueExtractor, operator, mappers);
+    public static <K, V, S> Map<K, S> listToMergeMap(List<V> originList,
+                                                     Function<V, K> keyExtractor,
+                                                     Function<V, S> valueExtractor,
+                                                     BinaryOperator<S> mergeExtractor) {
+        return LamUtil.toMergeMap(originList, keyExtractor, valueExtractor, mergeExtractor);
+    }
+
+    public static <K, V, S> Map<K, S> listToMergeLinkedMap(List<V> originList,
+                                                           Function<V, K> keyExtractor,
+                                                           Function<V, S> valueExtractor,
+                                                           BinaryOperator<S> mergeExtractor) {
+        return LamUtil.toMergeLinkedMap(originList, keyExtractor, valueExtractor, mergeExtractor);
+    }
+
+
+    /**
+     * 将List转为Map
+     *
+     * @param originList   原数据
+     * @param keyExtractor Key的抽取规则
+     * @param <K>          Key
+     * @param <V>          Value
+     * @return Map<K, V>
+     */
+    public static <K, V> Map<K, V> listToBeanMergeMap(List<V> originList,
+                                                      Function<V, K> keyExtractor,
+                                                      BinaryOperator<V> mergeExtractor) {
+        return LamUtil.toBeanMergeMap(originList, keyExtractor, mergeExtractor);
+    }
+
+    public static <K, V> Map<K, V> listToBeanMergeLinkedMap(List<V> originList,
+                                                            Function<V, K> keyExtractor,
+                                                            BinaryOperator<V> mergeExtractor) {
+        return LamUtil.toBeanMergeLinkedMap(originList, keyExtractor, mergeExtractor);
+    }
+
+
+    /**
+     * 将List转为Map
+     *
+     * @param originList   原数据
+     * @param keyExtractor Key的抽取规则
+     * @param <K>          Key
+     * @param <V>          Value
+     * @return Map<K, V>
+     */
+    public static <K, V, S> Map<K, S> listFilterToMergeMap(List<V> originList,
+                                                           Predicate<V> filter,
+                                                           Function<V, K> keyExtractor,
+                                                           Function<V, S> valueExtractor,
+                                                           BinaryOperator<S> mergeExtractor) {
+        return LamUtil.filterToMergeMap(originList, filter, keyExtractor, valueExtractor, mergeExtractor);
+    }
+
+    public static <K, V, S> Map<K, S> listFilterToMergeLinkedMap(List<V> originList,
+                                                                 Predicate<V> filter,
+                                                                 Function<V, K> keyExtractor,
+                                                                 Function<V, S> valueExtractor,
+                                                                 BinaryOperator<S> mergeExtractor) {
+        return LamUtil.filterToMergeLinkedMap(originList, filter, keyExtractor, valueExtractor, mergeExtractor);
+    }
+
+    /**
+     * 将List转为Map
+     *
+     * @param originList   原数据
+     * @param keyExtractor Key的抽取规则
+     * @param <K>          Key
+     * @param <V>          Value
+     * @return Map<K, V>
+     */
+    @SafeVarargs
+    public static <K, V, S> Map<K, S> listFiltersToMergeMap(List<V> originList,
+                                                            Function<V, K> keyExtractor,
+                                                            Function<V, S> valueExtractor,
+                                                            BinaryOperator<S> mergeExtractor,
+                                                            Predicate<V>... filters) {
+        return LamUtil.filtersToMergeMap(originList, keyExtractor, valueExtractor, mergeExtractor, filters);
+    }
+
+    @SafeVarargs
+    public static <K, V, S> Map<K, S> listFiltersToMergeLinkedMap(List<V> originList,
+                                                                  Function<V, K> keyExtractor,
+                                                                  Function<V, S> valueExtractor,
+                                                                  BinaryOperator<S> mergeExtractor,
+                                                                  Predicate<V>... filters) {
+        return LamUtil.filtersToMergeLinkedMap(originList, keyExtractor, valueExtractor, mergeExtractor, filters);
     }
 
     /**
@@ -757,9 +863,21 @@ public class XmUtil extends CheckUtil {
      * @param <V>          Value
      * @return Map<K, List < V>>
      */
-    public static <K, V> Map<K, List<V>> groupByToMap(List<V> originList,
-                                                      Function<V, K> keyExtractor) {
-        return LamUtil.groupByToMap(originList, keyExtractor);
+    public static <K, V> Map<K, List<V>> listGroupByToBeanMap(List<V> originList,
+                                                              Function<V, K> keyExtractor) {
+        return LamUtil.groupByToBeanMap(originList, keyExtractor);
+    }
+
+    public static <K, V, U extends Comparable<? super U>> List<V> listGroupByMaxValueToList(List<V> originList,
+                                                                                            Function<V, K> keyExtractor,
+                                                                                            Function<? super V, ? extends U> function) {
+        return LamUtil.groupByMaxValueToList(originList, keyExtractor, function);
+    }
+
+    public static <K, V, U extends Comparable<? super U>> List<V> listGroupByMinValueToList(List<V> originList,
+                                                                                            Function<V, K> keyExtractor,
+                                                                                            Function<? super V, ? extends U> function) {
+        return LamUtil.groupByMinValueToList(originList, keyExtractor, function);
     }
 
     /**
@@ -771,9 +889,9 @@ public class XmUtil extends CheckUtil {
      * @param <V>          Value
      * @return Map<K, List < V>>
      */
-    public static <K, V, U> Map<K, List<U>> groupByToMap(List<V> originList,
-                                                         Function<V, K> keyExtractor,
-                                                         Function<V, U> valueExtractor) {
+    public static <K, V, U> Map<K, List<U>> listGroupByToMap(List<V> originList,
+                                                             Function<V, K> keyExtractor,
+                                                             Function<V, U> valueExtractor) {
         return LamUtil.groupByToMap(originList, keyExtractor, valueExtractor);
     }
 
@@ -785,9 +903,9 @@ public class XmUtil extends CheckUtil {
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
-    public static <T, U extends Comparable<? super U>> List<T> sortAscLastNull(List<T> originList,
-                                                                               Function<? super T, ? extends U> function) {
-        return LamUtil.sortAscLastNull(originList, function);
+    public static <T, U extends Comparable<? super U>> List<T> sortAscLastNullToList(List<T> originList,
+                                                                                     Function<? super T, ? extends U> function) {
+        return LamUtil.sortAscLastNullToList(originList, function);
     }
 
 
@@ -798,9 +916,9 @@ public class XmUtil extends CheckUtil {
      * @param <T>        原数据的元素类型
      * @return List<T>
      */
-    public static <T, U extends Comparable<? super U>> List<T> sortAscFirstNull(List<T> originList,
-                                                                                Function<? super T, ? extends U> function) {
-        return LamUtil.sortAscFirstNull(originList, function);
+    public static <T, U extends Comparable<? super U>> List<T> sortAscFirstNullToList(List<T> originList,
+                                                                                      Function<? super T, ? extends U> function) {
+        return LamUtil.sortAscFirstNullToList(originList, function);
     }
 
     /**
@@ -810,9 +928,9 @@ public class XmUtil extends CheckUtil {
      * @param mapper     方法
      * @return {@link String}
      */
-    public static <T, U extends Comparable<? super U>> List<T> sortDescLastNull(List<T> originList,
-                                                                                Function<? super T, ? extends U> mapper) {
-        return LamUtil.sortDescLastNull(originList, mapper);
+    public static <T, U extends Comparable<? super U>> List<T> sortDescLastNullToList(List<T> originList,
+                                                                                      Function<? super T, ? extends U> mapper) {
+        return LamUtil.sortDescLastNullToList(originList, mapper);
     }
 
 
@@ -823,9 +941,9 @@ public class XmUtil extends CheckUtil {
      * @param mapper     方法
      * @return {@link String}
      */
-    public static <T, U extends Comparable<? super U>> List<T> sortDescFirstNull(List<T> originList,
-                                                                                 Function<? super T, ? extends U> mapper) {
-        return LamUtil.sortDescFirstNull(originList, mapper);
+    public static <T, U extends Comparable<? super U>> List<T> sortDescFirstNullToList(List<T> originList,
+                                                                                       Function<? super T, ? extends U> mapper) {
+        return LamUtil.sortDescFirstNullToList(originList, mapper);
     }
 
 
@@ -911,7 +1029,9 @@ public class XmUtil extends CheckUtil {
                 field = fieldSupplier.get();
             }
             final String errorMsg = StrUtil.format(msgSupplier.get(), field);
-            int errorCode = Objects.isNull(code) ? AjaxError.DEFAULT_ERROR_CODE : code;
+            int errorCode = Objects.isNull(code)
+                            ? AjaxError.DEFAULT_ERROR_CODE
+                            : code;
             throw new AjaxError(errorCode, StrUtil.blankToDefault(errorMsg, StrUtil.format("{}不能为空", field)));
         }
     }
@@ -935,6 +1055,13 @@ public class XmUtil extends CheckUtil {
         return Arrays.stream(fns)
                 .map(XmMap::getField)
                 .collect(Collectors.toList());
+    }
+
+    @SafeVarargs
+    public static <T> String[] getFieldNameAttr(SFunction<T, ?>... fns) {
+        return Arrays.stream(fns)
+                .map(XmMap::getField)
+                .toArray(String[]::new);
     }
 
     public static <T> Method getGetter(Class<T> clazz, SFunction<T, ?> sFunction) {
@@ -961,7 +1088,8 @@ public class XmUtil extends CheckUtil {
         T t;
         if (map.containsKey(key)) {
             t = map.get(key);
-        } else {
+        }
+        else {
             t = func.get();
             map.put(key, t);
         }
@@ -979,8 +1107,62 @@ public class XmUtil extends CheckUtil {
      */
     public static boolean isContainMonths(Date beginDate, Date endDate, Integer... months) {
         final List<DateTime> dateTimes = DateUtil.rangeToList(beginDate, endDate, DateField.MONTH);
-        final List<Integer> monthList = mapToList(dateTimes, DateTime::monthBaseOne);
+        final List<Integer> monthList = listMapToList(dateTimes, DateTime::monthBaseOne);
         return CollUtil.containsAll(monthList, Arrays.asList(months));
+    }
+
+
+    /**
+     * 根据年份/月份和类型获取时间范围
+     *
+     * @param year  年份
+     * @param month 月份
+     * @param type  类型（eq等于，ge大于等于，le小于等于）
+     * @return 时间范围
+     */
+    public static Date[] getDateRange(Integer year, Integer month, String type) {
+        Date[] dateRange = new Date[2];
+
+        if (month == null) {
+            // 只有年份
+            DateTime beginOfYear = DateUtil.parse(year.toString() + "-01-01");
+            DateTime endOfYear = DateUtil.endOfYear(beginOfYear);
+            switch (type) {
+                case "eq":
+                    dateRange[0] = beginOfYear.toJdkDate();
+                    dateRange[1] = endOfYear.toJdkDate();
+                    break;
+                case "ge":
+                    dateRange[0] = beginOfYear.toJdkDate();
+                    break;
+                case "le":
+                    dateRange[1] = endOfYear.toJdkDate();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            // 年份和月份
+            DateTime beginOfMonth = DateUtil.parse(year.toString() + "-" + month + "-01");
+            DateTime endOfMonth = DateUtil.endOfMonth(beginOfMonth);
+            switch (type) {
+                case "eq":
+                    dateRange[0] = beginOfMonth.toJdkDate();
+                    dateRange[1] = endOfMonth.toJdkDate();
+                    break;
+                case "ge":
+                    dateRange[0] = beginOfMonth.toJdkDate();
+                    break;
+                case "le":
+                    dateRange[1] = endOfMonth.toJdkDate();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return dateRange;
     }
 
 

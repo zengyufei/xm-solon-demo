@@ -10,6 +10,7 @@ import com.xunmo.base.move.XmSimpleMoveMapper;
 import com.xunmo.utils.MpBuildMapperMethodUtil;
 import com.xunmo.utils.MpSFunctionUtil;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -54,6 +55,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getParentByChildCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -63,7 +65,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                 String selectColumns = MpBuildMapperMethodUtil.getAllSqlSelect(tableInfo);
                 columnNameMap.put("select", selectColumns);
                 String sql = StrUtil.format("select {select} from {tableName} where code = (select parent_code from {tableName} where code = #{code})", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -91,6 +93,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getParentByChildId");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -101,7 +104,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
 
                 columnNameMap.put("select", selectColumns);
                 String sql = StrUtil.format("select {select} from {tableName} where code = ( select parent_code from {tableName} where id = #{deptId} )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -129,6 +132,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllNotSelfByBeginEndCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -153,7 +157,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "                AND disabled = 0\n" +
                         "            )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -182,6 +186,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllAndSelfByBeginEndCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -206,7 +211,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "                        AND disabled = 0\n" +
                         "            )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -264,6 +269,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllParentNotSelfById");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -278,7 +284,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and child_code = ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        and parent_code != ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -305,6 +311,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllParentAndSelfById");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -318,7 +325,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and disabled = 0\n" +
                         "        and child_code = ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -345,6 +352,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildNotSelfById");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -359,7 +367,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and parent_code = ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        and child_code != ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -386,6 +394,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildAndSelfById");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -399,7 +408,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and disabled = 0\n" +
                         "        and parent_code = ( select CODE from {tableName} where id = #{deptId} )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -430,6 +439,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllParentNotSelfByCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -444,7 +454,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and child_code = #{code}\n" +
                         "        and parent_code != #{code}\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -471,6 +481,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllParentAndSelfByCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -484,7 +495,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and disabled = 0\n" +
                         "        and child_code = #{code}\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -511,6 +522,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildNotSelfByCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -525,7 +537,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "            and parent_code = #{code}\n" +
                         "            and child_code != #{code}\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -552,6 +564,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildAndSelfByCode");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -565,7 +578,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "        and disabled = 0\n" +
                         "        and parent_code = #{code}\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, String> paramMap = new HashMap<>();
@@ -596,6 +609,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildNotSelfByIds");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -618,7 +632,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "                </foreach>\n" +
                         "            )\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, List<String>> paramMap = new HashMap<>();
@@ -645,6 +659,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildAndSelfByIds");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -662,7 +677,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "                #{deptId}\n" +
                         "            </foreach>)\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, List<String>> paramMap = new HashMap<>();
@@ -689,6 +704,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildNotSelfByCodes");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -709,7 +725,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "            #{deptCode}\n" +
                         "        </foreach>\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, List<String>> paramMap = new HashMap<>();
@@ -741,6 +757,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
             final String id = getMapperId("getAllChildAndSelfByCodes");
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
 
                 Map<String, String> columnNameMap = new HashMap<>();
@@ -757,7 +774,7 @@ public interface XmRelateCodeMapper<T extends XmRelateCodeEntity> extends XmSimp
                         "            #{deptCode}\n" +
                         "        </foreach>\n" +
                         "        )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace,configuration, id, SqlCommandType.SELECT, sql);
             }
 
             Map<String, List<String>> paramMap = new HashMap<>();

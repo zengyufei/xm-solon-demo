@@ -274,12 +274,13 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
 //        }
 
 
-        final Map<String, Dict> oldCodeByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicCode);
+        final Map<String, Dict> oldCodeByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicCode);
 
         // 获取所有父子结构的最大值 sort
-        final Map<String, Integer> parentIdByMaxSortMap = LamUtil.listFilterToMap(allDict,
+        final Map<String, Integer> parentIdByMaxSortMap = XmUtil.listFilterToBeanMergeMap(allDict,
                 dict -> dict.getParentId().equals("-1"),
-                Dict::getId, Dict::getSort,
+                Dict::getId,
+                Dict::getSort,
                 (t1, t2) -> t1.compareTo(t2) > 0 ? t1 : t2);
 
         // 获取 root 节点 sort 最大值
@@ -335,7 +336,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
 
         // 与全表合并方便中文上级转换id
         allDict.addAll(readDictList);
-        final Map<String, Dict> nameByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicDescription);
+        final Map<String, Dict> nameByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicDescription);
 
         // 因为全部值有了id， 这里把所有中文上级转化为id
         for (Dict readDict : readDictList) {
@@ -350,7 +351,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         }
 
         // 从level==1开始设置level和sort
-        final Map<String, List<Dict>> parentIdGroupByDictMap = LamUtil.groupByToMap(allDict, Dict::getParentId);
+        final Map<String, List<Dict>> parentIdGroupByDictMap = LamUtil.groupByToBeanMap(allDict, Dict::getParentId);
         handlerAllOrderByLevelAsc(LamUtil.filterToList(allDict,  dict -> dict.getParentId().equals("-1")), parentIdGroupByDictMap, Dict::getId, levelFirstDict -> {
             final String id = levelFirstDict.getId();
 //            if (!addIds.contains(id)) {

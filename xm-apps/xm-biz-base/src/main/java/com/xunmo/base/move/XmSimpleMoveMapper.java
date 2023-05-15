@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.solon.toolkit.SqlHelper;
@@ -18,6 +19,9 @@ import com.xunmo.annotations.SortUni;
 import com.xunmo.base.XmMapper;
 import com.xunmo.utils.MpBuildMapperMethodUtil;
 import com.xunmo.utils.MpSFunctionUtil;
+import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.mapping.StatementType;
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface XmSimpleMoveMapper<T extends XmSimpleMoveEntity> extends XmMapper<T> {
+    String DOT = ".";
 
     default int getMax(T sortEntigy) {
         LambdaQueryWrapper<T> lambdaQuery = Wrappers.lambdaQuery();
@@ -97,16 +102,17 @@ public interface XmSimpleMoveMapper<T extends XmSimpleMoveEntity> extends XmMapp
     }
 
     default int changeSort(String preId, String nextId) {
+        final String id = this.getClass().getName() + "." + "changeSort";
         final Class<T> modelClass = currentModelClass();
         // 使用MybatisPlus自己的SqlHelper获取SqlSessionFactory
         SqlSessionFactory sqlSessionFactory = SqlHelper.sqlSessionFactory(modelClass);
         // 通过SqlSessionFactory创建一个新的SqlSession，并获取全局配置
-        try(SqlSession sqlSession = sqlSessionFactory.openSession()) {
+        try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             Configuration configuration = sqlSessionFactory.getConfiguration();
             // 制作命名空间，用于将这个SQL创建的MappedStatement注册到MybatisPlus中
-            final String id = this.getClass().getName() + "." + "changeSort";
             if (!configuration.hasStatement(id, false)) {
                 final TableInfo tableInfo = TableInfoHelper.getTableInfo(modelClass);
+                final String currentNamespace = tableInfo.getCurrentNamespace();
                 final String tableName = tableInfo.getTableName();
                 final String keyColumn = tableInfo.getKeyColumn();
 
@@ -145,8 +151,9 @@ public interface XmSimpleMoveMapper<T extends XmSimpleMoveEntity> extends XmMapp
                         " SET g1.sort = g2.sort, g2.sort = g1.sort {otherField} " +
                         " where ( g1.{id} = #{preId} AND g2.{id} = #{nextId} ) " +
                         "   OR ( g1.{id} = #{nextId} AND g2.{id} = #{preId} )", columnNameMap);
-                MpBuildMapperMethodUtil.addMapperStatement(modelClass, configuration, id, sql);
+                MpBuildMapperMethodUtil.addMapperStatement(modelClass, currentNamespace, configuration, id, SqlCommandType.UPDATE, sql);
             }
+
 
             Map<String, String> paramMap = new HashMap<>();
             paramMap.put("preId", preId);
@@ -157,8 +164,6 @@ public interface XmSimpleMoveMapper<T extends XmSimpleMoveEntity> extends XmMapp
             return updateEffect;
         }
     }
-
-
 
 
     default void setLambdaQuery(T sortEntigy, LambdaQueryWrapper<T> lambdaQuery, Class<T> modelClass) {
@@ -176,10 +181,12 @@ public interface XmSimpleMoveMapper<T extends XmSimpleMoveEntity> extends XmMapp
                 if (ObjectUtil.isNull(fieldValue) && sortUniIsNull) {
                     // null
                     lambdaQuery.isNull(sFunction);
-                } else if (ObjectUtil.isNull(fieldValue) && !sortUniIsNull) {
+                }
+                else if (ObjectUtil.isNull(fieldValue) && !sortUniIsNull) {
                     // -1
                     lambdaQuery.eq(sFunction, defaultValue);
-                } else {
+                }
+                else {
                     lambdaQuery.eq(sFunction, fieldValue);
                 }
             }
