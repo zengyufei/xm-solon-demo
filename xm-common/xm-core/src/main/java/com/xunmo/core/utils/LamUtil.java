@@ -3,6 +3,8 @@ package com.xunmo.core.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.xunmo.core.utils.LambdaBuilder;
+import com.xunmo.core.utils.XmMap;
 import com.xunmo.ext.SFunction;
 import lombok.extern.slf4j.Slf4j;
 
@@ -741,37 +743,10 @@ public class LamUtil {
      * @param keyExtractor Key提取方法
      * @return Map结果
      */
-    public static <K, V, S> Map<K, S> filterToBeanMergeMap(List<V> originList,
-                                                           Predicate<V> filter,
-                                                           Function<V, K> keyExtractor,
-                                                           Function<V, S> valueExtractor,
-                                                           BinaryOperator<S> mergeExtractor) {
-        if (CollUtil.isEmpty(originList)) {
-            return new HashMap<>();
-        }
-        originList = removeNull(originList);
-        if (CollUtil.isEmpty(originList)) {
-            return new HashMap<>();
-        }
-        return originList
-                .stream()
-                .filter(filter)
-                .filter(Objects::nonNull)
-                .filter(item -> keyExtractor.apply(item) != null && valueExtractor.apply(item) != null)
-                .collect(Collectors.toMap(keyExtractor, valueExtractor, mergeExtractor));
-    }
-
-    /**
-     * 将List中的元素转化为Map，指定Key的提取方法，Value为不同来源元素的合并结果
-     *
-     * @param originList   原始List集合
-     * @param keyExtractor Key提取方法
-     * @return Map结果
-     */
     @SafeVarargs
     public static <K, V> Map<K, V> filtersToBeanMap(List<V> originList,
-                                                    Function<V, K> keyExtractor,
-                                                    Predicate<V>... filters) {
+                                                   Function<V, K> keyExtractor,
+                                                   Predicate<V>... filters) {
         if (CollUtil.isEmpty(originList)) {
             return new HashMap<>();
         }
@@ -787,6 +762,13 @@ public class LamUtil {
                 .collect(Collectors.toMap(keyExtractor, Function.identity()));
     }
 
+
+    @SafeVarargs
+    public static <T> long count(List<T> originList, Predicate<T>... filters) {
+        return originList.stream()
+                .filter(Stream.of(filters).reduce(Predicate::and).orElse(t -> true))
+                .count();
+    }
 
     /**
      * 将List中的元素转化为Map，指定Key的提取方法
@@ -1345,6 +1327,5 @@ public class LamUtil {
     public static <T> LambdaBuilder<T> build(Supplier<T> constructor) {
         return LambdaBuilder.builder(constructor);
     }
-
 
 }

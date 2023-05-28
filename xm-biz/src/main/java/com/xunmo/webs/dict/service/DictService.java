@@ -7,6 +7,7 @@ import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -88,7 +89,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             tree.setWeight(treeNode.getSort());
             tree.setName(treeNode.getDicDescription());
             // 扩展属性 ...
-//            tree.putExtra("sectionId", treeNode.getSectionId());
+            //            tree.putExtra("sectionId", treeNode.getSectionId());
             for (Field field : ReflectUtil.getFields(Dict.class)) {
                 final String fieldName = field.getName();
                 if (StrUtil.equalsAnyIgnoreCase(fieldName, "id", "parentid", "weight", "name")) {
@@ -106,7 +107,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
      * @param dict dict
      * @return {@link Dict}
      */
-//    @Tran
+    //    @Tran
     public Dict addBean(Dict dict) throws Exception {
         {
             final boolean inTrans = TranUtils.inTrans();
@@ -118,7 +119,8 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         dict.setSort(max + 1);
         if (StrUtil.equals("-1", parentId)) {
             dict.setDicLevel(1);
-        } else {
+        }
+        else {
             final Dict parentDict = this.checkAndGet(parentId);
             Integer parentLevel = parentDict.getDicLevel();
             dict.setDicLevel(++parentLevel);
@@ -156,7 +158,8 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
 
             if (StrUtil.equals("-1", inputParentId)) {
                 inputDict.setDicLevel(1);
-            } else {
+            }
+            else {
                 final Dict parentDict = this.checkAndGet(inputParentId);
                 Integer parentLevel = parentDict.getDicLevel();
                 inputDict.setDicLevel(++parentLevel);
@@ -234,16 +237,17 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         // 检查表内特定列值重复
         // 检查特定列值不为空
         int dataLine = 0;
-        List<Integer> errorList = new ArrayList<>();
+        List<String> errorList = new ArrayList<>();
         Set<String> codeSet = new HashSet<>();
         for (DictImportExecl dictImportExecl : excelList) {
             dataLine++;
-            String parentName = dictImportExecl.getParentName();
+            String parentCode = dictImportExecl.getParentCode();
             String code = dictImportExecl.getDicCode();
-            final String key = parentName + "_" + code;
+            final String key = parentCode + "_" + code;
             if (StrUtil.isBlank(code)) {
-                errorList.add(dataLine);
-            } else {
+                errorList.add(dataLine + "");
+            }
+            else {
                 if (codeSet.contains(key)) {
                     throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "导入文件中存在字典编码重复!");
                 }
@@ -251,7 +255,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             }
         }
         if (CollUtil.isNotEmpty(errorList)) {
-            throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "第" + errorList + "行的字典编码不能为空");
+            throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "第 " + CollUtil.join(errorList, ",") + " 行的字典编码不能为空");
         }
         List<Dict> readDictList = BeanUtil.copyToList(excelList, Dict.class);
         if (CollUtil.isEmpty(readDictList)) {
@@ -259,139 +263,182 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         }
 
         // 根据现有容量，判断走轻量方案
-//        final long allDictCount = baseMapper.selectCount(Wrappers.emptyWrapper());
+        final long allDictCount = baseMapper.selectCount(Wrappers.emptyWrapper());
         // 需要处理 parentId 问题， sort 问题， dicLevel 问题
 
+        if (allDictCount > 1000) {
+            // 检查同一上级编码内是否重复
+            final List<String> parentIds = new ArrayList<>();
+            {
+                final List<String> parentCodes = XmUtil.listFiltersMapToList(excelList, DictImportExecl::getParentCode, dict -> StrUtil.isNotBlank(dict.getParentCode()));
+                if (CollUtil.isNotEmpty(parentCodes)) {
+                    final List<Dict> parentCodeByDict = baseMapper.selectList(Wrappers.<Dict>lambdaQuery()
+                            .in(Dict::getDicCode, parentCodes));
+                    parentIds.addAll(XmUtil.listMapToList(parentCodeByDict, Dict::getId));
+                    final List<String> codes = XmUtil.listMapToList(excelList, DictImportExecl::getDicCode);
+                    final List<Dict> existxDicts = baseMapper.selectList(Wrappers.<Dict>lambdaQuery()
+                            .in(Dict::getDicCode, codes)
+                            .in(CollUtil.isNotEmpty(parentIds), Dict::getId, parentIds));
+                    if (CollUtil.isNotEmpty(existxDicts)) {
+                        errorList.addAll(XmUtil.listMapToList(existxDicts, dict -> dict.getDicCode() + "_" + dict.getDicDescription()));
+                        throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "" + CollUtil.join(errorList, ",") + " 字典编码已经存在");
+                    }
+                }
+            }
+            {
+                final List<String> parentCodes = XmUtil.listFiltersMapToList(excelList, DictImportExecl::getParentCode, dict -> StrUtil.isBlank(dict.getParentCode()));
+                if (CollUtil.isNotEmpty(parentCodes)) {
+                    final List<Dict> parentCodeByDict = baseMapper.selectList(Wrappers.<Dict>lambdaQuery()
+                            .in(Dict::getDicCode, parentCodes));
+                    parentIds.addAll(XmUtil.listMapToList(parentCodeByDict, Dict::getId));
+                    final List<String> codes = XmUtil.listMapToList(excelList, DictImportExecl::getDicCode);
+                    final List<Dict> existxDicts = baseMapper.selectList(Wrappers.<Dict>lambdaQuery()
+                            .in(Dict::getDicCode, codes)
+                            .eq(Dict::getId, "-1"));
+                    if (CollUtil.isNotEmpty(existxDicts)) {
+                        errorList.addAll(XmUtil.listMapToList(existxDicts, dict -> dict.getDicCode() + "_" + dict.getDicDescription()));
+                        throw new CustomException(SystemStatus.IN_VALIDA_PARAM, "" + CollUtil.join(errorList, ",") + " 字典编码已经存在");
+                    }
+                }
+            }
+        }
+        else {
 
-        // 查全表
-        final List<Dict> allDict = baseMapper.selectList(Wrappers.emptyWrapper());
-//        Map<String, Dict> nameByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicDescription);
-//        for (Dict dict : readDictList) {
-//            final String dicDescription = dict.getDicDescription();
-//            if (nameByDictMap.containsKey(dicDescription)) {
-//                throw new CustomException(SystemStatus.IN_VALIDA_PARAM, dicDescription + " 字典名字重复!");
-//            }
-//        }
+            // 查全表
+            final List<Dict> allDict = baseMapper.selectList(Wrappers.emptyWrapper());
+            //        Map<String, Dict> nameByDictMap = LamUtil.listToBeanMap(allDict, Dict::getDicDescription);
+            //        for (Dict dict : readDictList) {
+            //            final String dicDescription = dict.getDicDescription();
+            //            if (nameByDictMap.containsKey(dicDescription)) {
+            //                throw new CustomException(SystemStatus.IN_VALIDA_PARAM, dicDescription + " 字典名字重复!");
+            //            }
+            //        }
 
 
-        final Map<String, Dict> oldCodeByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicCode);
+            final Map<String, Dict> oldCodeByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicCode);
 
-        // 获取所有父子结构的最大值 sort
-        final Map<String, Integer> parentIdByMaxSortMap = XmUtil.listFilterToBeanMergeMap(allDict,
-                dict -> dict.getParentId().equals("-1"),
-                Dict::getId,
-                Dict::getSort,
-                (t1, t2) -> t1.compareTo(t2) > 0 ? t1 : t2);
+            // 获取所有父子结构的最大值 sort
+            final Map<String, Integer> parentIdByMaxSortMap = XmUtil.listFilterToMergeMap(allDict,
+                    dict -> dict.getParentId().equals("-1"),
+                    Dict::getId,
+                    Dict::getSort,
+                    (t1, t2) -> t1.compareTo(t2) > 0
+                                ? t1
+                                : t2);
 
-        // 获取 root 节点 sort 最大值
-        int rootMaxSort = allDict.stream()
-                .filter(dict -> dict.getParentId().equals("-1"))
-                .map(Dict::getSort)
-                .max(Integer::compareTo)
-                .orElse(0);
+            // 获取 root 节点 sort 最大值
+            int rootMaxSort = allDict.stream()
+                    .filter(dict -> dict.getParentId().equals("-1"))
+                    .map(Dict::getSort)
+                    .max(Integer::compareTo)
+                    .orElse(0);
 
-        // 导入的数据没有上级，就是 root 节点
-        List<Dict> levelFirstByInputDictList = LamUtil.filterToList(readDictList, readDict -> StrUtil.isBlank(readDict.getParentName()));
-        // 给 root 节点设置上级 -1，设置最大 sort 值
-        for (Dict levelFirstInputDict : levelFirstByInputDictList) {
-            final String levelFirstInputCode = levelFirstInputDict.getDicCode();
-            // 已存在则不改变其三个问题
-            if (oldCodeByDictMap.containsKey(levelFirstInputCode)) {
-                final Dict oldDict = oldCodeByDictMap.get(levelFirstInputCode);
+            // 导入的数据没有上级，就是 root 节点
+            List<Dict> levelFirstByInputDictList = LamUtil.filterToList(readDictList, readDict -> StrUtil.isBlank(readDict.getParentName()));
+            // 给 root 节点设置上级 -1，设置最大 sort 值
+            for (Dict levelFirstInputDict : levelFirstByInputDictList) {
+                final String levelFirstInputCode = levelFirstInputDict.getDicCode();
+                // 已存在则不改变其三个问题
+                if (oldCodeByDictMap.containsKey(levelFirstInputCode)) {
+                    final Dict oldDict = oldCodeByDictMap.get(levelFirstInputCode);
+                    levelFirstInputDict.setParentId("-1");
+                    levelFirstInputDict.setDicLevel(oldDict.getDicLevel());
+                    levelFirstInputDict.setSort(oldDict.getSort());
+                    continue;
+                }
+                // 全新增则处理三个问题
                 levelFirstInputDict.setParentId("-1");
-                levelFirstInputDict.setDicLevel(oldDict.getDicLevel());
-                levelFirstInputDict.setSort(oldDict.getSort());
-                continue;
+                levelFirstInputDict.setDicLevel(1);
+                rootMaxSort = rootMaxSort + 1;
+                levelFirstInputDict.setSort(rootMaxSort);
             }
-            // 全新增则处理三个问题
-            levelFirstInputDict.setParentId("-1");
-            levelFirstInputDict.setDicLevel(1);
-            rootMaxSort = rootMaxSort + 1;
-            levelFirstInputDict.setSort(rootMaxSort);
+
+
+            // 拆分新增和修改 -- 与上面三个问题处理分离开来，逻辑清晰点
+            List<String> addIds = new ArrayList<>();
+            final List<Dict> stayAddDictList = new ArrayList<>();
+            final List<Dict> stayUpdateDictList = new ArrayList<>();
+            final Snowflake snowflake = IdUtil.getSnowflake();
+            for (Dict readDict : readDictList) {
+                final String readDicCode = readDict.getDicCode();
+                // 已存在
+                if (oldCodeByDictMap.containsKey(readDicCode)) {
+                    final Dict oldDict = oldCodeByDictMap.get(readDicCode);
+                    readDict.setId(oldDict.getId());
+                    readDict.setParentId(oldDict.getParentId());
+                    readDict.setParentName(oldDict.getParentName());
+                    stayUpdateDictList.add(readDict);
+                }
+                else {
+                    // 全新增
+                    final String newId = snowflake.nextIdStr();
+                    addIds.add(newId);
+                    readDict.setId(newId);
+                    stayAddDictList.add(readDict);
+                }
+            }
+
+            // 与全表合并方便中文上级转换id
+            allDict.addAll(readDictList);
+            final Map<String, Dict> nameByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicDescription);
+
+            // 因为全部值有了id， 这里把所有中文上级转化为id
+            for (Dict readDict : readDictList) {
+                final String parentName = readDict.getParentName();
+                // 根据名字找到上级
+                if (nameByDictMap.containsKey(parentName)) {
+                    final Dict parentDict = nameByDictMap.get(parentName);
+                    final String parentId = parentDict.getId();
+                    readDict.setParentId(parentId);
+                    readDict.setParentName(parentName);
+                }
+            }
+
+            // 从level==1开始设置level和sort
+            final Map<String, List<Dict>> parentIdGroupByDictMap = LamUtil.groupByToBeanMap(allDict, Dict::getParentId);
+            handlerAllOrderByLevelAsc(LamUtil.filterToList(allDict, dict -> dict.getParentId().equals("-1")), parentIdGroupByDictMap, Dict::getId, levelFirstDict -> {
+                final String id = levelFirstDict.getId();
+                //            if (!addIds.contains(id)) {
+                //                return;
+                //            }
+                // 处理上级sort
+                if (levelFirstDict.getSort() == null) {
+                    final String parentId = levelFirstDict.getParentId();
+                    final Integer maxSort = Convert.toInt(parentIdByMaxSortMap.get(parentId), 0);
+                    final int newMaxSort = maxSort + 1;
+                    parentIdByMaxSortMap.put(parentId, newMaxSort);
+                    levelFirstDict.setSort(newMaxSort);
+                }
+            }, (levelFirstDict, levelSecondDictList) -> {
+                // 处理下级sort
+                for (Dict dict : levelSecondDictList) {
+                    final String id = dict.getId();
+                    //                if (!addIds.contains(id)) {
+                    //                    continue;
+                    //                }
+                    dict.setDicLevel(levelFirstDict.getDicLevel() + 1);
+                    final String parentId = dict.getParentId();
+                    final Integer maxSort = Convert.toInt(parentIdByMaxSortMap.get(parentId), 0);
+                    final int newMaxSort = maxSort + 1;
+                    parentIdByMaxSortMap.put(parentId, newMaxSort);
+                    dict.setSort(newMaxSort);
+                }
+            });
+
+            // 批量保存
+            if (CollUtil.isNotEmpty(stayAddDictList)) {
+                for (List<Dict> addList : CollUtil.split(stayAddDictList, 1000)) {
+                    baseMapper.insertBatch(addList);
+                }
+            }
+            if (CollUtil.isNotEmpty(stayUpdateDictList)) {
+                for (List<Dict> updateList : CollUtil.split(stayUpdateDictList, 1000)) {
+                    baseMapper.updateBatch(updateList);
+                }
+            }
+
         }
 
-
-        // 拆分新增和修改 -- 与上面三个问题处理分离开来，逻辑清晰点
-        List<String> addIds = new ArrayList<>();
-        final List<Dict> stayAddDictList = new ArrayList<>();
-        final List<Dict> stayUpdateDictList = new ArrayList<>();
-        final Snowflake snowflake = IdUtil.getSnowflake();
-        for (Dict readDict : readDictList) {
-            final String readDicCode = readDict.getDicCode();
-            // 已存在
-            if (oldCodeByDictMap.containsKey(readDicCode)) {
-                final Dict oldDict = oldCodeByDictMap.get(readDicCode);
-                readDict.setId(oldDict.getId());
-                readDict.setParentId(oldDict.getParentId());
-                readDict.setParentName(oldDict.getParentName());
-                stayUpdateDictList.add(readDict);
-            } else {
-                // 全新增
-                final String newId = snowflake.nextIdStr();
-                addIds.add(newId);
-                readDict.setId(newId);
-                stayAddDictList.add(readDict);
-            }
-        }
-
-        // 与全表合并方便中文上级转换id
-        allDict.addAll(readDictList);
-        final Map<String, Dict> nameByDictMap = XmUtil.listToBeanMap(allDict, Dict::getDicDescription);
-
-        // 因为全部值有了id， 这里把所有中文上级转化为id
-        for (Dict readDict : readDictList) {
-            final String parentName = readDict.getParentName();
-            // 根据名字找到上级
-            if (nameByDictMap.containsKey(parentName)) {
-                final Dict parentDict = nameByDictMap.get(parentName);
-                final String parentId = parentDict.getId();
-                readDict.setParentId(parentId);
-                readDict.setParentName(parentName);
-            }
-        }
-
-        // 从level==1开始设置level和sort
-        final Map<String, List<Dict>> parentIdGroupByDictMap = LamUtil.groupByToBeanMap(allDict, Dict::getParentId);
-        handlerAllOrderByLevelAsc(LamUtil.filterToList(allDict,  dict -> dict.getParentId().equals("-1")), parentIdGroupByDictMap, Dict::getId, levelFirstDict -> {
-            final String id = levelFirstDict.getId();
-//            if (!addIds.contains(id)) {
-//                return;
-//            }
-            // 处理上级sort
-            if (levelFirstDict.getSort() == null) {
-                final String parentId = levelFirstDict.getParentId();
-                final Integer maxSort = Convert.toInt(parentIdByMaxSortMap.get(parentId), 0);
-                final int newMaxSort = maxSort + 1;
-                parentIdByMaxSortMap.put(parentId, newMaxSort);
-                levelFirstDict.setSort(newMaxSort);
-            }
-        }, (levelFirstDict, levelSecondDictList) -> {
-            // 处理下级sort
-            for (Dict dict : levelSecondDictList) {
-                final String id = dict.getId();
-//                if (!addIds.contains(id)) {
-//                    continue;
-//                }
-                dict.setDicLevel(levelFirstDict.getDicLevel() + 1);
-                final String parentId = dict.getParentId();
-                final Integer maxSort = Convert.toInt(parentIdByMaxSortMap.get(parentId), 0);
-                final int newMaxSort = maxSort + 1;
-                parentIdByMaxSortMap.put(parentId, newMaxSort);
-                dict.setSort(newMaxSort);
-            }
-        });
-
-        // 批量保存
-        if (CollUtil.isNotEmpty(stayAddDictList)) {
-            for (List<Dict> addList : CollUtil.split(stayAddDictList, 1000)) {
-                baseMapper.insertBatch(addList);
-            }
-        }
-        if (CollUtil.isNotEmpty(stayUpdateDictList)) {
-            for (List<Dict> updateList : CollUtil.split(stayUpdateDictList, 1000)) {
-                baseMapper.updateBatch(updateList);
-            }
-        }
 
         return true;
     }
@@ -415,7 +462,7 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
         while (true) {
             if (isThrowCount == 0) {
                 break;
-//                throw new RuntimeException("超出循环限制次数");
+                //                throw new RuntimeException("超出循环限制次数");
             }
             for (Dict levelFirstDict : levelFirstDictList) {
                 final String levelFirstDictId = fieldFunc.apply(levelFirstDict);
@@ -429,7 +476,8 @@ public class DictService extends XmSimpleMoveServiceImpl<DictMapper, Dict> imple
             if (CollUtil.isNotEmpty(levelNextDictList)) {
                 levelFirstDictList = levelNextDictList;
                 levelNextDictList = new ArrayList<>();
-            } else {
+            }
+            else {
                 break;
             }
             isThrowCount++;

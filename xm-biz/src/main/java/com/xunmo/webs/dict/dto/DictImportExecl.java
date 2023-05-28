@@ -6,13 +6,15 @@ import lombok.Data;
 @Data
 public class DictImportExecl {
 
-    @ExcelProperty(value = "字典名", index = 0)
-    private String dicDescription;
-    @ExcelProperty(value = "字典值", index = 1)
-    private String dicValue;
-    @ExcelProperty(value = "字典编码", index = 2)
-    private String dicCode;
-    @ExcelProperty(value = "上级字典名", index = 3)
+    @ExcelProperty(value = "上级code")
+    private String parentCode;
+    @ExcelProperty(value = "上级字典名")
     private String parentName;
+    @ExcelProperty(value = "字典code")
+    private String dicCode;
+    @ExcelProperty(value = "字典名")
+    private String dicDescription;
+    @ExcelProperty(value = "字典值")
+    private String dicValue;
 
 }

@@ -302,6 +302,8 @@ public class XmUtil extends CheckUtil {
     }
 
 
+
+
     // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
@@ -642,8 +644,8 @@ public class XmUtil extends CheckUtil {
      */
     @SuppressWarnings({"all"})
     public static <T, R> List<R> mapFiltersDistinctToList(List<T> originList,
-                                                          Function<T, R> mapper,
-                                                          Predicate<R>... filters) {
+                                                      Function<T, R> mapper,
+                                                      Predicate<R>... filters) {
         return LamUtil.mapFiltersDistinctToList(originList, mapper, filters);
     }
 
@@ -679,6 +681,12 @@ public class XmUtil extends CheckUtil {
         return LamUtil.mapDistinctFiltersToList(originList, mapper, filters);
     }
 
+
+    @SafeVarargs
+    public static <T>  long listCount(List<T> taskOrders, Predicate<T>... filters) {
+        return LamUtil.count(taskOrders, filters);
+    }
+
     /**
      * 将List转为Map
      *
@@ -694,7 +702,7 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V> Map<K, V> listToBeanLinkedMap(List<V> originList,
-                                                       Function<V, K> keyExtractor) {
+                                             Function<V, K> keyExtractor) {
 
         return LamUtil.toBeanLinkedMap(originList, keyExtractor);
     }
@@ -715,15 +723,14 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V, S> Map<K, S> listFilterToMap(List<V> originList,
-                                                      Predicate<V> filter,
-                                                      Function<V, K> keyExtractor,
-                                                      Function<V, S> valueExtractor) {
+                                                  Predicate<V> filter,
+                                                  Function<V, K> keyExtractor,
+                                                  Function<V, S> valueExtractor) {
         return LamUtil.filterToMap(originList, filter, keyExtractor, valueExtractor);
     }
-
     public static <K, V> Map<K, V> listFilterToBeanMap(List<V> originList,
-                                                       Predicate<V> filter,
-                                                       Function<V, K> keyExtractor) {
+                                                   Predicate<V> filter,
+                                                   Function<V, K> keyExtractor) {
         return LamUtil.filterToBeanMap(originList, filter, keyExtractor);
     }
 
@@ -734,24 +741,16 @@ public class XmUtil extends CheckUtil {
         return LamUtil.filterToBeanMergeMap(originList, filter, keyExtractor, mergeExtractor);
     }
 
-    public static <K, V, S> Map<K, S> listFilterToBeanMergeMap(List<V> originList,
-                                                            Predicate<V> filter,
-                                                            Function<V, K> keyExtractor,
-                                                            Function<V, S> valueExtractor,
-                                                            BinaryOperator<S> mergeExtractor) {
-        return LamUtil.filterToBeanMergeMap(originList, filter, keyExtractor, valueExtractor, mergeExtractor);
-    }
-
     public static <K, V> Map<K, V> listFiltersToBeanMap(List<V> originList,
-                                                        Function<V, K> keyExtractor,
-                                                        Predicate<V>... filters) {
+                                                   Function<V, K> keyExtractor,
+                                                   Predicate<V>... filters) {
         return LamUtil.filtersToBeanMap(originList, keyExtractor, filters);
 
     }
 
     public static <K, V, S> Map<K, S> listToLinkedMap(List<V> originList,
-                                                      Function<V, K> keyExtractor,
-                                                      Function<V, S> valueExtractor) {
+                                            Function<V, K> keyExtractor,
+                                            Function<V, S> valueExtractor) {
         return LamUtil.toLinkedMap(originList, keyExtractor, valueExtractor);
 
     }
@@ -773,9 +772,9 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V, S> Map<K, S> listToMergeLinkedMap(List<V> originList,
-                                                           Function<V, K> keyExtractor,
-                                                           Function<V, S> valueExtractor,
-                                                           BinaryOperator<S> mergeExtractor) {
+                                                 Function<V, K> keyExtractor,
+                                                 Function<V, S> valueExtractor,
+                                                 BinaryOperator<S> mergeExtractor) {
         return LamUtil.toMergeLinkedMap(originList, keyExtractor, valueExtractor, mergeExtractor);
     }
 
@@ -796,8 +795,8 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V> Map<K, V> listToBeanMergeLinkedMap(List<V> originList,
-                                                            Function<V, K> keyExtractor,
-                                                            BinaryOperator<V> mergeExtractor) {
+                                                  Function<V, K> keyExtractor,
+                                                  BinaryOperator<V> mergeExtractor) {
         return LamUtil.toBeanMergeLinkedMap(originList, keyExtractor, mergeExtractor);
     }
 
@@ -820,10 +819,10 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V, S> Map<K, S> listFilterToMergeLinkedMap(List<V> originList,
-                                                                 Predicate<V> filter,
-                                                                 Function<V, K> keyExtractor,
-                                                                 Function<V, S> valueExtractor,
-                                                                 BinaryOperator<S> mergeExtractor) {
+                                                       Predicate<V> filter,
+                                                       Function<V, K> keyExtractor,
+                                                       Function<V, S> valueExtractor,
+                                                       BinaryOperator<S> mergeExtractor) {
         return LamUtil.filterToMergeLinkedMap(originList, filter, keyExtractor, valueExtractor, mergeExtractor);
     }
 
@@ -847,10 +846,10 @@ public class XmUtil extends CheckUtil {
 
     @SafeVarargs
     public static <K, V, S> Map<K, S> listFiltersToMergeLinkedMap(List<V> originList,
-                                                                  Function<V, K> keyExtractor,
-                                                                  Function<V, S> valueExtractor,
-                                                                  BinaryOperator<S> mergeExtractor,
-                                                                  Predicate<V>... filters) {
+                                                        Function<V, K> keyExtractor,
+                                                        Function<V, S> valueExtractor,
+                                                        BinaryOperator<S> mergeExtractor,
+                                                        Predicate<V>... filters) {
         return LamUtil.filtersToMergeLinkedMap(originList, keyExtractor, valueExtractor, mergeExtractor, filters);
     }
 
@@ -869,14 +868,14 @@ public class XmUtil extends CheckUtil {
     }
 
     public static <K, V, U extends Comparable<? super U>> List<V> listGroupByMaxValueToList(List<V> originList,
-                                                                                            Function<V, K> keyExtractor,
-                                                                                            Function<? super V, ? extends U> function) {
+                                                                                        Function<V, K> keyExtractor,
+                                                                                        Function<? super V, ? extends U> function) {
         return LamUtil.groupByMaxValueToList(originList, keyExtractor, function);
     }
 
     public static <K, V, U extends Comparable<? super U>> List<V> listGroupByMinValueToList(List<V> originList,
-                                                                                            Function<V, K> keyExtractor,
-                                                                                            Function<? super V, ? extends U> function) {
+                                                                                        Function<V, K> keyExtractor,
+                                                                                        Function<? super V, ? extends U> function) {
         return LamUtil.groupByMinValueToList(originList, keyExtractor, function);
     }
 
@@ -950,6 +949,7 @@ public class XmUtil extends CheckUtil {
     // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
+
 
     /**
      * 性能损耗少一点的抛异常方法

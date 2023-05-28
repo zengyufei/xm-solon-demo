@@ -18,7 +18,7 @@ public class BizApp {
 
             app.get("/", ctx -> {
 //                ctx.forward("/railway-bureau-test/index.html");
-                ctx.redirect("/dict/view/list");
+                ctx.redirect("/dict/view/tree");
 //                ctx.redirect("/employee_info/view/index");
             });
 
