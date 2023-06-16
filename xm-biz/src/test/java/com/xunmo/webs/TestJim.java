@@ -1,12 +1,20 @@
 package com.xunmo.webs;
 
-import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.BizApp;
 import lombok.extern.slf4j.Slf4j;
+import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.noear.solon.annotation.Inject;
+import org.noear.solon.boot.smarthttp.http.SmartHttpContext;
+import org.noear.solon.core.handle.Context;
+import org.noear.solon.core.handle.ContextEmpty;
+import org.noear.solon.core.handle.Render;
+import org.noear.solon.core.handle.RenderManager;
+import org.noear.solon.serialization.jackson.JacksonRenderFactory;
+import org.noear.solon.serialization.snack3.SnackActionExecutor;
 import org.noear.solon.test.SolonJUnit4ClassRunner;
 import org.noear.solon.test.SolonTest;
 
@@ -20,8 +28,11 @@ public class TestJim {
     @Inject
     JSqlClient sqlClient;
 
+    @Inject
+    JacksonRenderFactory renderFactory;
+
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() throws Throwable {
         BookTable book = BookTable.$;
 
         List<Book> books = sqlClient
@@ -29,6 +40,10 @@ public class TestJim {
                 .where(book.name().like("GraphQL"))
                 .select(book)
                 .execute();
-        System.out.println(JSONUtil.toJsonStr(books));
+
+
+        ContextEmpty ctx = new ContextEmpty();
+        final String s = renderFactory.create().renderAndReturn(books, ctx);
+        System.out.println(s);
     }
 }

@@ -25,10 +25,36 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.babyfish.jimmer</groupId>
-            <artifactId>jimmer-spring-boot-starter</artifactId>
-            <version>${jimmer.version}</version>
+            <artifactId>jimmer-sql</artifactId>
+            <version>0.7.98</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-sql-kotlin</artifactId>
+            <version>0.7.98</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-client</artifactId>
+            <version>0.7.98</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>2.14.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>1.7.10</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.noear</groupId>
@@ -62,16 +88,6 @@
         <dependency>
             <groupId>com.xunmo</groupId>
             <artifactId>xm-core-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>solon.serialization.snack3</artifactId>
-                    <groupId>org.noear</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>snack3</artifactId>
-                    <groupId>org.noear</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- p6spy，可关闭依赖，修改配置，停止该功能 -->
@@ -98,10 +114,10 @@
             <artifactId>xm-web</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.noear</groupId>-->
-<!--            <artifactId>sa-token-solon-plugin</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.noear</groupId>-->
+        <!--            <artifactId>sa-token-solon-plugin</artifactId>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.noear</groupId>
@@ -222,11 +238,11 @@
                             <artifactId>lombok</artifactId>
                             <version>1.18.26</version>
                         </path>
-<!--                        <path>-->
-<!--                            <groupId>org.mapstruct</groupId>-->
-<!--                            <artifactId>mapstruct-processor</artifactId>-->
-<!--                            <version>1.5.3.Final</version>-->
-<!--                        </path>-->
+                        <!--                        <path>-->
+                        <!--                            <groupId>org.mapstruct</groupId>-->
+                        <!--                            <artifactId>mapstruct-processor</artifactId>-->
+                        <!--                            <version>1.5.3.Final</version>-->
+                        <!--                        </path>-->
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
