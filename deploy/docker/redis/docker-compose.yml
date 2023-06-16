@@ -1,13 +1,16 @@
 version: "3.8"
 services:
   redis:
-    image: "redis"
-    container_name: "redis"
+    privileged: true
+    user: root:root
+    image: "redis:${REDIS_SERVICE_VERSION}"
+    container_name: "${REDIS_SERVICE_CONTAINER_NAME}"
     #network_mode: "host"
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_SERVICE_PORT_6379}:6379"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
       - /home/redis/data:/data
     command: redis-server /usr/local/etc/redis/redis.conf

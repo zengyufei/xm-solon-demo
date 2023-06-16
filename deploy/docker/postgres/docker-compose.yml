@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  postgres:
+    privileged: true
+    user: root:root
+    container_name: "${POSTGRESQL_SERVICE_CONTAINER_NAME}"
+    hostname: "${POSTGRESQL_SERVICE_HOSTNAME}"
+    image: "postgres:${POSTGRESQL_SERVICE_VERSION}"
+    restart: always
+    ports:
+     - "5432:5432"
+    environment:
+      POSTGRES_DB: "${POSTGRESQL_SERVICE_DATABASE_NAME}"
+      POSTGRES_USER: "${POSTGRESQL_SERVICE_USER_NAME}"
+      POSTGRES_PASSWORD: "${POSTGRESQL_SERVICE_ROOT_PASSWORD}"
+    volumes: 
+      - /etc/localtime:/etc/localtime:ro
+      - /home/postgres:/var/lib/postgresql/data

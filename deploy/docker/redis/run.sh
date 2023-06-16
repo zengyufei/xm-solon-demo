@@ -7,7 +7,7 @@ echo $NAME
 case "$1" in
     start)
         echo "Starting $NAME…"
-        docker-compose up -d
+        docker-compose --env-file ./config.env up -d
         echo "Finished!"
         ;;
     stop)
@@ -23,3 +23,4 @@ case "$1" in
         echo "Usage: $NAME { start | stop | restart } "
         exit 1
 esac
+

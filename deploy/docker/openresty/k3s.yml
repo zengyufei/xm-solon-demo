@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openresty-full
+spec:
+  selector:
+    matchLabels:
+      app: openresty
+  replicas: 1
+  #策略
+  strategy:
+    #更新类型
+    type: RollingUpdate
+    #滚动更新
+    rollingUpdate:
+      #更新时允许最大激增的容器数
+      maxSurge: 1
+      #更新时允许最大 unavailable 容器数
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: openresty
+    spec:
+      hostAliases:
+      - ip: "172.30.24.225"
+        hostnames:
+        - "edu" 
+      #实际目录挂载
+      volumes:
+      #宿主机时间文件
+      - name: time
+        hostPath:
+          path: /etc/localtime
+      containers:
+        - name: openresty
+          image: openresty/openresty:1.17.8.2-5-alpine-fat
+          imagePullPolicy: Always
+          #镜像挂载目录
+          volumeMounts:
+          - name: time
+            mountPath: /etc/localtime
+          ports:
+            - name: api
+              containerPort: 80
+              protocol: "TCP"
+          readinessProbe:
+              httpGet:
+                path: /
+                port: api
+              initialDelaySeconds: 10
+              periodSeconds: 2
+              timeoutSeconds: 1
+              successThreshold: 1
+              failureThreshold: 6
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openresty
+spec:
+  selector:
+    app: openresty
+  type: LoadBalancer
+  ports:
+    - name: api
+      #协议
+      protocol: TCP
+      #对外开放端口
+      port: 80
+      #容器开放端口
+      targetPort: 80
+
