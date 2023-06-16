@@ -5,9 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.OsInfo;
 import cn.hutool.system.SystemUtil;
 import lombok.Data;
-import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Init;
-import org.noear.solon.annotation.Inject;
 
 import java.io.File;
 

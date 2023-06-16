@@ -2,30 +2,16 @@ package com.xunmo.solon;
 
 import cn.hutool.core.util.ObjectUtil;
 import org.noear.solon.Utils;
-import org.noear.solon.annotation.After;
-import org.noear.solon.annotation.Before;
-import org.noear.solon.annotation.Controller;
-import org.noear.solon.annotation.Mapping;
-import org.noear.solon.annotation.Options;
+import org.noear.solon.annotation.*;
 import org.noear.solon.core.BeanWrap;
-import org.noear.solon.core.handle.Action;
-import org.noear.solon.core.handle.Handler;
-import org.noear.solon.core.handle.HandlerAide;
-import org.noear.solon.core.handle.HandlerSlots;
-import org.noear.solon.core.handle.MethodType;
-import org.noear.solon.core.handle.MethodTypeUtil;
-import org.noear.solon.core.handle.Render;
+import org.noear.solon.core.handle.*;
 import org.noear.solon.core.util.ConsumerEx;
 import org.noear.solon.core.util.PathUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 通用处理接口加载器（根据bean加载）

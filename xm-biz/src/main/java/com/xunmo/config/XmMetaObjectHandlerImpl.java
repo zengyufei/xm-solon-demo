@@ -2,11 +2,9 @@ package com.xunmo.config;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.IdcardUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.xunmo.XmConstants;
 import com.xunmo.base.XmEntity;
-import com.xunmo.common.utils.XmUtil;
 import com.xunmo.core.utils.LamUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;

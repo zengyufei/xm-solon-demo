@@ -1,9 +1,6 @@
 package com.xunmo.annotations;
 
 import org.javers.core.Changes;
-import org.javers.core.diff.changetype.ValueChange;
-
-import java.util.List;
 
 @FunctionalInterface
 public interface AuditFunc {

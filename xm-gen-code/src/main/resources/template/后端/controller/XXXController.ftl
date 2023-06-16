@@ -9,7 +9,6 @@
 <#assign serviceImplSimpleName=t.serviceImplSuperClassName?substring(serviceImplLastIndex,serviceImplLen) >
 package ${t.packageName}.${t.moduleName}.controller;
 
-import com.xunmo.base.XmSuperControllerImpl;
 import com.xunmo.common.utils.AjaxJson;
 import ${t.packageName}.${t.moduleName}.dto.${t.entityName}DelDTO;
 import ${t.packageName}.${t.moduleName}.dto.${t.entityName}GetDTO;

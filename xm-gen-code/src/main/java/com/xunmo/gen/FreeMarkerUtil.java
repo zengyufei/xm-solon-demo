@@ -1,14 +1,13 @@
 package com.xunmo.gen;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
 import cn.hutool.core.io.file.FileReader;
 import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * freemarker操作 的工具类

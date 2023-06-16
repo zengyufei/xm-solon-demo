@@ -4,20 +4,27 @@ solon.app:
 server.port: 8667
 server.contextPath: "/xunmo-TEST"
 
+sa-token-dao: #名字可以随意取
+    redis:
+        server: "localhost:6379"
+        password: "*!Xunmo@AiQing68951@zyf!*"
+        db: 3
+        maxTotal: 200
+
 xm:
     exception:
-        enable: false
+        enable: true
     cache:
-        enable: false
+        enable: true
         db: 2 #默认为 0，可不配置
         server: "localhost:6379"
-        #password: ""
+        password: "*!Xunmo@AiQing68951@zyf!*"
     mq:
-        enable: false
+        enable: true
         host: 127.0.0.1
         port: 5672
         username: root
-        password: root
+        password: "*!Xunmo@AiQing68951@zyf!*"
     datasource.db:
         type: "com.zaxxer.hikari.HikariDataSource"
         strict: true
@@ -26,16 +33,4 @@ xm:
             driverClassName: com.p6spy.engine.spy.P6SpyDriver
             jdbcUrl: jdbc:p6spy:mysql://localhost:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
             username: root
-            password: root
-        db2:
-#            driverClassName: com.mysql.cj.jdbc.Driver
-            driverClassName: com.p6spy.engine.spy.P6SpyDriver
-            jdbcUrl: jdbc:p6spy:mysql://localhost:3306/zyf?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
-            username: root
-            password: root
-
-    datasource.filedb:
-        driverClassName: com.p6spy.engine.spy.P6SpyDriver
-        jdbcUrl: jdbc:p6spy:mysql://localhost:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
-        username: root
-        password: root
+            password: "*!Xunmo@AiQing68951@zyf!*"

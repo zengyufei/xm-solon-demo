@@ -3,7 +3,6 @@ package com.xunmo;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
-import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.solon.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.solon.plugins.inner.PaginationInnerInterceptor;

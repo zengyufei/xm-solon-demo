@@ -1,11 +1,6 @@
 import cn.hutool.core.util.ArrayUtil;
 
-import java.io.BufferedReader;
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class CopyAndRenameTest {
 

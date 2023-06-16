@@ -1,12 +1,10 @@
 package com.xunmo.webs.exception_record.controller;
 
 
-import com.xunmo.base.XmSuperControllerImpl;
 import com.xunmo.utils.AjaxJson;
 import com.xunmo.webs.exception_record.entity.ExceptionRecord;
 import com.xunmo.webs.exception_record.model.query.ExceptionRecordQuery;
 import com.xunmo.webs.exception_record.service.ExceptionRecordService;
-import com.xunmo.webs.exception_record.service.impl.ExceptionRecordServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Get;
@@ -22,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @Mapping("/exceptionRecord")
-public class ExceptionRecordController extends XmSuperControllerImpl<ExceptionRecordServiceImpl, ExceptionRecord> {
+public class ExceptionRecordController {
 
     @Inject
     private ExceptionRecordService exceptionRecordService;
