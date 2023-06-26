@@ -17,7 +17,7 @@ public class TestMqHelper {
     @Order(2)
     public void test0() throws Exception {
         TimeUnit.SECONDS.sleep(30);
-        MqHelper.initMq("127.0.0.1", "root", "root", "5672");
+        MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", "32701");
         MqHelper.sendMsg("ttt","demo1");
         TimeUnit.SECONDS.sleep(1);
         MqHelper.sendMsg("bbb","bbb2");
@@ -42,18 +42,14 @@ public class TestMqHelper {
     @Test
     @Order(1)
     public void test1() throws Exception {
-        MqHelper.initMq("127.0.0.1", "root", "*!Xunmo@AiQing68951@zyf!*", "5672");
+        MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", "32701");
         ThreadUtil.execute(() -> {
             try {
                 MqHelper.consumeMsg( "ttt",true, s -> {
                     System.out.println("ttt: "+s);
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (TimeoutException e) {
+            } catch (IOException | InterruptedException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -64,11 +60,7 @@ public class TestMqHelper {
                     System.out.println("bb: "+s);
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (TimeoutException e) {
+            } catch (IOException | InterruptedException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -81,11 +73,7 @@ public class TestMqHelper {
                     System.out.println("ttt2: "+s);
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (TimeoutException e) {
+            } catch (IOException | InterruptedException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -96,11 +84,7 @@ public class TestMqHelper {
                     System.out.println("bb2: "+s);
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (TimeoutException e) {
+            } catch (IOException | InterruptedException | TimeoutException e) {
                 throw new RuntimeException(e);
             }
         });

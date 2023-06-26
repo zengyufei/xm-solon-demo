@@ -41,9 +41,7 @@ public class TestJim {
                 .select(book)
                 .execute();
 
-
-        ContextEmpty ctx = new ContextEmpty();
-        final String s = renderFactory.create().renderAndReturn(books, ctx);
+        final String s = renderFactory.create().renderAndReturn(books, new ContextEmpty());
         System.out.println(s);
     }
 }

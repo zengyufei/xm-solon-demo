@@ -6,8 +6,8 @@ server.contextPath: "/xunmo-TEST"
 
 sa-token-dao: #名字可以随意取
     redis:
-        server: "zengyf:6379"
-        password: "*!Xunmo@AiQing68951@zyf!*"
+        server: "vat:6379"
+        password: "*xun13@mo14!154RConf!*"
         db: 3
         maxTotal: 200
 
@@ -17,20 +17,21 @@ xm:
     cache:
         enable: true
         db: 2 #默认为 0，可不配置
-        server: "zengyf:6379"
-        password: "*!Xunmo@AiQing68951@zyf!*"
+        server: "vat:6379"
+        password: "*xun13@mo14!154RConf!*"
     mq:
         enable: true
-        host: zengyf
-        port: 5672
+        host: vat
+        #port: 5672
+        port: 32701
         username: root
-        password: "*!Xunmo@AiQing68951@zyf!*"
+        password: "*xun13@mo14!154RConf!*"
     datasource.db:
         type: "com.zaxxer.hikari.HikariDataSource"
         strict: true
         default: #default 或 master ，会做为动态源的默认源
 #            driverClassName: com.mysql.cj.jdbc.Driver
             driverClassName: com.p6spy.engine.spy.P6SpyDriver
-            jdbcUrl: jdbc:p6spy:mysql://zengyf:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
+            jdbcUrl: jdbc:p6spy:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
             username: root
-            password: "*!Xunmo@AiQing68951@zyf!*"
+            password: "root"
