@@ -12,6 +12,7 @@ import org.noear.solon.SolonProps;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -346,9 +347,28 @@ public class MqHelper {
             reTry = false;
             //建立通讯信道
             try (Channel channel = connection.createChannel()) {
+                // 延迟交换器  https://xie.infoq.cn/article/e0c56c9d10a047fb179bc3aba
+                final String changeName = "exchange.normal";
+                Map<String, Object> args = new HashMap<>();
+                args.put("x-delayed-type", "direct");
+                channel.exchangeDeclare(changeName, "x-delayed-message", true, false, args);
+
                 // 参数从前面开始分别意思为：队列名称，是否持久化，独占的队列，不使用时是否自动删除，其他参数
                 channel.queueDeclare(queueName, durable, false, false, null);
-                channel.basicPublish("", queueName, null, msg.getBytes(StandardCharsets.UTF_8));
+                // 绑定路由
+                channel.queueBind(queueName, changeName, "");
+
+                AMQP.BasicProperties properties = null;
+
+                final boolean isDelay = true;
+                if (isDelay) {
+                    AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
+                    Map<String, Object> headers = new HashMap<>();
+                    headers.put("x-delay", 5 * 1000);
+                    props.headers(headers);
+                    properties = props.build();
+                }
+                channel.basicPublish(changeName, "", properties, msg.getBytes(StandardCharsets.UTF_8));
                 sendErrMsg = "";
             } catch (Exception ex) {
                 if (ex instanceof SocketException) {
@@ -420,7 +440,12 @@ public class MqHelper {
         }
         try {
             Channel channel = connection.createChannel();
+
+            final String changeName = "exchange.normal";
             channel.queueDeclare(queueName, durable, false, false, null); //获取队列
+            // 绑定路由
+            channel.queueBind(queueName, changeName, "");
+
             channel.basicQos(0, 1, false); //分发机制为触发式
             //建立消费者
             Consumer consumer = new DefaultConsumer(channel) {
