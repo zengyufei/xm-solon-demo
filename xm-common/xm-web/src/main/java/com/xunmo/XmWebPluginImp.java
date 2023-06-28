@@ -1,5 +1,7 @@
 package com.xunmo;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -17,6 +19,8 @@ import org.noear.solon.serialization.jackson.JacksonActionExecutor;
 import org.noear.solon.web.cors.CrossHandler;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -87,8 +91,9 @@ public class XmWebPluginImp implements Plugin {
         if (isEnableJsonTrim) {
             // 处理 json 字段左右空白, 空字符串入参设置为null;
             app.onEvent(JacksonActionExecutor.class, executor -> {
-                final SimpleModule module = new SimpleModule();
-//                final EduJavaTimeModule module = new EduJavaTimeModule();
+                executor.config().setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+//                final SimpleModule module = new SimpleModule();
+                final EduJavaTimeModule module = new EduJavaTimeModule();
                 module.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
                     private static final long serialVersionUID = -2186517763342421483L;
 
@@ -99,6 +104,19 @@ public class XmWebPluginImp implements Plugin {
                         }
 
                         return StrUtil.trim(jsonParser.getValueAsString());
+                    }
+                });
+                module.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
+                    private static final long serialVersionUID = -2186517763342421483L;
+
+                    @Override
+                    public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
+                        if (StrUtil.isBlank(jsonParser.getValueAsString())) {
+                            return null;
+                        }
+
+                        final String trim = StrUtil.trim(jsonParser.getValueAsString());
+                        return DateUtil.parse(trim);
                     }
                 });
                 executor.config().registerModule(module);
