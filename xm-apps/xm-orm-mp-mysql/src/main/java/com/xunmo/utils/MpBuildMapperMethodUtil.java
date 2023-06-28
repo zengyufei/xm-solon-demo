@@ -11,7 +11,6 @@ import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ public class MpBuildMapperMethodUtil {
         configuration.addMappedStatement(mappedStatement);
     }
 
-    @NotNull
     public static MappedStatement.Builder getMapperBuilder(Configuration configuration, String currentNamespace, String id, SqlCommandType sqlCommandType, String finalSql) {
         final LanguageDriver languageDriver = configuration.getDefaultScriptingLanguageInstance();
         final String databaseId = configuration.getDatabaseId();
@@ -57,11 +55,10 @@ public class MpBuildMapperMethodUtil {
 
     private static <T> T valueOrDefault(T value, T defaultValue) {
         return value == null
-               ? defaultValue
-               : value;
+                ? defaultValue
+                : value;
     }
 
-    @NotNull
     public static <T> ArrayList<ResultMap> getResultMaps(Class<T> modelClass, Configuration configuration) {
         ArrayList<ResultMap> resultMaps = new ArrayList<>();
         ResultMap.Builder resultMapBuilder = new ResultMap.Builder(configuration, IdUtil.fastUUID(), modelClass, new ArrayList<>());
@@ -71,54 +68,54 @@ public class MpBuildMapperMethodUtil {
     }
 
 
-  private List<ResultMap> getStatementResultMaps(
-          Configuration configuration,
-      String currentNamespace,
-      String resultMap,
-      Class<?> resultType,
-      String statementId) {
-    resultMap = applyCurrentNamespace(currentNamespace, resultMap, true);
+    private List<ResultMap> getStatementResultMaps(
+            Configuration configuration,
+            String currentNamespace,
+            String resultMap,
+            Class<?> resultType,
+            String statementId) {
+        resultMap = applyCurrentNamespace(currentNamespace, resultMap, true);
 
-    List<ResultMap> resultMaps = new ArrayList<>();
-    if (resultMap != null) {
-      String[] resultMapNames = resultMap.split(",");
-      for (String resultMapName : resultMapNames) {
-        try {
-          resultMaps.add(configuration.getResultMap(resultMapName.trim()));
-        } catch (IllegalArgumentException e) {
-          throw new IncompleteElementException("Could not find result map '" + resultMapName + "' referenced from '" + statementId + "'", e);
+        List<ResultMap> resultMaps = new ArrayList<>();
+        if (resultMap != null) {
+            String[] resultMapNames = resultMap.split(",");
+            for (String resultMapName : resultMapNames) {
+                try {
+                    resultMaps.add(configuration.getResultMap(resultMapName.trim()));
+                } catch (IllegalArgumentException e) {
+                    throw new IncompleteElementException("Could not find result map '" + resultMapName + "' referenced from '" + statementId + "'", e);
+                }
+            }
+        } else if (resultType != null) {
+            ResultMap inlineResultMap = new ResultMap.Builder(
+                    configuration,
+                    statementId + "-Inline",
+                    resultType,
+                    new ArrayList<>(),
+                    null).build();
+            resultMaps.add(inlineResultMap);
         }
-      }
-    } else if (resultType != null) {
-      ResultMap inlineResultMap = new ResultMap.Builder(
-          configuration,
-          statementId + "-Inline",
-          resultType,
-          new ArrayList<>(),
-          null).build();
-      resultMaps.add(inlineResultMap);
+        return resultMaps;
     }
-    return resultMaps;
-  }
 
-  public String applyCurrentNamespace(String currentNamespace, String base, boolean isReference) {
-    if (base == null) {
-      return null;
+    public String applyCurrentNamespace(String currentNamespace, String base, boolean isReference) {
+        if (base == null) {
+            return null;
+        }
+        if (isReference) {
+            // is it qualified with any namespace yet?
+            if (base.contains(".")) {
+                return base;
+            }
+        } else {
+            // is it qualified with this namespace yet?
+            if (base.startsWith(currentNamespace + ".")) {
+                return base;
+            }
+            if (base.contains(".")) {
+                throw new BuilderException("Dots are not allowed in element names, please remove it from " + base);
+            }
+        }
+        return currentNamespace + "." + base;
     }
-    if (isReference) {
-      // is it qualified with any namespace yet?
-      if (base.contains(".")) {
-        return base;
-      }
-    } else {
-      // is it qualified with this namespace yet?
-      if (base.startsWith(currentNamespace + ".")) {
-        return base;
-      }
-      if (base.contains(".")) {
-        throw new BuilderException("Dots are not allowed in element names, please remove it from " + base);
-      }
-    }
-    return currentNamespace + "." + base;
-  }
 }

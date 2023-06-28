@@ -28,6 +28,6 @@ public class UpdateNotNullById extends AbstractMethod {
         String additional = this.optlockVersion(tableInfo) + tableInfo.getLogicDeleteSql(true, true);
         String sql = String.format(sqlMethod.getSql(), tableInfo.getTableName(), this.sqlSet(tableInfo.isWithLogicDelete(), false, tableInfo, false, "et", "et."), tableInfo.getKeyColumn(), "et." + tableInfo.getKeyProperty(), additional);
         SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, modelClass);
-        return this.addUpdateMappedStatement(mapperClass, modelClass, this.getMethod(sqlMethod), sqlSource);
+        return this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
     }
 }

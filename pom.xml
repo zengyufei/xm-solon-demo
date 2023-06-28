@@ -15,7 +15,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <xm.version>1.0.0</xm.version>
-        <solon.version>1.12.3</solon.version>
+        <solon.version>2.3.6</solon.version>
     </properties>
 
     <modules>
@@ -48,8 +48,6 @@
             <artifactId>logback-solon-plugin</artifactId>
         </dependency>
     </dependencies>
-
-
 
 
     <dependencyManagement>

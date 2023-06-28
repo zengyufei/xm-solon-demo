@@ -1,6 +1,6 @@
 solon.app:
-    name: xm-biz
-    group: com.xunmo
+  name: xm-biz
+  group: com.xunmo
 server.port: 8667
 server.contextPath: "/xunmo-TEST"
 
@@ -11,147 +11,147 @@ solon.env: dev
 solon.output.meta: 1
 
 page:
-    pageNumName: pageNo
-    pageSizeName: pageSize
-    orderByName: orderBy
+  pageNumName: pageNo
+  pageSizeName: pageSize
+  orderByName: orderBy
 
 sa-token-dao: #名字可以随意取
-    redis:
-        server: "localhost:6379"
-        #password: 123456
-        db: 3
-        maxTotal: 200
+  redis:
+    server: "localhost:6379"
+    #password: 123456
+    db: 3
+    maxTotal: 200
 
 xm:
-    web:
-        cors:
-            enable: true
-        args:
-            trim:
-                enable: true
-        json:
-            decode-datetime:
-                enable: true
-            trim:
-                enable: true
-        # 支持扫描父类接口信息
-        scan:
-            super-controller:
-                enable: true
-            generic-bind:
-                enable: false
-        cache:
-            enable: true
-            db: 2
-            server: localhost:6379
-            #password: ""
-        xss:
-            enable: true
-        console:
-            args:
-                enable: true
-                type: handler #handler or filter
-            requestTimes:
-                enable: true
-                type: handler #handler or filter
-    log:
-        mappers: com.xunmo.webs
-        traceId:
-            enable: true
-            thread:
-                enable: true
-    tran:
+  web:
+    cors:
+      enable: true
+    args:
+      trim:
         enable: true
-        method:
-            prefix:
-                - "add"
-                - "insert"
-                - "create"
-                - "save"
-                - "delete"
-                - "edit"
-                - "modify"
-                - "update"
-                - "remove"
-                - "del"
-                - "move"
-                - "change"
-    exception:
+    json:
+      decode-datetime:
         enable: true
-    mq:
-        host: localhost
-        port: 5672
-        username: root
-        password: root
-        vhost: /
-        max-conn: 30
+      trim:
+        enable: true
+    # 支持扫描父类接口信息
+    scan:
+      super-controller:
+        enable: true
+      generic-bind:
+        enable: false
+    cache:
+      enable: true
+      db: 2
+      server: localhost:6379
+      #password: ""
+    xss:
+      enable: true
+    console:
+      args:
+        enable: true
+        type: handler #handler or filter
+      requestTimes:
+        enable: true
+        type: handler #handler or filter
+  log:
+    mappers: com.xunmo.webs
+    traceId:
+      enable: true
+      thread:
+        enable: true
+  tran:
+    enable: true
+    method:
+      prefix:
+        - "add"
+        - "insert"
+        - "create"
+        - "save"
+        - "delete"
+        - "edit"
+        - "modify"
+        - "update"
+        - "remove"
+        - "del"
+        - "move"
+        - "change"
+  exception:
+    enable: true
+  mq:
+    host: localhost
+    port: 5672
+    username: root
+    password: root
+    vhost: /
+    max-conn: 30
 
-    # 微信
-    wx:
-        # 小程序的配置([mp.appid;mp.app-secret] 与 [mp.multi-default-name;mp.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
-        mp:
-            appid: '微信小程序appid'
-            app-secret: '微信小程序appsecret'
-            multi-default-name: '默认使用的小程序配置名'
-            # 多配置
-            multi:
-                # 小程序配置1, 名为 first
-                first:
-                    appid: '微信小程序appid.1'
-                    app-secret: '微信小程序appsecret.1'
-                # 小程序配置2, 名为 second
-                second:
-                    appid: '微信小程序appid.2'
-                    app-secret: '微信小程序appsecret.2'
-        # 公众号的配置([official-account.appid;official-account.app-secret] 与 [official-account.multi-default-name;official-account.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
-        official-account:
-            appid: "微信公众号appid"
-            app-secret: "微信公众号appsecret"
-            multi-default-name: '默认使用的微信公众号配置名'
-            multi:
-                # 公众号配置1, 名为 first
-                first:
-                    appid: '微信公众号appid.1'
-                    app-secret: '微信公众号appsecret.1'
-                # 公众号配置2, 名为 second
-                second:
-                    appid: '微信公众号appid.2'
-                    app-secret: '微信公众号appsecret.2'
-    alipay:
-        appid: '应用ID'
-        app-private-key: '应用密钥'
-        app-public-key: '应用公钥'
-        public-key: '支付宝公钥'
+  # 微信
+  wx:
+    # 小程序的配置([mp.appid;mp.app-secret] 与 [mp.multi-default-name;mp.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
+    mp:
+      appid: '微信小程序appid'
+      app-secret: '微信小程序appsecret'
+      multi-default-name: '默认使用的小程序配置名'
+      # 多配置
+      multi:
+        # 小程序配置1, 名为 first
+        first:
+          appid: '微信小程序appid.1'
+          app-secret: '微信小程序appsecret.1'
+        # 小程序配置2, 名为 second
+        second:
+          appid: '微信小程序appid.2'
+          app-secret: '微信小程序appsecret.2'
+    # 公众号的配置([official-account.appid;official-account.app-secret] 与 [official-account.multi-default-name;official-account.multi]不是要同时配置的, 如果同时配置, 会自动把前者追加到多配置multi中)
+    official-account:
+      appid: "微信公众号appid"
+      app-secret: "微信公众号appsecret"
+      multi-default-name: '默认使用的微信公众号配置名'
+      multi:
+        # 公众号配置1, 名为 first
+        first:
+          appid: '微信公众号appid.1'
+          app-secret: '微信公众号appsecret.1'
+        # 公众号配置2, 名为 second
+        second:
+          appid: '微信公众号appid.2'
+          app-secret: '微信公众号appsecret.2'
+  alipay:
+    appid: '应用ID'
+    app-private-key: '应用密钥'
+    app-public-key: '应用公钥'
+    public-key: '支付宝公钥'
 
 
 #默认
 mybatis.db:
-    typeAliases:    #支持包名 或 类名（.class 结尾）
-        - "com.xunmo.webs.*.entity"
-    mappers:        #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
-        - "mybatis/xm/*.xml"
-        - "mybatis/db/*.xml"
-    globalConfig:
-        metaObjectHandler: com.xunmo.config.XmMetaObjectHandlerImpl
+  typeAliases: #支持包名 或 类名（.class 结尾）
+    - "com.xunmo.webs.*.entity"
+  mappers: #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
+    - "mybatis/xm/**/*.xml"
+    - "mybatis/db/**/*.xml"
+  globalConfig:
+    metaObjectHandler: com.xunmo.config.XmMetaObjectHandlerImpl
 
 #第二数据源
 mybatis.filedb:
-    typeAliases:    #支持包名 或 类名（.class 结尾）
-        - "com.xunmo.second.webs.*.entity"
-    mappers:        #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
-        - "mybatis/second/*.xml"
-    globalConfig:
-        metaObjectHandler: com.xunmo.config.XmMetaObjectHandlerImpl
+  typeAliases: #支持包名 或 类名（.class 结尾）
+    - "com.xunmo.second.webs.*.entity"
+  mappers: #支持包名 或 类名（.class 结尾）或 xml（.xml结尾 或 *.xml 结尾）
+    - "mybatis/second/**/*.xml"
+  globalConfig:
+    metaObjectHandler: com.xunmo.config.XmMetaObjectHandlerImpl
 
 
 solon.serialization.json:
-    dateAsFormat: 'yyyy-MM-dd HH:mm:ss' #配置日期格式（默认输出为时间戳）
-    dateAsTimeZone: 'GMT+8' #配置时区
-    #dateAsTicks: false #将date转为毫秒数（和 dateAsFormat 二选一）
-    #longAsString: true #将long型转为字符串输出 （默认为false）
-    #boolAsInt: false   #将bool型转为字符串输出 （默认为false）
-    nullStringAsEmpty: false
-    nullBoolAsFalse: false
-    nullNumberAsZero: false
-    nullArrayAsEmpty: false
-    nullAsWriteable: true #输出所有null值
+  dateAsFormat: 'yyyy-MM-dd HH:mm:ss' #配置日期格式（默认输出为时间戳）
+  dateAsTimeZone: 'GMT+8' #配置时区
+  #dateAsTicks: false #将date转为毫秒数（和 dateAsFormat 二选一）
+  #longAsString: true #将long型转为字符串输出 （默认为false）
+  #boolAsInt: false   #将bool型转为字符串输出 （默认为false）
+  nullStringAsEmpty: false
+  nullBoolAsFalse: false
+  nullNumberAsZero: false
+  nullArrayAsEmpty: false
+  nullAsWriteable: true #输出所有null值

@@ -14,7 +14,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.page.PageMethod;
 import com.xunmo.entity.PageParam;
-import org.jetbrains.annotations.NotNull;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonProps;
 import org.noear.solon.core.handle.Context;
@@ -195,12 +194,9 @@ public class XmPageUtil {
     }
 
 
-
-
     // =================================================================================================================
     // =================================================================================================================
     // =================================================================================================================
-    @NotNull
     private static String checkOrderType(String requestOrder) {
         if (StrUtil.isBlank(requestOrder)) {
             requestOrder = "asc";
@@ -216,6 +212,7 @@ public class XmPageUtil {
         final SolonProps cfg = Solon.cfg();
         return cfg.get("orderByName", "orderBy");
     }
+
     private static String getOrderByValue(String orderByName) {
         final Context current = Context.current();
         return current.param(orderByName);

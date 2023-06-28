@@ -2,15 +2,26 @@ package com.xunmo;
 
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
+import org.noear.solon.core.ChainManager;
+import org.noear.solon.core.handle.ActionExecuteHandlerDefault;
 import org.noear.solon.core.util.LogUtil;
 import org.noear.solon.extend.quartz.EnableQuartz;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @EnableQuartz
 public class BizApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchFieldException {
+
+        final Class<ChainManager> chainManagerClass = ChainManager.class;
+        final Field executeHandlers = chainManagerClass.getDeclaredField("executeHandlers");
+        executeHandlers.setAccessible(true);
+
         Solon.start(BizApp.class, args, app -> {
 
             //转发日志到 Slf4j 接口
@@ -43,6 +54,50 @@ public class BizApp {
 //                }
 //                chain.doFilter(ctx);
 //            });
+
+
+            // 向外提供钩子
+//            app.before(9999999, ctx -> {
+//                final PageRequest pageRequest = ctx.paramAsBean(PageRequest.class);
+//                ctx.paramSet("pageRequest", JSONUtil.toJsonStr(pageRequest));
+//                System.out.println(JSONUtil.toJsonPrettyStr(pageRequest));
+//            });
+
+
+//            // 向外提供钩子
+            app.context().beanOnloaded(aopContext -> {
+                final ChainManager chainManager = app.chainManager();
+                try {
+                    Map<Class<?>, ActionExecuteHandlerDefault> map = (Map<Class<?>, ActionExecuteHandlerDefault>) executeHandlers.get(chainManager);
+                    final Set<Class<?>> classes = map.keySet();
+                    System.out.println("使用Json框架:");
+                    for (Class<?> aClass : classes) {
+                        System.out.println(aClass.getName());
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+//            app.chainManager()
+//                    .addExecuteHandler(new SnackActionExecutor() {
+//                        @Override
+//                        protected Object changeBody(Context ctx) throws Exception {
+//                            final ONode changeBody = (ONode) super.changeBody(ctx);
+//                            ctx.paramMap().forEach(changeBody::set);
+//                            return changeBody;
+//                        }
+//                    });
+//
+//            app.chainManager()
+//                    .addExecuteHandler(new JacksonActionExecutor() {
+//                        @Override
+//                        protected Object changeBody(Context ctx) throws Exception {
+//                            final ONode changeBody = (ONode) super.changeBody(ctx);
+//                            ctx.paramMap().forEach(changeBody::set);
+//                            return changeBody;
+//                        }
+//                    });
         });
     }
 }

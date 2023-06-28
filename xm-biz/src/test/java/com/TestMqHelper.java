@@ -2,6 +2,7 @@ package com;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.xunmo.utils.MqHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -48,6 +49,11 @@ public class TestMqHelper {
             try {
                 MqHelper.consumeMsg( "ttt",true, s -> {
                     System.out.println("bbb1号 消费者收到消息:" + new String(s)+",当前时间:"+ DateUtil.now());
+                    try {
+                        TimeUnit.SECONDS.sleep(RandomUtil.randomInt(1,5));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
             } catch (IOException | InterruptedException | TimeoutException e) {
@@ -59,6 +65,11 @@ public class TestMqHelper {
             try {
                 MqHelper.consumeMsg( "bbb",true, s -> {
                     System.out.println("bbb2号 消费者收到消息:" + new String(s)+",当前时间:"+ DateUtil.now());
+                    try {
+                        TimeUnit.SECONDS.sleep(RandomUtil.randomInt(1,5));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
             } catch (IOException | InterruptedException | TimeoutException e) {
@@ -83,6 +94,11 @@ public class TestMqHelper {
             try {
                 MqHelper.consumeMsg( "bbb",false, s -> {
                     System.out.println("bbb3号 消费者收到消息:" + new String(s)+",当前时间:"+ DateUtil.now());
+                    try {
+                        TimeUnit.SECONDS.sleep(RandomUtil.randomInt(1,5));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return MqHelper.ConsumeAction.ACCEPT;
                 });
             } catch (IOException | InterruptedException | TimeoutException e) {

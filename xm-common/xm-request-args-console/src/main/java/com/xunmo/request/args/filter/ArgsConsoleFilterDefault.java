@@ -1,5 +1,6 @@
 package com.xunmo.request.args.filter;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Action;
@@ -23,7 +24,10 @@ public class ArgsConsoleFilterDefault implements ArgsConsoleFilterExt {
             }
             final MethodWrap methodWrap = action.method();
             final Method method = methodWrap.getMethod();
-            if (log.isInfoEnabled()) {
+            final String reqMethod = ctx.method();
+            if (StrUtil.equalsIgnoreCase(reqMethod, "post")) {
+                log.info("Method: {} Args: {}  Body: {}", method.getName(), ctx.paramsMap(), ctx.body());
+            } else {
                 log.info("Method: {} Args: {}", method.getName(), ctx.paramsMap());
             }
         } else {

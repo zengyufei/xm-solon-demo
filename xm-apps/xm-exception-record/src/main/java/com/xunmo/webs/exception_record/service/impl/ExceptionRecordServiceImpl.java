@@ -11,7 +11,7 @@ import com.xunmo.webs.exception_record.model.query.ExceptionRecordQuery;
 import com.xunmo.webs.exception_record.service.ExceptionRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Inject;
-import org.noear.solon.aspect.annotation.Service;
+import org.noear.solon.annotation.ProxyComponent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +23,7 @@ import java.util.Objects;
  * @date 2021/9/27 20:54
  */
 @Slf4j
-@Service
+@ProxyComponent
 public class ExceptionRecordServiceImpl extends XmServiceImpl<ExceptionRecordMapper, ExceptionRecord> implements ExceptionRecordService {
 
     @Inject

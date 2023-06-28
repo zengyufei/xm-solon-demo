@@ -43,7 +43,7 @@ public class InsertBatch extends AbstractMethod {
         String columnScript = "(" + insertSqlColumn.substring(0, insertSqlColumn.length() - 1) + ")";
         String insertSqlProperty = tableInfo.getKeyInsertSqlProperty(true, "et.", false) + this.filterTableFieldInfo(fieldList, this.predicate, (i) -> i.getInsertSqlProperty("et."), "");
         insertSqlProperty = "(" + insertSqlProperty.substring(0, insertSqlProperty.length() - 1) + ")";
-        String valuesScript = SqlScriptUtils.convertForeach(insertSqlProperty, "coll", (String)null, "et", ",");
+        String valuesScript = SqlScriptUtils.convertForeach(insertSqlProperty, "coll", (String) null, "et", ",");
         String keyProperty = null;
         String keyColumn = null;
         if (tableInfo.havePK()) {
@@ -60,7 +60,7 @@ public class InsertBatch extends AbstractMethod {
 
         String sql = String.format(sqlMethod.getSql(), tableInfo.getTableName(), columnScript, valuesScript);
         SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, modelClass);
-        return this.addInsertMappedStatement(mapperClass, modelClass, this.getMethod(sqlMethod), sqlSource, (KeyGenerator)keyGenerator, keyProperty, keyColumn);
+        return this.addInsertMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource, (KeyGenerator) keyGenerator, keyProperty, keyColumn);
     }
 
     public InsertBatch setPredicate(final Predicate<TableFieldInfo> predicate) {

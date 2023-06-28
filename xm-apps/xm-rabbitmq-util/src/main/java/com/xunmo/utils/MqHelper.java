@@ -364,7 +364,7 @@ public class MqHelper {
                 if (isDelay) {
                     AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
                     Map<String, Object> headers = new HashMap<>();
-                    headers.put("x-delay", 5 * 1000);
+                    headers.put("x-delay", 1 * 1000);
                     props.headers(headers);
                     properties = props.build();
                 }

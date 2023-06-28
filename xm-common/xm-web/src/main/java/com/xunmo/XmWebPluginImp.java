@@ -2,15 +2,13 @@ package com.xunmo;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xunmo.solon.ActionExecutorDefaultPlus;
-import com.xunmo.solon.HandlerLoaderPlus;
-import com.xunmo.solon.SnackActionExecutorPlus;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
-import org.noear.solon.annotation.Controller;
-import org.noear.solon.core.*;
-import org.noear.solon.core.event.EventBus;
+import org.noear.solon.core.AopContext;
+import org.noear.solon.core.NvMap;
+import org.noear.solon.core.Plugin;
+import org.noear.solon.core.Props;
 import org.noear.solon.serialization.snack3.SnackActionExecutor;
 import org.noear.solon.serialization.snack3.SnackRenderFactory;
 import org.noear.solon.web.cors.CrossHandler;
@@ -23,6 +21,15 @@ import java.util.Map;
 
 @Slf4j
 public class XmWebPluginImp implements Plugin {
+
+    //初始化json定制（需要在插件运行前定制）
+    private static void initMvcJsonCustom(SnackRenderFactory factory) {
+        //示例1：通过转换器，做简单类型的定制
+        factory.addConvertor(Date.class, s -> DateUtil.date(s).toString());
+        factory.addConvertor(LocalDateTime.class, s -> DateUtil.date(s).toString());
+        factory.addConvertor(LocalDate.class, s -> DateUtil.date(s).toString("yyyy-MM-dd"));
+//        factory.addConvertor(Double.class, String::valueOf);
+    }
 
     @Override
     public void start(AopContext context) {
@@ -67,35 +74,15 @@ public class XmWebPluginImp implements Plugin {
 
         if (isEnableSuperController) {
             // 自动扫描父类接口
-            Solon.context().beanBuilderAdd(Controller.class, (clz, bw, anno) -> {
-                if (clz.isInterface()) {
-                    return;
-                }
-                new HandlerLoaderPlus(bw).load(app);
-            });
+//            Solon.context().beanBuilderAdd(Controller.class, (clz, bw, anno) -> {
+//                if (clz.isInterface()) {
+//                    return;
+//                }
+//                new HandlerLoaderPlus(bw).load(app);
+//            });
         }
 
-        if (isEnableBind) {
-            // 父类泛型参数被擦除， 手动进行参数绑定
-            EventBus.subscribe(SnackActionExecutor.class, cfg -> {
-                EventBus.push(SnackActionExecutorPlus.global);
-                Bridge.actionExecutorRemove(SnackActionExecutor.class);
-                Bridge.actionExecutorAdd(SnackActionExecutorPlus.global);
-                Bridge.actionExecutorDefSet(new ActionExecutorDefaultPlus());
-
-                if (isEnableJsonTrim) {
-                    // 处理 json 字段左右空白, 空字符串入参设置为null;
-                    SnackActionExecutorPlus.global.config().addDecoder(String.class, (node, type) -> {
-                        if (StrUtil.isBlankOrUndefined(node.getString())) {
-                            return null;
-                        } else {
-                            return StrUtil.trim(node.getString());
-                        }
-                    });
-                }
-
-            });
-        } else if (isEnableJsonTrim) {
+        if (isEnableJsonTrim) {
             // 处理 json 字段左右空白, 空字符串入参设置为null;
             app.onEvent(SnackActionExecutor.class, executor -> {
                 executor.config().addDecoder(String.class, (node, type) -> {
@@ -127,7 +114,7 @@ public class XmWebPluginImp implements Plugin {
 
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageConstants.XM_WEB);
-        }else {
+        } else {
             System.out.println(XmPackageConstants.XM_WEB + " 包加载完毕!");
         }
     }
@@ -136,17 +123,8 @@ public class XmWebPluginImp implements Plugin {
     public void stop() throws Throwable {
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 插件关闭!", XmPackageConstants.XM_WEB);
-        }else {
+        } else {
             System.out.println(XmPackageConstants.XM_WEB + " 插件关闭!");
         }
-    }
-
-    //初始化json定制（需要在插件运行前定制）
-    private static void initMvcJsonCustom(SnackRenderFactory factory) {
-        //示例1：通过转换器，做简单类型的定制
-        factory.addConvertor(Date.class, s -> DateUtil.date(s).toString());
-        factory.addConvertor(LocalDateTime.class, s -> DateUtil.date(s).toString());
-        factory.addConvertor(LocalDate.class, s -> DateUtil.date(s).toString("yyyy-MM-dd"));
-//        factory.addConvertor(Double.class, String::valueOf);
     }
 }
