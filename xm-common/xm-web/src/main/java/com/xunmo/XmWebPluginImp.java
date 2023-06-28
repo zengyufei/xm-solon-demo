@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.xunmo.config.EduJavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
@@ -86,7 +87,8 @@ public class XmWebPluginImp implements Plugin {
         if (isEnableJsonTrim) {
             // 处理 json 字段左右空白, 空字符串入参设置为null;
             app.onEvent(JacksonActionExecutor.class, executor -> {
-                final EduJavaTimeModule module = new EduJavaTimeModule();
+                final SimpleModule module = new SimpleModule();
+//                final EduJavaTimeModule module = new EduJavaTimeModule();
                 module.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
                     private static final long serialVersionUID = -2186517763342421483L;
 
