@@ -52,10 +52,30 @@
             <artifactId>xm-health</artifactId>
         </dependency>
 
+
         <dependency>
             <groupId>org.noear</groupId>
-            <artifactId>solon-web</artifactId>
+            <artifactId>solon-lib</artifactId>
         </dependency>
+
+        <!-- 静态文件支持组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.web.staticfiles</artifactId>
+        </dependency>
+
+        <!-- 跨域处理组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.web.cors</artifactId>
+        </dependency>
+
+        <!-- 本地SessionSate支持组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.sessionstate.local</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>org.noear</groupId>
