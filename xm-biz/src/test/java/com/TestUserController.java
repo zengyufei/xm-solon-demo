@@ -37,7 +37,7 @@ public class TestUserController extends HttpTester {
 
     @Test
     public void test_002_GetById() throws Exception {
-        HttpUtils httpUtils = path("/user/getById?id=user_1017")
+        HttpUtils httpUtils = path("/user/getById?id=user_1009")
                 .bodyJson("{}");
         httpUtils.post();
     }
@@ -45,21 +45,21 @@ public class TestUserController extends HttpTester {
     @Test
     public void test_003_Del() throws Exception {
         HttpUtils httpUtils = path("/user/deleteByIds")
-                .bodyJson("[\"user_1017\"]");
+                .bodyJson("[\"user_1009\"]");
         httpUtils.post();
     }
 
     @Test
     public void test_004_Add() throws Exception {
         final String data = "{\n" +
-                "  \"userId\": \"user_1017\",\n" +
+                "  \"userId\": \"user_1009\",\n" +
                 "  \"userName\": \"User 1008\",\n" +
                 "  \"createTime\": \"2023-06-29 11:49:40\",\n" +
                 "  \"updateTime\": \"2023-06-29 13:32:46\",\n" +
                 "  \"createId\": \"user_2450\",\n" +
                 "  \"updateId\": \"user_9427\",\n" +
                 "  \"approvalStatus\": \"1\",\n" +
-                "  \"approverId\": \"user_1017\",\n" +
+                "  \"approverId\": \"user_1009\",\n" +
                 "  \"approvalComment\": \"审批通过\",\n" +
                 "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" +
                 "  \"isImported\": 0,\n" +
@@ -78,14 +78,14 @@ public class TestUserController extends HttpTester {
     @Test
     public void test_005_Update() throws Throwable {
         final String data = "{\n" +
-                "  \"userId\": \"user_1017\",\n" +
+                "  \"userId\": \"user_1009\",\n" +
                 "  \"userName\": \"我修改了名字哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦\",\n" +
                 "  \"createTime\": \"2023-06-29 11:49:40\",\n" +
                 "  \"updateTime\": \"2023-06-29 13:32:46\",\n" +
                 "  \"createId\": \"user_2450\",\n" +
                 "  \"updateId\": \"user_9427\",\n" +
                 "  \"approvalStatus\": \"1\",\n" +
-                "  \"approverId\": \"user_1017\",\n" +
+                "  \"approverId\": \"user_1009\",\n" +
                 "  \"approvalComment\": \"审批通过\",\n" +
                 "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" +
                 "  \"isImported\": 0,\n" +
