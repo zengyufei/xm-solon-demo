@@ -19,6 +19,8 @@ import com.xunmo.webs.user.input.UserInput;
 import com.xunmo.webs.user.query.UserQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.sql.ast.mutation.DeleteResult;
+import org.babyfish.jimmer.sql.ast.mutation.SimpleSaveResult;
 import org.noear.solon.annotation.*;
 import org.noear.solon.data.annotation.Tran;
 import org.noear.solon.validation.annotation.NotBlank;
@@ -154,7 +156,8 @@ public class UserController extends BaseController {
     @Post
     @Mapping("/add")
     public ResponseEntity<User> add(@Validated UserInput input) throws Exception {
-        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
+        final SimpleSaveResult<User> result = this.sqlClient.save(input);
+        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getModifiedEntity());
     }
 
     /**
@@ -166,7 +169,8 @@ public class UserController extends BaseController {
     @Post
     @Mapping("/update")
     public ResponseEntity<User> update(@Validated UserInput input) throws Exception {
-        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
+        final SimpleSaveResult<User> result = this.sqlClient.update(input);
+        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getModifiedEntity());
     }
 
     /**
@@ -179,7 +183,8 @@ public class UserController extends BaseController {
     @Mapping("/deleteByIds")
     @Tran
     public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
-        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(User.class, ids));
+        final DeleteResult result = this.sqlClient.deleteByIds(User.class, ids);
+        return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getTotalAffectedRowCount());
     }
 
 

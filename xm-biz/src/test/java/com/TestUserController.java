@@ -1,5 +1,6 @@
 package com;
 
+import cn.hutool.core.util.RandomUtil;
 import com.xunmo.BizApp;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.FixMethodOrder;
@@ -79,7 +80,7 @@ public class TestUserController extends HttpTester {
     public void test_005_Update() throws Throwable {
         final String data = "{\n" +
                 "  \"userId\": \"user_1009\",\n" +
-                "  \"userName\": \"我修改了名字哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦\",\n" +
+                "  \"userName\": \"我修改了名字" + (RandomUtil.randomString(15)) + "\",\n" +
                 "  \"createTime\": \"2023-06-29 11:49:40\",\n" +
                 "  \"updateTime\": \"2023-06-29 13:32:46\",\n" +
                 "  \"createId\": \"user_2450\",\n" +
