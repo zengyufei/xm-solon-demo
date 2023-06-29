@@ -64,6 +64,8 @@ public class UserController extends BaseController {
         final String orgName = query.getOrgName();
         final String roleId = query.getRoleId();
         final String roleName = query.getRoleName();
+        final String permissionId = query.getPermissionId();
+        final String permissionName = query.getPermissionName();
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest)
                 .execute(sqlClient
                         .createQuery(TABLE)
@@ -86,6 +88,18 @@ public class UserController extends BaseController {
                         .whereIf(
                                 StrUtil.isNotBlank(roleName),
                                 () -> UserTableEx.$.roles().roleName().like(roleName)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(roleId),
+                                () -> UserTableEx.$.roles().roleId().eq(roleId)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(permissionId),
+                                () -> UserTableEx.$.roles().permissions().permissionId().like(permissionId)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(permissionName),
+                                () -> UserTableEx.$.roles().permissions().permissionName().like(permissionName)
                         )
                         .whereIf(
                                 beginCreateTime != null,

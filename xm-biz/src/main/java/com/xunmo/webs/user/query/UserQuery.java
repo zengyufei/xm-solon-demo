@@ -136,4 +136,14 @@ public class UserQuery {
      */
     private String roleName;
 
+    /**
+     * 权限id
+     */
+    private String permissionId;
+
+    /**
+     * 权限名称
+     */
+    private String permissionName;
+
 }

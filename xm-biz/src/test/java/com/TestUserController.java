@@ -90,7 +90,9 @@ public class TestUserController extends HttpTester {
     @Test
     public void test_004_GetList() throws Exception {
         HttpUtils httpUtils = path("/user/list?size=10&page=1")
-                .bodyJson("{}")
+//                .bodyJson("{\"orgName\": \"Organization 2\"}")
+//                .bodyJson("{\"roleName\": \"Role 10\"}")
+                .bodyJson("{\"permissionName\": \"Permission 103\"}")
 //                .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
                 ;
         httpUtils.post();
@@ -99,7 +101,7 @@ public class TestUserController extends HttpTester {
 
     @Test
     public void test_005_GetById() throws Exception {
-        HttpUtils httpUtils = path("/user/getById?id=user_000002")
+        HttpUtils httpUtils = path("/user/getById?id=user_1008")
                 .bodyJson("{}");
         httpUtils.post();
     }
