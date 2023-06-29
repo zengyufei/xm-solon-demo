@@ -1,15 +1,21 @@
 package com.xunmo.webs.user.controller;
 
+
+import cn.hutool.core.util.StrUtil;
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
 import com.xunmo.common.entity.page.Page;
 import com.xunmo.common.entity.page.PageRequest;
 import com.xunmo.common.enums.SystemStatus;
 import com.xunmo.common.utils.ResponseUtil;
+import com.xunmo.webs.organization.entity.OrganizationFetcher;
+import com.xunmo.webs.role.entity.RoleFetcher;
 import com.xunmo.webs.user.entity.User;
 import com.xunmo.webs.user.entity.UserFetcher;
 import com.xunmo.webs.user.entity.UserTable;
+import com.xunmo.webs.user.entity.UserTableEx;
 import com.xunmo.webs.user.input.UserInput;
+import com.xunmo.webs.user.query.UserQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.annotation.*;
@@ -25,7 +31,7 @@ import java.util.List;
  * 用户表(User)表控制层
  *
  * @author zengyufei
- * @since 2023-06-28 10:23:13
+ * @since 2023-06-29 11:07:50
  */
 @Slf4j
 @Valid
@@ -36,11 +42,9 @@ public class UserController extends BaseController {
     private final static UserTable TABLE = UserTable.$;
     private final static UserFetcher FETCHER = UserFetcher.$;
 
-    /**
-     * 服务对象
-     */
     @Inject
     private JSqlClient sqlClient;
+
 
     /**
      * 分页查询
@@ -51,12 +55,28 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/list")
-    public ResponseEntity<Page<User>> list(@Validated @Body UserInput input, @Param PageRequest pageRequest) throws Exception {
-        final LocalDateTime beginCreateTime = input.getBeginCreateTime();
-        final LocalDateTime endCreateTime = input.getEndCreateTime();
+    public ResponseEntity<Page<User>> list(@Validated @Body UserQuery query, @Param PageRequest pageRequest) throws Exception {
+        final LocalDateTime beginCreateTime = query.getBeginCreateTime();
+        final LocalDateTime endCreateTime = query.getEndCreateTime();
+        final String orgId = query.getOrgId();
+        final String orgName = query.getOrgName();
+        final String roleId = query.getRoleId();
+        final String roleName = query.getRoleName();
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest)
                 .execute(sqlClient
                         .createQuery(TABLE)
+                        .whereIf(
+                                StrUtil.isNotBlank(orgId),
+                                () -> TABLE.organization().organizationId().eq(orgId)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(orgName),
+                                () -> TABLE.organization().organizationName().like(orgName)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(roleName),
+                                () -> UserTableEx.$.roles().roleName().like(roleName)
+                        )
                         .whereIf(
                                 beginCreateTime != null,
                                 () -> TABLE.createTime().ge(beginCreateTime)
@@ -65,7 +85,21 @@ public class UserController extends BaseController {
                                 endCreateTime != null,
                                 () -> TABLE.createTime().le(endCreateTime)
                         )
-                        .select(TABLE.fetch(FETCHER.allScalarFields()))));
+                        .select(
+                                TABLE.fetch(
+                                        FETCHER.allScalarFields()
+                                                .create(UserFetcher.$
+                                                        .userName())
+                                                .update(UserFetcher.$
+                                                        .userName())
+                                                .organization(OrganizationFetcher.$
+                                                        .organizationName())
+                                                .roles(RoleFetcher.$
+                                                        .parentRoleId()
+                                                        .roleName())
+                                )
+                        )
+                ));
     }
 
     /**
@@ -79,6 +113,7 @@ public class UserController extends BaseController {
     public ResponseEntity<User> getById(@NotNull @NotBlank String id) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(User.class, id));
     }
+
 
     /**
      * 新增数据
@@ -115,5 +150,6 @@ public class UserController extends BaseController {
     public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(User.class, ids));
     }
+
 
 }

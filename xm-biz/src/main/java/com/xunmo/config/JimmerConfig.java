@@ -16,12 +16,6 @@ import javax.sql.DataSource;
 @Configuration
 public class JimmerConfig {
 
-//    @Bean
-//    public ObjectMapper getObjectMapper() {
-//        return new ObjectMapper()
-//                .registerModule(new ImmutableModule());
-//    }
-
     @Bean
     public void jsonInit(@Inject JacksonRenderFactory factory) {
         factory.config().registerModule(new ImmutableModule());

@@ -17,7 +17,7 @@ import org.noear.solon.test.SolonTest;
 @RunWith(SolonJUnit4ClassRunner.class)
 @SolonTest(BizApp.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TestController extends HttpTester {
+public class TestUserController extends HttpTester {
 
     @Inject
     JacksonActionExecutor jacksonActionExecutor;

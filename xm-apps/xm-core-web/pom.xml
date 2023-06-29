@@ -22,10 +22,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-orm-mp-mysql</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.xunmo</groupId>

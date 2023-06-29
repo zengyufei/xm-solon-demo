@@ -154,4 +154,4 @@ solon.serialization.json:
   nullBoolAsFalse: false
   nullNumberAsZero: false
   nullArrayAsEmpty: false
-  nullAsWriteable: true #输出所有null值
+  nullAsWriteable: false #输出所有null值

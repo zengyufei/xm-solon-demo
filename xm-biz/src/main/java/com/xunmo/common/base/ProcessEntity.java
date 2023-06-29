@@ -1,8 +1,8 @@
 package com.xunmo.common.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.babyfish.jimmer.sql.Column;
-import org.babyfish.jimmer.sql.MappedSuperclass;
+import com.xunmo.webs.user.entity.User;
+import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -23,16 +23,14 @@ public interface ProcessEntity {
     /**
      * 审批人id
      */
+    @IdView
     @Nullable
-    @Column(name = Columns.approverId)
     String approverId();
 
-    /**
-     * 审批人姓名
-     */
+    @ManyToOne
     @Nullable
-    @Column(name = Columns.approverName)
-    String approverName();
+    @JoinColumn(name = Columns.approverId)
+    User approver();
 
     /**
      * 审批意见
@@ -52,7 +50,6 @@ public interface ProcessEntity {
     interface Columns {
         String approvalStatus = "approval_status"; // 审批状态
         String approverId = "approver_id"; // 审批人id
-        String approverName = "approver_name"; // 审批人姓名
         String approvalComment = "approval_comment"; // 审批意见
         String approvalTime = "approval_time"; // 审批时间
     }
@@ -60,7 +57,6 @@ public interface ProcessEntity {
     interface FieldNames {
         String approvalStatus = "approvalStatus"; // 审批状态
         String approverId = "approverId"; // 审批人id
-        String approverName = "approverName"; // 审批人姓名
         String approvalComment = "approvalComment"; // 审批意见
         String approvalTime = "approvalTime"; // 审批时间
     }

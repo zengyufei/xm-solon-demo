@@ -2,6 +2,7 @@ package com.xunmo;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.handle.Context;
@@ -60,7 +61,7 @@ public class BizApp {
             app.context().beanOnloaded(aopContext -> {
                 final ChainManager chainManager = app.chainManager();
                 chainManager.removeExecuteHandler(JacksonActionExecutor.class);
-                chainManager.addExecuteHandler(new JacksonActionExecutor() {
+                final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
                     @Override
                     protected Object changeBody(Context ctx) throws Exception {
                         final ObjectNode changeBody = (ObjectNode) super.changeBody(ctx);
@@ -71,7 +72,9 @@ public class BizApp {
                         });
                         return changeBody;
                     }
-                });
+                };
+                jacksonActionExecutor.config().registerModule(new ImmutableModule());
+                chainManager.addExecuteHandler(jacksonActionExecutor);
             });
 
 

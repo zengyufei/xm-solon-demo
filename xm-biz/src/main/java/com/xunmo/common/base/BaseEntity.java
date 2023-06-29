@@ -1,8 +1,8 @@
 package com.xunmo.common.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.babyfish.jimmer.sql.Column;
-import org.babyfish.jimmer.sql.MappedSuperclass;
+import com.xunmo.webs.user.entity.User;
+import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -18,34 +18,26 @@ public interface BaseEntity {
      *
      * @return {@link String}
      */
-    @Column(name = Columns.createId)
+    @IdView
     String createId();
+
+    @ManyToOne
+    @JoinColumn(name = Columns.createId)
+    User create();
 
     /**
      * 修改人ID
      *
      * @return {@link String}
      */
+    @IdView
     @Nullable
-    @Column(name = Columns.updateId)
     String updateId();
 
-    /**
-     * 创建人姓名
-     *
-     * @return {@link String}
-     */
-    @Column(name = Columns.createName)
-    String createName();
-
-    /**
-     * 修改人姓名
-     *
-     * @return {@link String}
-     */
+    @ManyToOne
     @Nullable
-    @Column(name = Columns.updateName)
-    String updateName();
+    @JoinColumn(name = Columns.updateId)
+    User update();
 
     /**
      * 创建时间
@@ -71,8 +63,6 @@ public interface BaseEntity {
         String updateTime = "update_time"; // 修改时间
         String createId = "create_id"; // 创建人ID
         String updateId = "update_id"; // 修改人ID
-        String createName = "create_name"; // 创建人用户名
-        String updateName = "update_name"; // 修改人用户名
     }
 
     interface FieldNames {
@@ -80,7 +70,5 @@ public interface BaseEntity {
         String updateId = "updateId"; // 修改人ID
         String createTime = "createTime"; // 创建时间
         String updateTime = "updateTime"; // 修改时间
-        String createName = "createName"; // 创建人用户名
-        String updateName = "updateName"; // 修改人用户名
     }
 }

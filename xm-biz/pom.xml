@@ -21,7 +21,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jimmer.version>0.7.98</jimmer.version>
+        <jimmer.version>0.7.105</jimmer.version>
         <mapstruct-plus.version>1.3.2</mapstruct-plus.version>
     </properties>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.babyfish.jimmer</groupId>
             <artifactId>jimmer-sql</artifactId>
-            <version>0.7.98</version>
+            <version>${jimmer.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -52,14 +52,21 @@
         <dependency>
             <groupId>org.babyfish.jimmer</groupId>
             <artifactId>jimmer-sql-kotlin</artifactId>
-            <version>0.7.98</version>
+            <version>${jimmer.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.babyfish.jimmer</groupId>
             <artifactId>jimmer-client</artifactId>
-            <version>0.7.98</version>
+            <version>${jimmer.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
         </dependency>
 
         <dependency>
@@ -73,10 +80,10 @@
         </dependency>
 
         <!-- 异常自动记录入库，可关闭依赖，停止该功能 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-exception-record</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.xunmo</groupId>-->
+        <!--            <artifactId>xm-exception-record</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- mq 封装工具类，纯工具类依赖 -->
         <dependency>
@@ -85,10 +92,10 @@
         </dependency>
 
         <!-- 业务项目基础类包，与具体项目绑定 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-biz-base</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.xunmo</groupId>-->
+        <!--            <artifactId>xm-biz-base</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- 业务项目基础web包，与具体项目绑定 -->
         <dependency>
@@ -97,10 +104,10 @@
         </dependency>
 
         <!-- p6spy，可关闭依赖，修改配置，停止该功能 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-p6spy</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.xunmo</groupId>-->
+        <!--            <artifactId>xm-p6spy</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- 自动添加事务，可关闭依赖，停止该功能 -->
         <dependency>
@@ -169,6 +176,7 @@
             <artifactId>solon-test</artifactId>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

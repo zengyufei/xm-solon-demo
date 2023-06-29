@@ -1,6 +1,6 @@
-package com.xunmo.webs.user.input;
+package com.xunmo.webs.organization.input;
 
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.organization.entity.Organization;
 import lombok.Data;
 import org.babyfish.jimmer.Input;
 import org.mapstruct.BeanMapping;
@@ -11,25 +11,30 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 
 /**
- * 用户表(User)输入类
+ * 组织表(Organization)输入类
  *
  * @author zengyufei
- * @since 2023-06-29 11:07:50
+ * @since 2023-06-29 13:37:42
  */
 @Data
-public class UserInput implements Input<User> {
+public class OrganizationInput implements Input<Organization> {
 
     private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
     /**
-     * 用户ID
+     * 组织ID
      */
-    private String userId;
+    private String organizationId;
 
     /**
-     * 用户名
+     * 组织名称
      */
-    private String userName;
+    private String organizationName;
+
+    /**
+     * 父组织ID
+     */
+    private String parentOrganizationId;
 
     /**
      * 创建时间
@@ -56,16 +61,6 @@ public class UserInput implements Input<User> {
     private String updateId;
 
     /**
-     * 创建人用户名
-     */
-    private String createName;
-
-    /**
-     * 修改人用户名
-     */
-    private String updateName;
-
-    /**
      * 审批状态
      */
     private String approvalStatus;
@@ -74,11 +69,6 @@ public class UserInput implements Input<User> {
      * 审批人id
      */
     private String approverId;
-
-    /**
-     * 审批人姓名
-     */
-    private String approverName;
 
     /**
      * 审批意见
@@ -129,14 +119,14 @@ public class UserInput implements Input<User> {
 
 
     @Override
-    public User toEntity() {
-        return CONVERTER.toUser(this);
+    public Organization toEntity() {
+        return CONVERTER.toOrganization(this);
     }
 
     @Mapper
     interface Converter {
 
         @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        User toUser(UserInput input);
+        Organization toOrganization(OrganizationInput input);
     }
 }

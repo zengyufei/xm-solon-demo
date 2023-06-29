@@ -1,12 +1,6 @@
-package com.xunmo.webs.user.input;
+package com.xunmo.webs.user.query;
 
-import com.xunmo.webs.user.entity.User;
 import lombok.Data;
-import org.babyfish.jimmer.Input;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +11,7 @@ import java.time.LocalDateTime;
  * @since 2023-06-29 11:07:50
  */
 @Data
-public class UserInput implements Input<User> {
-
-    private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
+public class UserQuery {
 
     /**
      * 用户ID
@@ -124,19 +116,24 @@ public class UserInput implements Input<User> {
      */
     private String status;
 
+    /**
+     * 组织id
+     */
+    private String orgId;
 
-    // ---------- 转换方法 ----------
+    /**
+     * 组织名字
+     */
+    private String orgName;
 
+    /**
+     * 角色id
+     */
+    private String roleId;
 
-    @Override
-    public User toEntity() {
-        return CONVERTER.toUser(this);
-    }
+    /**
+     * 角色名字
+     */
+    private String roleName;
 
-    @Mapper
-    interface Converter {
-
-        @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        User toUser(UserInput input);
-    }
 }
