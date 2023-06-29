@@ -11,7 +11,10 @@ import org.noear.solon.annotation.Inject;
 import org.noear.solon.serialization.jackson.JacksonRenderFactory;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.function.Function;
 
 @Configuration
 public class JimmerConfig {
@@ -29,9 +32,44 @@ public class JimmerConfig {
     public JSqlClient sqlClient(@Inject DataSource dataSource) {
         return JSqlClient
                 .newBuilder()
+//                .setConnectionManager(
+//                        ConnectionManager
+//                                .simpleConnectionManager(dataSource)
+//                )
                 .setConnectionManager(
-                        ConnectionManager
-                                .simpleConnectionManager(dataSource)
+                        new ConnectionManager() {
+                            @Override
+                            public <R> R execute(
+                                    Function<Connection, R> block
+                            ) {
+                                Connection con = null;
+                                R var3;
+                                try {
+                                    con = dataSource.getConnection();
+                                    con.setAutoCommit(false);
+                                    var3 = block.apply(con);
+                                    con.commit();
+                                } catch (Throwable var6) {
+                                    if (con != null) {
+                                        try {
+                                            con.rollback();
+                                        } catch (SQLException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                    throw new RuntimeException(var6);
+                                } finally {
+                                    if (con != null) {
+                                        try {
+                                            con.close();
+                                        } catch (SQLException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                }
+                                return var3;
+                            }
+                        }
                 )
                 .setExecutor(Executor.log())
                 .setDefaultBatchSize(256)
