@@ -22,73 +22,9 @@ public class TestUserController extends HttpTester {
     @Inject
     JacksonActionExecutor jacksonActionExecutor;
 
-    @Test
-    public void test_001_Del() throws Exception {
-        HttpUtils httpUtils = path("/user/deleteByIds")
-                .bodyJson("[\"user_000001\"]");
-        httpUtils.post();
-    }
 
     @Test
-    public void test_002_Add() throws Exception {
-        final String data = "{\n" +
-                "  \"userId\": \"user_000001\",\n" +
-                "  \"userName\": \"User 000001\",\n" +
-                "  \"createTime\": \"2023-04-13 11:36:34\",\n" +
-                "  \"updateTime\": \"2023-03-19 11:36:34\",\n" +
-                "  \"createId\": \"create_000001\",\n" +
-                "  \"updateId\": \"update_000001\",\n" +
-                "  \"createName\": \"Creator 000001\",\n" +
-                "  \"updateName\": \"Updater 000001\",\n" +
-                "  \"approvalStatus\": \"Rejected\",\n" +
-                "  \"approverId\": \"approver_000001\",\n" +
-                "  \"approverName\": \"Approver 000001\",\n" +
-                "  \"approvalComment\": \"Comment 000001\",\n" +
-                "  \"approvalTime\": \"2022-07-17 11:36:34\",\n" +
-                "  \"isImported\": 1,\n" +
-                "  \"importTime\": \"2022-12-21 11:36:34\",\n" +
-                "  \"isSystemDefault\": 1,\n" +
-                "  \"tenantId\": \"tenant_000001\",\n" +
-                "  \"version\": 1,\n" +
-                "  \"status\": \"Inactive\"\n" +
-                "}\n";
-        HttpUtils httpUtils = path("/user/add")
-                .bodyJson(data);
-        httpUtils.post();
-    }
-
-
-    @Test
-    public void test_003_Update() throws Throwable {
-        final String data = "{\n" +
-                "  \"userId\": \"user_000001\",\n" +
-                "  \"userName\": \"User 1111111\",\n" +
-                "  \"createTime\": \"2023-04-13 11:36:34\",\n" +
-                "  \"updateTime\": \"2023-03-19 11:36:34\",\n" +
-                "  \"createId\": \"create_000001\",\n" +
-                "  \"updateId\": \"update_000001\",\n" +
-                "  \"createName\": \"Creator 000001\",\n" +
-                "  \"updateName\": \"Updater 000001\",\n" +
-                "  \"approvalStatus\": \"Rejected\",\n" +
-                "  \"approverId\": \"approver_000001\",\n" +
-                "  \"approverName\": \"Approver 000001\",\n" +
-                "  \"approvalComment\": \"Comment 000001\",\n" +
-                "  \"approvalTime\": \"2022-07-17 11:36:34\",\n" +
-                "  \"isImported\": 1,\n" +
-                "  \"importTime\": \"2022-12-21 11:36:34\",\n" +
-                "  \"isSystemDefault\": 1,\n" +
-                "  \"tenantId\": \"tenant_000001\",\n" +
-                "  \"version\": 1,\n" +
-                "  \"status\": \"Inactive\"\n" +
-                "}\n";
-        HttpUtils httpUtils = path("/user/update")
-                .bodyJson(data);
-        httpUtils.post();
-    }
-
-
-    @Test
-    public void test_004_GetList() throws Exception {
+    public void test_001_GetList() throws Exception {
         HttpUtils httpUtils = path("/user/list?size=10&page=1")
 //                .bodyJson("{\"orgName\": \"Organization 2\"}")
 //                .bodyJson("{\"roleName\": \"Role 10\"}")
@@ -100,9 +36,67 @@ public class TestUserController extends HttpTester {
 
 
     @Test
-    public void test_005_GetById() throws Exception {
-        HttpUtils httpUtils = path("/user/getById?id=user_1008")
+    public void test_002_GetById() throws Exception {
+        HttpUtils httpUtils = path("/user/getById?id=user_1007")
                 .bodyJson("{}");
+        httpUtils.post();
+    }
+
+    @Test
+    public void test_003_Del() throws Exception {
+        HttpUtils httpUtils = path("/user/deleteByIds")
+                .bodyJson("[\"user_1007\"]");
+        httpUtils.post();
+    }
+
+    @Test
+    public void test_004_Add() throws Exception {
+        final String data = "{\n" +
+                "  \"userId\": \"user_1007\",\n" +
+                "  \"userName\": \"User 1008\",\n" +
+                "  \"createTime\": \"2023-06-29 11:49:40\",\n" +
+                "  \"updateTime\": \"2023-06-29 13:32:46\",\n" +
+                "  \"createId\": \"user_2450\",\n" +
+                "  \"updateId\": \"user_9427\",\n" +
+                "  \"approvalStatus\": \"1\",\n" +
+                "  \"approverId\": \"user_1007\",\n" +
+                "  \"approvalComment\": \"审批通过\",\n" +
+                "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" +
+                "  \"isImported\": 0,\n" +
+                "  \"importTime\": \"2023-06-29 11:49:36\",\n" +
+                "  \"isSystemDefault\": 0,\n" +
+                "  \"tenantId\": \"tenant1\",\n" +
+                "  \"version\": 1,\n" +
+                "  \"status\": \"active\"\n" +
+                "}\n";
+        HttpUtils httpUtils = path("/user/add")
+                .bodyJson(data);
+        httpUtils.post();
+    }
+
+
+    @Test
+    public void test_005_Update() throws Throwable {
+        final String data = "{\n" +
+                "  \"userId\": \"user_1007\",\n" +
+                "  \"userName\": \"我修改了名字哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦哦\",\n" +
+                "  \"createTime\": \"2023-06-29 11:49:40\",\n" +
+                "  \"updateTime\": \"2023-06-29 13:32:46\",\n" +
+                "  \"createId\": \"user_2450\",\n" +
+                "  \"updateId\": \"user_9427\",\n" +
+                "  \"approvalStatus\": \"1\",\n" +
+                "  \"approverId\": \"user_1007\",\n" +
+                "  \"approvalComment\": \"审批通过\",\n" +
+                "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" +
+                "  \"isImported\": 0,\n" +
+                "  \"importTime\": \"2023-06-29 11:49:36\",\n" +
+                "  \"isSystemDefault\": 0,\n" +
+                "  \"tenantId\": \"tenant1\",\n" +
+                "  \"version\": 1,\n" +
+                "  \"status\": \"active\"\n" +
+                "}\n";
+        HttpUtils httpUtils = path("/user/update")
+                .bodyJson(data);
         httpUtils.post();
     }
 

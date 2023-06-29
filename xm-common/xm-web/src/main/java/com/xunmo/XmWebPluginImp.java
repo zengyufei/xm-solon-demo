@@ -1,11 +1,6 @@
 package com.xunmo;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
@@ -13,14 +8,8 @@ import org.noear.solon.core.AopContext;
 import org.noear.solon.core.NvMap;
 import org.noear.solon.core.Plugin;
 import org.noear.solon.core.Props;
-import org.noear.solon.proxy.ProxyUtil;
-import org.noear.solon.serialization.jackson.JacksonActionExecutor;
 import org.noear.solon.web.cors.CrossHandler;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -86,52 +75,6 @@ public class XmWebPluginImp implements Plugin {
             //                new HandlerLoaderPlus(bw).load(app);
             //            });
         }
-
-        if (isEnableJsonTrim) {
-            // 处理 json 字段左右空白, 空字符串入参设置为null;
-            app.onEvent(JacksonActionExecutor.class, executor -> {
-
-                ProxyUtil.attach(app.context(), JacksonActionExecutor.class, executor, new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-                        final String methodName = method.getName();
-                        System.out.println("调用方法 " + methodName);
-                        return method.invoke(o, objects);
-                    }
-                });
-
-//                executor.config().setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-                final SimpleModule module = new SimpleModule();
-//                final EduJavaTimeModule module = new EduJavaTimeModule();
-                module.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
-                    private static final long serialVersionUID = -2186517763342421483L;
-
-                    @Override
-                    public String deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
-                        if (StrUtil.isBlank(jsonParser.getValueAsString())) {
-                            return null;
-                        }
-
-                        return StrUtil.trim(jsonParser.getValueAsString());
-                    }
-                });
-                module.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
-                    private static final long serialVersionUID = -2186517763342421483L;
-
-                    @Override
-                    public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
-                        if (StrUtil.isBlank(jsonParser.getValueAsString())) {
-                            return null;
-                        }
-
-                        final String trim = StrUtil.trim(jsonParser.getValueAsString());
-                        return DateUtil.parse(trim);
-                    }
-                });
-                executor.config().registerModule(module);
-            });
-        }
-
 
         // 手动注册缓存
         //        final boolean isEnabled = props.getBool("xm.cache.enable", true);

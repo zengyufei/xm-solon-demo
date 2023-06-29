@@ -20,6 +20,7 @@ import com.xunmo.webs.user.query.UserQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.annotation.*;
+import org.noear.solon.data.annotation.Tran;
 import org.noear.solon.validation.annotation.NotBlank;
 import org.noear.solon.validation.annotation.NotNull;
 import org.noear.solon.validation.annotation.Valid;
@@ -176,6 +177,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/deleteByIds")
+    @Tran
     public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(User.class, ids));
     }

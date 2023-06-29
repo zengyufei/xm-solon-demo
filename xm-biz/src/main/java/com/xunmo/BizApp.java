@@ -1,6 +1,14 @@
 package com.xunmo;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.deser.*;
+import com.fasterxml.jackson.datatype.jsr310.ser.*;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
@@ -10,6 +18,11 @@ import org.noear.solon.core.util.LogUtil;
 import org.noear.solon.extend.quartz.EnableQuartz;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
 import org.noear.solon.serialization.jackson.JacksonActionExecutor;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @EnableQuartz
@@ -64,20 +77,96 @@ public class BizApp {
                 final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
                     @Override
                     protected Object changeBody(Context ctx) throws Exception {
-                        final ObjectNode changeBody = (ObjectNode) super.changeBody(ctx);
-                        ctx.paramMap().forEach((key, value) -> {
-                            if (!changeBody.has(key)) {
-                                changeBody.put(key, value);
-                            }
-                        });
-                        return changeBody;
+                        final Object o = super.changeBody(ctx);
+                        if (o instanceof ObjectNode) {
+                            final ObjectNode changeBody = (ObjectNode) o;
+                            ctx.paramMap().forEach((key, value) -> {
+                                if (!changeBody.has(key)) {
+                                    changeBody.put(key, value);
+                                }
+                            });
+                        }
+                        return o;
                     }
                 };
-                jacksonActionExecutor.config().registerModule(new ImmutableModule());
+                final ObjectMapper objectMapper = jacksonActionExecutor.config();
+                final ImmutableModule immutableModule = new ImmutableModule();
+                initModule(immutableModule);
+                objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+                        .registerModule(immutableModule);
                 chainManager.addExecuteHandler(jacksonActionExecutor);
             });
 
 
+        });
+    }
+
+
+    public static void initModule(ImmutableModule immutableModule) {
+        // ======================= 时间序列化规则 ===============================
+        // yyyy-MM-dd HH:mm:ss
+        immutableModule.addSerializer(LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN)));
+        // yyyy-MM-dd
+        immutableModule.addSerializer(LocalDate.class,
+                new LocalDateSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATE_PATTERN)));
+        // HH:mm:ss
+        immutableModule.addSerializer(LocalTime.class,
+                new LocalTimeSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN)));
+        // yyyy
+        immutableModule.addSerializer(Year.class,
+                new YearSerializer(DateTimeFormatter.ofPattern("yyyy")));
+        // MM
+        immutableModule.addSerializer(YearMonth.class,
+                new YearMonthSerializer(DateTimeFormatter.ofPattern("yyyy-MM")));
+
+        // Instant 类型序列化
+        immutableModule.addSerializer(Instant.class, InstantSerializer.INSTANCE);
+
+        // ======================= 时间反序列化规则 ==============================
+        // yyyy-MM-dd HH:mm:ss
+        immutableModule.addDeserializer(LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN)));
+        // yyyy-MM-dd
+        immutableModule.addDeserializer(LocalDate.class,
+                new LocalDateDeserializer(DateTimeFormatter.ofPattern(DatePattern.NORM_DATE_PATTERN)));
+        // HH:mm:ss
+        immutableModule.addDeserializer(LocalTime.class,
+                new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN)));
+        // yyyy
+        immutableModule.addDeserializer(Year.class,
+                new YearDeserializer(DateTimeFormatter.ofPattern("yyyy")));
+        // MM
+        immutableModule.addDeserializer(YearMonth.class,
+                new YearMonthDeserializer(DateTimeFormatter.ofPattern("yyyy-MM")));
+
+        // Instant 反序列化
+        immutableModule.addDeserializer(Instant.class, InstantDeserializer.INSTANT);
+
+
+//        immutableModule.addSerializer(LocalDateTime.class, new StdSerializer<LocalDateTime>(LocalDateTime.class) {
+//            @Override
+//            public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+//                gen.writeString(value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+//            }
+//        });
+//        immutableModule.addDeserializer(LocalDateTime.class, new StdDeserializer<LocalDateTime>(LocalDateTime.class) {
+//            @Override
+//            public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+//                final String text = p.getText();
+//                return DateUtil.toLocalDateTime(DateUtil.parse(text));
+//            }
+//        });
+        immutableModule.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
+            private static final long serialVersionUID = -2186517763342421483L;
+
+            @Override
+            public String deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
+                if (StrUtil.isBlank(jsonParser.getValueAsString())) {
+                    return null;
+                }
+                return StrUtil.trim(jsonParser.getValueAsString());
+            }
         });
     }
 }
