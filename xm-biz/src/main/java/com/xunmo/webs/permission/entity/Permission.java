@@ -1,55 +1,60 @@
-package com.xunmo.webs.role.entity;
+package com.xunmo.webs.permission.entity;
 
 import com.xunmo.common.base.BaseEntity;
 import com.xunmo.common.base.ProcessEntity;
 import com.xunmo.common.base.TenantEntity;
 import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
-import com.xunmo.webs.permission.entity.Permission;
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.role.entity.Role;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
- * 角色表(Role)实体类
+ * 权限表(Permission)实体类
  *
  * @author zengyufei
- * @since 2023-06-29 14:51:29
+ * @since 2023-06-29 15:28:09
  */
 @Entity
-@Table(name = Role.TABLE_NAME)
-public interface Role extends BaseEntity, ProcessEntity, TenantEntity, VersionEntity {
+@Table(name = Permission.TABLE_NAME)
+public interface Permission extends BaseEntity, ProcessEntity, TenantEntity, VersionEntity {
 
     /**
      * 表名
      */
-    String TABLE_NAME = "role";
+    String TABLE_NAME = "permission";
 
     /**
-     * 角色ID
+     * 权限ID
      */
     @Id
     @GeneratedValue(generatorType = SnowflakeIdGenerator.class)
-    String roleId();
+    String permissionId();
 
     /**
-     * 角色名称
+     * 权限名称
      */
     @Nullable
-    @Column(name = Columns.roleName)
-    String roleName();
+    @Column(name = Columns.permissionName)
+    String permissionName();
 
     // ---------- 表中字段 ----------
 
     /**
-     * 父角色ID
+     * 权限类型
      */
     @Nullable
-    @Column(name = Columns.parentRoleId)
-    String parentRoleId();
+    @Column(name = Columns.permissionType)
+    String permissionType();
+
+    /**
+     * 父权限ID
+     */
+    @Nullable
+    @Column(name = Columns.parentPermissionId)
+    String parentPermissionId();
 
     /**
      * 是否导入
@@ -79,21 +84,21 @@ public interface Role extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
     @Column(name = Columns.status)
     String status();
 
-    @ManyToMany(mappedBy = "roles")
-    List<User> users();
-
-    @OneToMany(
-            mappedBy = "role"
+    @ManyToOne
+    @JoinTable(
+            name = "role_permission"
     )
-    List<Permission> permissions();
+    @Nullable
+    Role role();
 
     /**
      * 表字段名
      */
     interface Columns {
-        String roleId = "role_id"; // 角色ID
-        String roleName = "role_name"; // 角色名称
-        String parentRoleId = "parent_role_id"; // 父角色ID
+        String permissionId = "permission_id"; // 权限ID
+        String permissionName = "permission_name"; // 权限名称
+        String permissionType = "permission_type"; // 权限类型
+        String parentPermissionId = "parent_permission_id"; // 父权限ID
         String createTime = "create_time"; // 创建时间
         String updateTime = "update_time"; // 修改时间
         String createId = "create_id"; // 创建人ID
@@ -114,9 +119,10 @@ public interface Role extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
      * 实体字段名
      */
     interface FieldNames {
-        String roleId = "roleId"; // 角色ID
-        String roleName = "roleName"; // 角色名称
-        String parentRoleId = "parentRoleId"; // 父角色ID
+        String permissionId = "permissionId"; // 权限ID
+        String permissionName = "permissionName"; // 权限名称
+        String permissionType = "permissionType"; // 权限类型
+        String parentPermissionId = "parentPermissionId"; // 父权限ID
         String createTime = "createTime"; // 创建时间
         String updateTime = "updateTime"; // 修改时间
         String createId = "createId"; // 创建人ID

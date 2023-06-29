@@ -9,6 +9,7 @@ import com.xunmo.common.entity.page.PageRequest;
 import com.xunmo.common.enums.SystemStatus;
 import com.xunmo.common.utils.ResponseUtil;
 import com.xunmo.webs.organization.entity.OrganizationFetcher;
+import com.xunmo.webs.permission.entity.PermissionFetcher;
 import com.xunmo.webs.role.entity.RoleFetcher;
 import com.xunmo.webs.user.entity.User;
 import com.xunmo.webs.user.entity.UserFetcher;
@@ -56,6 +57,7 @@ public class UserController extends BaseController {
     @Post
     @Mapping("/list")
     public ResponseEntity<Page<User>> list(@Validated @Body UserQuery query, @Param PageRequest pageRequest) throws Exception {
+        final String userId = query.getUserId();
         final LocalDateTime beginCreateTime = query.getBeginCreateTime();
         final LocalDateTime endCreateTime = query.getEndCreateTime();
         final String orgId = query.getOrgId();
@@ -66,12 +68,20 @@ public class UserController extends BaseController {
                 .execute(sqlClient
                         .createQuery(TABLE)
                         .whereIf(
+                                StrUtil.isNotBlank(userId),
+                                () -> TABLE.userId().eq(userId)
+                        )
+                        .whereIf(
                                 StrUtil.isNotBlank(orgId),
                                 () -> TABLE.organization().organizationId().eq(orgId)
                         )
                         .whereIf(
                                 StrUtil.isNotBlank(orgName),
                                 () -> TABLE.organization().organizationName().like(orgName)
+                        )
+                        .whereIf(
+                                StrUtil.isNotBlank(roleId),
+                                () -> UserTableEx.$.roles().roleId().eq(roleId)
                         )
                         .whereIf(
                                 StrUtil.isNotBlank(roleName),
@@ -85,6 +95,9 @@ public class UserController extends BaseController {
                                 endCreateTime != null,
                                 () -> TABLE.createTime().le(endCreateTime)
                         )
+                        .orderBy(
+                                TABLE.createTime().desc()
+                        )
                         .select(
                                 TABLE.fetch(
                                         FETCHER.allScalarFields()
@@ -96,7 +109,9 @@ public class UserController extends BaseController {
                                                         .organizationName())
                                                 .roles(RoleFetcher.$
                                                         .parentRoleId()
-                                                        .roleName())
+                                                        .roleName()
+                                                        .permissions(PermissionFetcher.$
+                                                                .permissionName()))
                                 )
                         )
                 ));
