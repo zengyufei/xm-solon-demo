@@ -8,7 +8,7 @@ import com.xunmo.config.jimmer.SnowflakeIdGenerator;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 用户表(User)实体类
@@ -53,7 +53,7 @@ public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
      */
     @Nullable
     @Column(name = Columns.importTime)
-    Date importTime();
+    LocalDateTime importTime();
 
     /**
      * 是否系统默认

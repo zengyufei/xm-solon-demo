@@ -2,30 +2,19 @@ package com.xunmo;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.snack.ONode;
 import org.noear.solon.Solon;
 import org.noear.solon.core.ChainManager;
-import org.noear.solon.core.handle.ActionExecuteHandlerDefault;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.util.LogUtil;
 import org.noear.solon.extend.quartz.EnableQuartz;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
 import org.noear.solon.serialization.jackson.JacksonActionExecutor;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Set;
-
 @Slf4j
 @EnableQuartz
 public class BizApp {
 
     public static void main(String[] args) throws NoSuchFieldException {
-
-        final Class<ChainManager> chainManagerClass = ChainManager.class;
-        final Field executeHandlers = chainManagerClass.getDeclaredField("executeHandlers");
-        executeHandlers.setAccessible(true);
-
         Solon.start(BizApp.class, args, app -> {
 
             //转发日志到 Slf4j 接口
@@ -67,31 +56,25 @@ public class BizApp {
             //                System.out.println(JSONUtil.toJsonPrettyStr(pageRequest));
             //            });
 
-
-            //            // 向外提供钩子
+            // 给 body 塞入 arg 参数
             app.context().beanOnloaded(aopContext -> {
                 final ChainManager chainManager = app.chainManager();
-                try {
-                    Map<Class<?>, ActionExecuteHandlerDefault> map = (Map<Class<?>, ActionExecuteHandlerDefault>) executeHandlers.get(chainManager);
-                    final Set<Class<?>> classes = map.keySet();
-                    System.out.println("使用Json框架:");
-                    for (Class<?> aClass : classes) {
-                        System.out.println(aClass.getName());
+                chainManager.removeExecuteHandler(JacksonActionExecutor.class);
+                chainManager.addExecuteHandler(new JacksonActionExecutor() {
+                    @Override
+                    protected Object changeBody(Context ctx) throws Exception {
+                        final ObjectNode changeBody = (ObjectNode) super.changeBody(ctx);
+                        ctx.paramMap().forEach((key, value) -> {
+                            if (!changeBody.has(key)) {
+                                changeBody.put(key, value);
+                            }
+                        });
+                        return changeBody;
                     }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                });
             });
 
-            app.chainManager()
-                    .addExecuteHandler(new JacksonActionExecutor() {
-                        @Override
-                        protected Object changeBody(Context ctx) throws Exception {
-                            final ObjectNode changeBody = (ObjectNode) super.changeBody(ctx);
-                            ctx.paramMap().forEach(changeBody::put);
-                            return changeBody;
-                        }
-                    });
+
         });
     }
 }

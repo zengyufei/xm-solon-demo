@@ -6,8 +6,8 @@ import com.xunmo.common.base.TenantEntity;
 import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
 import org.babyfish.jimmer.sql.*;
+import org.jetbrains.annotations.Nullable;
 
-import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public interface Book extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 
     BigDecimal price();
 
-    @Null
+    @Nullable
     @ManyToOne
     BookStore store();
 

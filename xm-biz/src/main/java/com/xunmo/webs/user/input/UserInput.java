@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 用户表(User)输入类
@@ -32,14 +32,24 @@ public class UserInput implements Input<User> {
     private String userName;
 
     /**
-     * 创建时间
+     * 创建时间 - 开始区间
      */
-    private Date createTime;
+    private LocalDateTime beginCreateTime;
 
     /**
-     * 修改时间
+     * 创建时间 - 结束区间
      */
-    private Date updateTime;
+    private LocalDateTime endCreateTime;
+
+    /**
+     * 修改时间 - 开始区间
+     */
+    private LocalDateTime beginUpdateTime;
+
+    /**
+     * 修改时间 - 结束区间
+     */
+    private LocalDateTime endUpdateTime;
 
     /**
      * 创建人ID
@@ -84,7 +94,7 @@ public class UserInput implements Input<User> {
     /**
      * 审批时间
      */
-    private Date approvalTime;
+    private LocalDateTime approvalTime;
 
     /**
      * 是否导入
@@ -94,7 +104,7 @@ public class UserInput implements Input<User> {
     /**
      * 导入时间
      */
-    private Date importTime;
+    private LocalDateTime importTime;
 
     /**
      * 是否系统默认

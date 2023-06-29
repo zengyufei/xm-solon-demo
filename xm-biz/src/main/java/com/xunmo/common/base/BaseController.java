@@ -93,7 +93,7 @@ public abstract class BaseController {
     }
 
     protected Pager pager(PageRequest pageable) {
-        return new PagerImpl(pageable.getPageNumber(), pageable.getPageSize());
+        return new PagerImpl(pageable);
     }
 
     protected Pager pager(int pageIndex, int pageSize) {
@@ -102,18 +102,23 @@ public abstract class BaseController {
 
     public static class PagerImpl extends Pager {
 
-        private final int pageIndex;
+        private final Integer pageIndex;
 
-        private final int pageSize;
+        private final Integer pageSize;
 
-        PagerImpl(int pageIndex, int pageSize) {
+        PagerImpl(PageRequest pageRequest) {
+            this.pageIndex = pageRequest.getPageNumber();
+            this.pageSize = pageRequest.getPageSize();
+        }
+
+        PagerImpl(Integer pageIndex, Integer pageSize) {
             this.pageIndex = pageIndex;
             this.pageSize = pageSize;
         }
 
         @Override
         public <T> Page<T> execute(ConfigurableRootQuery<?, T> query) {
-            if (pageSize == 0) {
+            if (pageSize == null || pageSize == 0) {
                 return new PageImpl<>(query.execute());
             }
             long offset = (long) pageIndex * pageSize;

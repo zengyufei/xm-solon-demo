@@ -15,7 +15,10 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.annotation.*;
 import org.noear.solon.validation.annotation.NotBlank;
 import org.noear.solon.validation.annotation.NotNull;
+import org.noear.solon.validation.annotation.Valid;
+import org.noear.solon.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,8 +28,9 @@ import java.util.List;
  * @since 2023-06-28 10:23:13
  */
 @Slf4j
-@Mapping("/user")
+@Valid
 @Controller
+@Mapping("/user")
 public class UserController extends BaseController {
 
     private final static UserTable TABLE = UserTable.$;
@@ -47,10 +51,20 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/list")
-    public ResponseEntity<Page<User>> list(@Body UserInput input, @Param PageRequest pageRequest) {
+    public ResponseEntity<Page<User>> list(@Validated @Body UserInput input, @Param PageRequest pageRequest) throws Exception {
+        final LocalDateTime beginCreateTime = input.getBeginCreateTime();
+        final LocalDateTime endCreateTime = input.getEndCreateTime();
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest)
                 .execute(sqlClient
                         .createQuery(TABLE)
+                        .whereIf(
+                                beginCreateTime != null,
+                                () -> TABLE.createTime().ge(beginCreateTime)
+                        )
+                        .whereIf(
+                                endCreateTime != null,
+                                () -> TABLE.createTime().le(endCreateTime)
+                        )
                         .select(TABLE.fetch(FETCHER.allScalarFields()))));
     }
 
@@ -62,7 +76,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/getById")
-    public ResponseEntity<User> getById(@NotNull @NotBlank String id) {
+    public ResponseEntity<User> getById(@NotNull @NotBlank String id) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(User.class, id));
     }
 
@@ -74,7 +88,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/add")
-    public ResponseEntity<User> add(UserInput input) {
+    public ResponseEntity<User> add(@Validated UserInput input) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
     }
 
@@ -86,7 +100,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/update")
-    public ResponseEntity<User> update(UserInput input) {
+    public ResponseEntity<User> update(@Validated UserInput input) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
     }
 
@@ -98,7 +112,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/deleteByIds")
-    public ResponseEntity<Boolean> deleteByIds(List<String> ids) {
+    public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(User.class, ids));
     }
 

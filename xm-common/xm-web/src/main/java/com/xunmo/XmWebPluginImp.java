@@ -1,13 +1,11 @@
 package com.xunmo;
 
-import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.xunmo.config.EduJavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
@@ -15,11 +13,13 @@ import org.noear.solon.core.AopContext;
 import org.noear.solon.core.NvMap;
 import org.noear.solon.core.Plugin;
 import org.noear.solon.core.Props;
+import org.noear.solon.proxy.ProxyUtil;
 import org.noear.solon.serialization.jackson.JacksonActionExecutor;
 import org.noear.solon.web.cors.CrossHandler;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -69,8 +69,7 @@ public class XmWebPluginImp implements Plugin {
                         final String value = entry.getValue();
                         if (StrUtil.isBlankOrUndefined(value)) {
                             entryIterator.remove();
-                        }
-                        else {
+                        } else {
                             paramMap.put(key, StrUtil.trim(value));
                         }
                     }
@@ -91,9 +90,19 @@ public class XmWebPluginImp implements Plugin {
         if (isEnableJsonTrim) {
             // 处理 json 字段左右空白, 空字符串入参设置为null;
             app.onEvent(JacksonActionExecutor.class, executor -> {
-                executor.config().setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-//                final SimpleModule module = new SimpleModule();
-                final EduJavaTimeModule module = new EduJavaTimeModule();
+
+                ProxyUtil.attach(app.context(), JacksonActionExecutor.class, executor, new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+                        final String methodName = method.getName();
+                        System.out.println("调用方法 " + methodName);
+                        return method.invoke(o, objects);
+                    }
+                });
+
+//                executor.config().setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+                final SimpleModule module = new SimpleModule();
+//                final EduJavaTimeModule module = new EduJavaTimeModule();
                 module.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
                     private static final long serialVersionUID = -2186517763342421483L;
 
@@ -142,8 +151,7 @@ public class XmWebPluginImp implements Plugin {
 
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageConstants.XM_WEB);
-        }
-        else {
+        } else {
             System.out.println(XmPackageConstants.XM_WEB + " 包加载完毕!");
         }
     }
@@ -152,8 +160,7 @@ public class XmWebPluginImp implements Plugin {
     public void stop() throws Throwable {
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 插件关闭!", XmPackageConstants.XM_WEB);
-        }
-        else {
+        } else {
             System.out.println(XmPackageConstants.XM_WEB + " 插件关闭!");
         }
     }

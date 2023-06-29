@@ -4,8 +4,8 @@ import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.Key;
 import org.babyfish.jimmer.sql.OneToMany;
+import org.jetbrains.annotations.Nullable;
 
-import javax.validation.constraints.Null;
 import java.util.List;
 
 @Entity
@@ -17,7 +17,7 @@ public interface BookStore {
     @Key
     String name();
 
-    @Null
+    @Nullable
     String website();
 
     @OneToMany(mappedBy = "store")
