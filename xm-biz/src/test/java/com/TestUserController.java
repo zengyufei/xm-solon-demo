@@ -94,9 +94,11 @@ public class TestUserController extends HttpTester {
                 "  \"isSystemDefault\": 0,\n" +
                 "  \"tenantId\": \"tenant1\",\n" +
                 "  \"version\": 1,\n" +
-                "  \"status\": \"active\"\n" +
+//                "  \"status\": \"active\"\n" +
+                "  \"status\": null\n" +
                 "}\n";
         HttpUtils httpUtils = path("/user/update")
+                .timeout(5, -1, -1)
                 .bodyJson(data);
         httpUtils.post();
     }

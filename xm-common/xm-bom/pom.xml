@@ -26,7 +26,6 @@
                 <version>${xm.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>com.xunmo</groupId>
                 <artifactId>xm-web</artifactId>
@@ -54,6 +53,12 @@
             <dependency>
                 <groupId>com.xunmo</groupId>
                 <artifactId>xm-exception-record</artifactId>
+                <version>${xm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xunmo</groupId>
+                <artifactId>xm-request-trace-id</artifactId>
                 <version>${xm.version}</version>
             </dependency>
 
@@ -91,18 +96,6 @@
             <dependency>
                 <groupId>com.xunmo</groupId>
                 <artifactId>xm-health</artifactId>
-                <version>${xm.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.xunmo</groupId>
-                <artifactId>xm-request-trace-id</artifactId>
-                <version>${xm.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.xunmo</groupId>
-                <artifactId>xm-log-sync</artifactId>
                 <version>${xm.version}</version>
             </dependency>
 
@@ -214,5 +207,6 @@
 
         </dependencies>
     </dependencyManagement>
+
 
 </project>

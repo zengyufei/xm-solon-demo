@@ -30,6 +30,7 @@
         <module>./xm-auto-tran</module>
         <module>./xm-package-util</module>
         <!--        <module>./xm-log-sync</module>-->
+        <module>./xm-request-trace-id</module>
         <module>./xm-request-times-console</module>
         <module>./xm-request-args-console</module>
         <module>./xm-request-xss-filter</module>

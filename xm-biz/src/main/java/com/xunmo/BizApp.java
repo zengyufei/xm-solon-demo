@@ -17,6 +17,7 @@ import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.core.AopContext;
+import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.RenderManager;
@@ -84,45 +85,47 @@ public class BizApp {
             //            });
 
             // 给 body 塞入 arg 参数
-//            app.context().beanOnloaded(aopContext -> {
-//                final ChainManager chainManager = app.chainManager();
-//                chainManager.removeExecuteHandler(JacksonActionExecutor.class);
-//                final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
-//                    @Override
-//                    protected Object changeBody(Context ctx) throws Exception {
-//                        final Object o = super.changeBody(ctx);
-//                        if (o instanceof ObjectNode) {
-//                            final ObjectNode changeBody = (ObjectNode) o;
-//                            ctx.paramMap().forEach((key, value) -> {
-//                                if (!changeBody.has(key)) {
-//                                    changeBody.put(key, value);
-//                                }
-//                            });
-//                        }
-//                        return o;
-//                    }
-//                };
-//                final ObjectMapper objectMapper = jacksonActionExecutor.config();
-//                final ImmutableModule immutableModule = new ImmutableModule();
-//                initModule(immutableModule);
-//                objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-//                        .registerModule(immutableModule);
-//
-//                aopContext.lifecycle(-199, () -> {
-//                    final StringSerializerRender render = new StringSerializerRender(false, new JacksonSerializer(objectMapper));
-//                    RenderManager.mapping("@json", render);
-//                    RenderManager.mapping("@type_json", render);
-//                });
-//
-//                //支持 json 内容类型执行
-//                aopContext.wrapAndPut(JacksonActionExecutor.class, jacksonActionExecutor);
-//                EventBus.push(jacksonActionExecutor);
-//
-//                chainManager.addExecuteHandler(jacksonActionExecutor);
-//            });
+            app.context().beanOnloaded(aopContext -> {
+                final ChainManager chainManager = app.chainManager();
+                chainManager.removeExecuteHandler(JacksonActionExecutor.class);
+                final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
+                    @Override
+                    protected Object changeBody(Context ctx) throws Exception {
+                        final Object o = super.changeBody(ctx);
+                        if (o instanceof ObjectNode) {
+                            final ObjectNode changeBody = (ObjectNode) o;
+                            ctx.paramMap().forEach((key, value) -> {
+                                if (!changeBody.has(key)) {
+                                    changeBody.put(key, value);
+                                }
+                            });
+                        }
+                        return o;
+                    }
+                };
+                final ObjectMapper objectMapper = jacksonActionExecutor.config();
+                // 不设置为null会自动加入 @type 打印 json
+                objectMapper.setDefaultTyping(null);
+                final ImmutableModule immutableModule = new ImmutableModule();
+                initModule(immutableModule);
+                objectMapper.registerModule(immutableModule);
+
+                // 框架默认 -99
+                aopContext.lifecycle(-199, () -> {
+                    final StringSerializerRender render = new StringSerializerRender(false, new JacksonSerializer(objectMapper));
+                    RenderManager.mapping("@json", render);
+                    RenderManager.mapping("@type_json", render);
+                });
+
+                //支持 json 内容类型执行
+                aopContext.wrapAndPut(JacksonActionExecutor.class, jacksonActionExecutor);
+                EventBus.push(jacksonActionExecutor);
+
+                chainManager.addExecuteHandler(jacksonActionExecutor);
+            });
 
 
-            initJackson(app);
+//            initJackson(app);
 
         });
     }

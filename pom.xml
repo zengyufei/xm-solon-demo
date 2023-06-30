@@ -21,7 +21,6 @@
     <modules>
         <module>xm-common</module>
         <module>xm-apps</module>
-        <module>xm-gen-code</module>
         <module>xm-biz</module>
     </modules>
 
@@ -153,7 +152,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>

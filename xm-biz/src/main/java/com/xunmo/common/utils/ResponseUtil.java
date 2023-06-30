@@ -4,9 +4,11 @@ import com.xunmo.XmConstants;
 import com.xunmo.common.ISystemStatus;
 import com.xunmo.common.entity.ResponseEntity;
 import com.xunmo.common.entity.Status;
+import com.xunmo.common.entity.page.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.core.handle.Context;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -75,7 +77,19 @@ public class ResponseUtil {
         responseEntity.setCode(status.getCode());
         responseEntity.setSuccess(status.isSuccess());
         responseEntity.setMsg(status.getMsg());
-        responseEntity.setData(content);
+        if (content instanceof Page) {
+            final Page page = (Page) content;
+            final List list = page.getContent();
+            final int totalPages = page.getTotalPages();
+            final long totalElements = page.getTotalElements();
+            responseEntity.setTotalPages(totalPages);
+            responseEntity.setTotal(totalElements);
+            responseEntity.setPageNum(page.getNumber());
+            responseEntity.setPageSize(page.getSize());
+            responseEntity.setData(list);
+        } else {
+            responseEntity.setData(content);
+        }
         final Context ctx = Context.current();
         if (ctx != null) {
             responseEntity.setReqId(ctx.attr(XmConstants.REQ_ID));
