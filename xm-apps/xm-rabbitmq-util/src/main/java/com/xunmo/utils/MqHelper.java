@@ -30,6 +30,7 @@ public class MqHelper {
     private static final AtomicInteger sendChannelCount = new AtomicInteger(1);
     private static final AtomicInteger consumerChannelCount = new AtomicInteger(1);
     private static MqPool mqPool;
+    private static ConnectionFactory connectionFactory = new ConnectionFactory();
 
     // 构造方法私有化 防止直接通过类创建实例
     private MqHelper() {
@@ -46,16 +47,26 @@ public class MqHelper {
             final SolonApp app = Solon.app();
             if (app != null) {
                 final SolonProps cfg = Solon.cfg();
-                final MqPoolConfig mqPoolConfig = new MqPoolConfig();
-                mqPoolConfig.setHost(cfg.get("xm.mq.host"));
-                mqPoolConfig.setUsername(cfg.get("xm.mq.username"));
-                mqPoolConfig.setPassword(cfg.get("xm.mq.password"));
-                mqPoolConfig.setPort(cfg.getInt("xm.mq.port", 5432));
-                mqPoolConfig.setMaxIdle(10);
-                mqPoolConfig.setMaxTotal(20);
-                mqPoolConfig.setMinIdle(1);
-                final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
-                mqPool = new MqPool(mqConnectionPoolObjectFactory);
+
+                // 设置服务地址
+                connectionFactory.setHost(cfg.get("xm.mq.host"));
+                // 设置账号信息，用户名、密码、vhost
+                connectionFactory.setUsername(cfg.get("xm.mq.username"));
+                connectionFactory.setPassword(cfg.get("xm.mq.password"));
+                connectionFactory.setPort(cfg.getInt("xm.mq.port", 5432));
+                connectionFactory.setAutomaticRecoveryEnabled(false); // 自动重连
+                connectionFactory.setTopologyRecoveryEnabled(false);
+
+//                final MqPoolConfig mqPoolConfig = new MqPoolConfig();
+//                mqPoolConfig.setHost(cfg.get("xm.mq.host"));
+//                mqPoolConfig.setUsername(cfg.get("xm.mq.username"));
+//                mqPoolConfig.setPassword(cfg.get("xm.mq.password"));
+//                mqPoolConfig.setPort(cfg.getInt("xm.mq.port", 5432));
+//                mqPoolConfig.setMaxIdle(10);
+//                mqPoolConfig.setMaxTotal(20);
+//                mqPoolConfig.setMinIdle(1);
+//                final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
+//                mqPool = new MqPool(mqConnectionPoolObjectFactory);
                 isInit.compareAndSet(false, true);
             }
         }
@@ -73,16 +84,25 @@ public class MqHelper {
             if (isInit.get()) {
                 return;
             }
-            final MqPoolConfig mqPoolConfig = new MqPoolConfig();
-            mqPoolConfig.setHost(host);
-            mqPoolConfig.setUsername(username);
-            mqPoolConfig.setPassword(password);
-            mqPoolConfig.setPort(port);
-            mqPoolConfig.setMaxIdle(10);
-            mqPoolConfig.setMaxTotal(20);
-            mqPoolConfig.setMinIdle(1);
-            final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
-            mqPool = new MqPool(mqConnectionPoolObjectFactory);
+            // 设置服务地址
+            connectionFactory.setHost(host);
+            // 设置账号信息，用户名、密码、vhost
+            connectionFactory.setUsername(username);
+            connectionFactory.setPassword(password);
+            connectionFactory.setPort(port);
+            connectionFactory.setAutomaticRecoveryEnabled(false); // 自动重连
+            connectionFactory.setTopologyRecoveryEnabled(false);
+
+//            final MqPoolConfig mqPoolConfig = new MqPoolConfig();
+//            mqPoolConfig.setHost(host);
+//            mqPoolConfig.setUsername(username);
+//            mqPoolConfig.setPassword(password);
+//            mqPoolConfig.setPort(port);
+//            mqPoolConfig.setMaxIdle(10);
+//            mqPoolConfig.setMaxTotal(20);
+//            mqPoolConfig.setMinIdle(1);
+//            final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
+//            mqPool = new MqPool(mqConnectionPoolObjectFactory);
             isInit.compareAndSet(false, true);
         }
     }
@@ -407,16 +427,27 @@ public class MqHelper {
      * @throws InterruptedException 中断异常
      */
     public static void sendMsg(MqConfig mqConfig, String msg, java.util.function.Consumer<SendAction> sendFunc) {
-        final Connection connection = mqPool.getConnection();
+        final Connection connection = getMqPoolConnection();
         sendMsg(connection, mqConfig, msg, null, sendFunc);
     }
 
 
     public static void consumeMsg(MqConfig mqConfig,
                                   Function<String, ConsumeAction> successMessage) throws IOException {
-        final Connection connection = mqPool.getConnection();
+        final Connection connection = getMqPoolConnection();
         consumeMsg(connection, mqConfig,
                 successMessage);
+    }
+
+    private static Connection getMqPoolConnection() {
+//        return mqPool.getConnection();
+        try {
+            return connectionFactory.newConnection();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -429,7 +460,7 @@ public class MqHelper {
      * @throws TimeoutException 超时异常
      */
     public static int getMessageCount(String queueName) throws IOException, TimeoutException {
-        final Connection connection = mqPool.getConnection();
+        final Connection connection = getMqPoolConnection();
         return getMessageCount(connection, queueName);
     }
 
@@ -448,7 +479,7 @@ public class MqHelper {
             channel.queueDeclare(queueName, true, false, false, null); //获取队列
             msgCount = (int) channel.messageCount(queueName);
         } finally {
-            mqPool.returnConnection(connection);
+            closeConnec(connection);
         }
         return msgCount;
     }
@@ -464,14 +495,23 @@ public class MqHelper {
             }
         }
         if (connection != null) {
-            mqPool.returnConnection(connection);
+            closeConnec(connection);
         }
     }
 
 
     private static void closeConnection(Connection connection) {
         if (connection != null) {
-            mqPool.returnConnection(connection);
+            closeConnec(connection);
+        }
+    }
+
+    private static void closeConnec(Connection connection) {
+//        mqPool.returnConnection(connection);
+        try {
+            connection.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
