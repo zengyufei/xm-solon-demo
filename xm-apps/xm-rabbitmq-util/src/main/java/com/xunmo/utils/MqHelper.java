@@ -1,63 +1,63 @@
 package com.xunmo.utils;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.rabbitmq.client.*;
+import com.xunmo.entity.DeadConfig;
+import com.xunmo.entity.MqConfig;
+import com.xunmo.enums.ConsumeAction;
+import com.xunmo.enums.ExchangeType;
+import com.xunmo.enums.SendAction;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.SolonProps;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 @Slf4j
 public class MqHelper {
-
+    private final static AtomicBoolean isInit = new AtomicBoolean(false);
     private final static Object initLock = new Object();
-    private final static Object freeConnLock = new Object();
-    private final static Object addConnLock = new Object();
+    private static final AtomicInteger sendChannelCount = new AtomicInteger(1);
+    private static final AtomicInteger consumerChannelCount = new AtomicInteger(1);
+    private static MqPool mqPool;
 
-    private static boolean isInit = false;
-
-    public static int DEFAULT_MAX_CONNECTION_COUNT = 30; // 默认最大保持可用连接数
-    private final static int DEFAULT_MAX_CONNECTION_USING_COUNT = 300; //默认最大连接可访问次数
-    public static int DEFAULT_RETRY_CONNECTION_COUNT = 1; // 默认重试连接次数
-
-    private static volatile int maxConnectionCount;
-    private static Semaphore mqConnectionPoolSemaphore;
-
-    private final static ConcurrentLinkedQueue<Connection> freeConnectionQueue = new ConcurrentLinkedQueue<>();
-    private final static Map<Connection, Boolean> busyConnectionDic = new ConcurrentHashMap<>();
-    private final static Map<Connection, Integer> mqConnectionPoolUsingDicNew = new ConcurrentHashMap<>();//连接池使用率
-
-    private static String host;
-    private static String username;
-    private static String password;
-    private static String port;
-    private static String vhost;
+    // 构造方法私有化 防止直接通过类创建实例
+    private MqHelper() {
+    }
 
     public static synchronized void initMq() {
-        if (isInit) {
+        if (isInit.get()) {
             return;
         }
         synchronized (initLock) {
+            if (isInit.get()) {
+                return;
+            }
             final SolonApp app = Solon.app();
             if (app != null) {
                 final SolonProps cfg = Solon.cfg();
-                maxConnectionCount = cfg.getInt("xm.mq.max-conn", DEFAULT_MAX_CONNECTION_COUNT);
-            } else {
-                maxConnectionCount = DEFAULT_MAX_CONNECTION_COUNT;
+                final MqPoolConfig mqPoolConfig = new MqPoolConfig();
+                mqPoolConfig.setHost(cfg.get("xm.mq.host"));
+                mqPoolConfig.setUsername(cfg.get("xm.mq.username"));
+                mqPoolConfig.setPassword(cfg.get("xm.mq.password"));
+                mqPoolConfig.setPort(cfg.getInt("xm.mq.port", 5432));
+                mqPoolConfig.setMaxIdle(10);
+                mqPoolConfig.setMaxTotal(20);
+                mqPoolConfig.setMinIdle(1);
+                final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
+                mqPool = new MqPool(mqConnectionPoolObjectFactory);
+                isInit.compareAndSet(false, true);
             }
-            //信号量，控制同时并发可用线程数
-            mqConnectionPoolSemaphore = new Semaphore(maxConnectionCount);
-            isInit = true;
         }
     }
 
@@ -65,495 +65,421 @@ public class MqHelper {
             String host,
             String username,
             String password,
-            String port) {
-        MqHelper.initMq(host, username, password, port, null);
-    }
-
-    public static synchronized void initMq(
-            String host,
-            String username,
-            String password,
-            String port,
-            String vhost) {
-        if (isInit) {
+            int port) {
+        if (isInit.get()) {
             return;
         }
-        final SolonApp app = Solon.app();
-        if (app != null) {
-            final SolonProps cfg = Solon.cfg();
-            maxConnectionCount = cfg.getInt("xm.mq.max-conn", DEFAULT_MAX_CONNECTION_COUNT);
-        } else {
-            MqHelper.host = host;
-            MqHelper.username = username;
-            MqHelper.password = password;
-            MqHelper.port = port;
-            MqHelper.vhost = vhost;
-            maxConnectionCount = DEFAULT_MAX_CONNECTION_COUNT;
-        }
-        //信号量，控制同时并发可用线程数
-        mqConnectionPoolSemaphore = new Semaphore(maxConnectionCount);//信号量，控制同时并发可用线程数
-        isInit = true;
-    }
-
-
-    /**
-     * 建立连接
-     *
-     * @return {@link ConnectionFactory}
-     */
-    private static ConnectionFactory crateFactory() {
-        String[] mqConnectionSetting = getMqConnectionSetting();
-        final ConnectionFactory connectionFactory = new ConnectionFactory();
-        // 设置服务地址
-        connectionFactory.setHost(mqConnectionSetting[0]);
-        // 设置账号信息，用户名、密码、vhost
-        connectionFactory.setVirtualHost("/");
-        connectionFactory.setUsername(mqConnectionSetting[1]);
-        connectionFactory.setPassword(mqConnectionSetting[2]);
-        if (mqConnectionSetting.length > 4) {
-            //端口
-            connectionFactory.setPort(Convert.toInt(mqConnectionSetting[3]));
-            final String virtualHost = mqConnectionSetting[4];
-            if (StrUtil.isNotBlank(virtualHost)) {
-                connectionFactory.setVirtualHost(virtualHost);
+        synchronized (initLock) {
+            if (isInit.get()) {
+                return;
             }
-        } else if (mqConnectionSetting.length > 3) {
-            //端口
-            connectionFactory.setPort(Convert.toInt(mqConnectionSetting[3]));
-        }
-        return connectionFactory;
-    }
-
-    /**
-     * 获取mq配置
-     *
-     * @return {@link String[]}
-     */
-    private static String[] getMqConnectionSetting() {
-        final SolonApp app = Solon.app();
-        if (app != null) {
-            final SolonProps cfg = Solon.cfg();
-            host = cfg.get("xm.mq.host");
-            username = cfg.get("xm.mq.username");
-            password = cfg.get("xm.mq.password");
-            port = cfg.get("xm.mq.port");
-            vhost = cfg.get("xm.mq.vhost");
-            return new String[]{
-                    host,
-                    username,
-                    password,
-                    port,
-                    vhost,
-            };
-        } else {
-            return new String[]{
-                    host,
-                    username,
-                    password,
-                    port,
-                    vhost,
-            };
+            final MqPoolConfig mqPoolConfig = new MqPoolConfig();
+            mqPoolConfig.setHost(host);
+            mqPoolConfig.setUsername(username);
+            mqPoolConfig.setPassword(password);
+            mqPoolConfig.setPort(port);
+            mqPoolConfig.setMaxIdle(10);
+            mqPoolConfig.setMaxTotal(20);
+            mqPoolConfig.setMinIdle(1);
+            final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
+            mqPool = new MqPool(mqConnectionPoolObjectFactory);
+            isInit.compareAndSet(false, true);
         }
     }
 
-
-    /**
-     * 创建mq连接
-     *
-     * @return {@link Connection}
-     * @throws IOException      ioexception
-     * @throws TimeoutException 超时异常
-     */
-    public static Connection createMqConnection() throws IOException, TimeoutException {
-        ConnectionFactory factory = crateFactory();
-        factory.setAutomaticRecoveryEnabled(true); // 自动重连
-        return factory.newConnection();
-    }
-
-
-    /**
-     * 新创建mq连接池
-     *
-     * @return {@link Connection}
-     * @throws InterruptedException 中断异常
-     * @throws IOException          ioexception
-     * @throws TimeoutException     超时异常
-     */
-    public static Connection createMqConnectionInPoolNew() throws InterruptedException, IOException, TimeoutException {
-        initMq();
-        mqConnectionPoolSemaphore.tryAcquire(10000, TimeUnit.MINUTES);// 当 令牌数 < maxConnectionCount 时，会直接进入，否则会等待直到空闲连接出现
-        Connection mqConnection = null;
-
-        try {
-            // 空闲 + 在忙 = 已有连接数
-            // 如果 已有连接数 < 最大可用连接数，则直接创建新连接
-            if ((freeConnectionQueue.size() + busyConnectionDic.size()) < maxConnectionCount) {
-                synchronized (addConnLock) {
-                    if ((freeConnectionQueue.size() + busyConnectionDic.size()) < maxConnectionCount) {
-                        mqConnection = createMqConnection();
-                        busyConnectionDic.put(mqConnection, true);// 加入到忙连接集合中
-                        mqConnectionPoolUsingDicNew.put(mqConnection, 1);
-                        return mqConnection;
-                    }
-                }
-            }
-            // 分支：尝试从空间池里取出
-            // 如果空闲池没有连接了，说明都在忙
-            // 如果没有可用空闲连接，则重新进入， mqConnectionPoolSemaphore.acquire() 会阻塞，等待排队领取令牌
-            mqConnection = freeConnectionQueue.peek();
-            if (mqConnection == null || !freeConnectionQueue.remove(mqConnection)) {
-                return createMqConnectionInPoolNew();
-            } else if (mqConnectionPoolUsingDicNew.get(mqConnection) + 1 > DEFAULT_MAX_CONNECTION_USING_COUNT || !mqConnection.isOpen()) {
-                // 如果取到空闲连接，判断是否使用次数是否超过最大限制, 超过则释放连接并重新创建
-                if (mqConnection.isOpen()) {
-                    mqConnection.close();
-                }
-
-                log.debug("close > DefaultMaxConnectionUsingCount mqConnection,freeConnectionCount:{}, busyConnectionCount:{}", freeConnectionQueue.size(), busyConnectionDic.size());
-                mqConnectionPoolUsingDicNew.remove(mqConnection);
-                mqConnection = createMqConnection();
-                mqConnectionPoolUsingDicNew.put(mqConnection, 0);
-                log.debug("create new mqConnection,freeConnectionCount:{}, busyConnectionCount:{}", freeConnectionQueue.size(), busyConnectionDic.size());
-            }
-
-            busyConnectionDic.put(mqConnection, true);//加入到忙连接集合中
-            mqConnectionPoolUsingDicNew.put(mqConnection, mqConnectionPoolUsingDicNew.get(mqConnection) + 1);//使用次数加1
-
-            log.debug("set busyConnectionDic:{},freeConnectionCount:{}, busyConnectionCount:{}", mqConnection.hashCode(), freeConnectionQueue.size(), busyConnectionDic.size());
-
-            return mqConnection;
-        } catch (Exception e) {
-            //如果在创建连接发生错误，则判断当前是否已获得Connection，如果获得则释放连接，最终都会释放连接池计数
-            if (mqConnection != null) {
-                resetMQConnectionToFree(mqConnection);
-            } else {
-                mqConnectionPoolSemaphore.release();
-            }
-            throw e;
-        }
-    }
-
-    private static void resetMQConnectionToFree(Connection connection) throws IOException {
-        synchronized (freeConnLock) {
-            boolean result = busyConnectionDic.remove(connection);
-            //从忙队列中取出
-            if (result) {
-                log.debug("set freeConnectionQueue:{}, freeConnectionCount:{}, busyConnectionCount:{}", connection.hashCode(), freeConnectionQueue.size(), busyConnectionDic.size());
-            } else {
-                log.debug("failed tryRemove busyConnectionDic:{}, freeConnectionCount:{}, busyConnectionCount:{}", connection.hashCode(), freeConnectionQueue.size(), busyConnectionDic.size());
-                //若极小概率移除失败，则再重试一次
-                try {
-                    TimeUnit.SECONDS.sleep(3);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                result = busyConnectionDic.remove(connection);
-            }
-
-            if (result) {
-                // 如果因为高并发出现极少概率的>maxConnectionCount，则直接释放该连接
-                if ((freeConnectionQueue.size() + busyConnectionDic.size()) > maxConnectionCount) {
-                    connection.close();
-                } else if (connection.isOpen()) {
-                    // 如果是 OPEN 状态才加入空闲队列，否则直接丢弃
-                    // 加入到空闲队列，以便持续提供连接服务
-                    freeConnectionQueue.offer(connection);
-                }
-
-                //释放一个空闲连接信号
-                mqConnectionPoolSemaphore.release();
-
-                log.debug("Enqueue freeConnectionQueue:{},freeConnectionCount:{}, busyConnectionCount:{}", connection.hashCode(), freeConnectionQueue.size(), busyConnectionDic.size());
-
-            }
-        }
-    }
-
-    public enum ConsumeAction {
-        ACCEPT,  // 消费成功
-        RETRY,   // 消费失败，可以放回队列重新消费
-        REJECT,  // 消费失败，直接丢弃
-    }
-
-
-    /**
-     * 发送消息
-     *
-     * @param queueName 队列名称
-     * @param msg       消息
-     * @param durable   是否持久化
-     * @return {@link String}
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
-     */
-    public static String sendMsg(String queueName, String msg, Boolean durable) throws IOException, TimeoutException, InterruptedException {
-        final Connection connection = MqHelper.createMqConnectionInPoolNew();
-        return sendMsg(connection, queueName, msg, durable);
-    }
-
-
-    /**
-     * 发送消息
-     *
-     * @param queueName 队列名称
-     * @param msg       消息
-     * @return {@link String}
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
-     */
-    public static String sendMsg(String queueName, String msg) throws IOException, TimeoutException, InterruptedException {
-        final Connection connection = MqHelper.createMqConnectionInPoolNew();
-        return sendMsg(connection, queueName, msg, true);
-    }
 
     /**
      * 发送消息
      *
      * @param connection 连接
-     * @param queueName  队列名称
-     * @param msg        消息
-     * @return {@link String}
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
      */
-    public static String sendMsg(Connection connection, String queueName, String msg) throws IOException, TimeoutException, InterruptedException {
-        return sendMsg(connection, queueName, msg, true);
-    }
+    private static void sendMsg(
+            Connection connection,
+            MqConfig mqConfig,
+            String msg,
+            Integer expiration,
+            java.util.function.Consumer<SendAction> sendFunc
+    ) {
 
-    /**
-     * 发送消息
-     *
-     * @param connection 连接
-     * @param queueName  队列名称
-     * @param durable    是否持久化
-     * @param msg        消息
-     * @return {@link String}
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
-     */
-    public static String sendMsg(Connection connection, String queueName, String msg, Boolean durable) throws IOException, TimeoutException, InterruptedException {
+        final String changeName = mqConfig.getChangeName();
+        String routingKey = mqConfig.getRoutingKey();
+        Boolean durable = mqConfig.getDurable();
+        Boolean isDelay = mqConfig.getIsDelay();
+        ExchangeType exchangeType = mqConfig.getExchangeType();
+        Long delayTime = mqConfig.getDelayTime();
+        Boolean isAutoClose = mqConfig.getIsAutoClose();
+        final String queueName = mqConfig.getQueueName();
+        final Long ttl = mqConfig.getTtl();
+        final Long max = mqConfig.getMax();
+        final DeadConfig deadConfig = mqConfig.getDeadConfig();
+
+        if (exchangeType == null) {
+            exchangeType = ExchangeType.direct;
+        }
         if (durable == null) {
             durable = true;
         }
-        boolean reTry = false;
-        int reTryCount = 0;
-        String sendErrMsg = null;
+        if (isAutoClose == null) {
+            isAutoClose = false;
+        }
+        if (StrUtil.isBlankOrUndefined(routingKey)) {
+            routingKey = "#";
+        }
+        if (isDelay == null) {
+            isDelay = false;
+        } else {
+            if (isDelay && delayTime == null) {
+                delayTime = 1000L;
+            }
+            if (isDelay && StrUtil.isBlankOrUndefined(changeName)) {
+                throw new NullPointerException("延迟队列, 交换机不能为空");
+            }
+        }
+        Channel channel = null;
+        //建立通讯信道
+        try {
+            // 注意，因为要等待broker的confirm消息，暂时不关闭channel和connection
+            channel = connection.createChannel();
+            sendChannelCount.incrementAndGet();
+            channel.confirmSelect();// 开启发送方确认模式
 
-        do {
-            reTry = false;
-            //建立通讯信道
-            try (Channel channel = connection.createChannel()) {
-                // 延迟交换器  https://xie.infoq.cn/article/e0c56c9d10a047fb179bc3aba
-                final String changeName = "exchange.normal";
-                Map<String, Object> args = new HashMap<>();
-                args.put("x-delayed-type", "direct");
-                channel.exchangeDeclare(changeName, "x-delayed-message", true, false, args);
-
-                // 参数从前面开始分别意思为：队列名称，是否持久化，独占的队列，不使用时是否自动删除，其他参数
-                channel.queueDeclare(queueName, durable, false, false, null);
-                // 绑定路由
-                channel.queueBind(queueName, changeName, "");
-
-                AMQP.BasicProperties properties = null;
-
-                final boolean isDelay = true;
-                if (isDelay) {
-                    AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
-                    Map<String, Object> headers = new HashMap<>();
-                    headers.put("x-delay", 1 * 1000);
-                    props.headers(headers);
-                    properties = props.build();
-                }
-                channel.basicPublish(changeName, "", properties, msg.getBytes(StandardCharsets.UTF_8));
-                sendErrMsg = "";
-            } catch (Exception ex) {
-                if (ex instanceof SocketException) {
-                    if ((++reTryCount) <= DEFAULT_RETRY_CONNECTION_COUNT) {
-                        //可重试1次
-                        resetMQConnectionToFree(connection);
-                        connection = createMqConnectionInPoolNew();
-                        reTry = true;
+            Boolean finalIsAutoClose = isAutoClose;
+            Channel finalChannel = channel;
+            final ConfirmListener confirmListener = new ConfirmListener() {
+                // 消息正确到达 broker
+                @Override
+                public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                    log.info("已收到消息，标识：{}", deliveryTag);
+                    //做一些其他处理
+                    sendFunc.accept(SendAction.SUCCESS);
+                    if (finalIsAutoClose) {
+                        closeChannelAndConnection(finalChannel, connection);
+                    } else {
+                        closeConnection(connection);
                     }
+                    countChannel(sendChannelCount, finalChannel);
                 }
-                sendErrMsg = ex.getMessage();
-            } finally {
-                if (!reTry) {
-                    resetMQConnectionToFree(connection);
+
+                // RabbitMQ 因为自身内部错误导致消息丢失，就会发送一条nack消息
+                @Override
+                public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                    log.warn("未确认消息，标识：{}", deliveryTag);
+                    //做一些其他处理，比如消息重发等
+                    sendFunc.accept(SendAction.MQ_FAIL);
+                    if (finalIsAutoClose) {
+                        closeChannelAndConnection(finalChannel, connection);
+                    } else {
+                        closeConnection(connection);
+                    }
+                    countChannel(sendChannelCount, finalChannel);
+                }
+            };
+            channel.addConfirmListener(confirmListener);
+
+            Map<String, Object> args = new HashMap<>();
+            // 队列设置最大长度
+            if (max != null) {
+                args.put("x-max-length", max);
+            }
+            //设置队列有效期为10秒
+            if (ttl != null) {
+                args.put("x-message-ttl", ttl);
+            }
+            if (deadConfig != null) {
+                final String deadChangeName = deadConfig.getChangeName();
+                String deadRoutingKey = deadConfig.getRoutingKey();
+                if (StrUtil.isBlankOrUndefined(deadRoutingKey)) {
+                    deadRoutingKey = "#";
+                }
+                args.put("x-dead-letter-exchange", deadChangeName);
+                args.put("x-dead-letter-routing-key", deadRoutingKey);
+            }
+
+            if (isDelay) {
+                // 延迟交换器  https://xie.infoq.cn/article/e0c56c9d10a047fb179bc3aba
+                args.put("x-delayed-type", exchangeType.name());
+                // exchange 持久化
+                channel.exchangeDeclare(changeName, "x-delayed-message", durable, false, args);
+            } else if (StrUtil.isNotBlank(changeName)) {
+                /*
+                 * 声明一个交换机
+                 * 参数1：交换机的名称，取值任意
+                 * 参数2：交换机的类型，取值为：direct、fanout、topic、headers
+                 * 参数3：是否为持久化的交换机
+                 * 注意：
+                 *      1) 声明交换机时，如果这个交换机已经存在，则放弃声明；如果交换机不存在，则声明该交换机
+                 *      2) 这行代码可有可无，但是使用前要确保该交换机已存在
+                 */
+                channel.exchangeDeclare(changeName, exchangeType.name(), durable, false, args);
+                /*
+                 * 将队列绑定到交换机
+                 * 参数1：队列的名称
+                 * 参数2：交换机的名称
+                 * 参数3：消息的RoutingKey（就是BindingKey）
+                 * 注意：
+                 *      1) 在进行队列和交换机绑定时，必须要确保交换机和队列已经成功声明
+                 */
+                channel.queueBind(queueName, changeName, routingKey);
+            }
+
+            // 参数从前面开始分别意思为：队列名称，是否持久化，独占的队列，不使用时是否自动删除，其他参数
+            channel.queueDeclare(queueName, durable, false, false, args);
+
+            AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
+            if (expiration != null) {
+                props.expiration(expiration.toString());
+            }
+            props.deliveryMode(2); // message持久化
+            if (isDelay) {
+                // 绑定路由
+                channel.queueBind(queueName, changeName, routingKey);
+                Map<String, Object> headers = new HashMap<>();
+                headers.put("x-delay", delayTime);
+                props.headers(headers);
+                AMQP.BasicProperties properties = props.build();
+                channel.basicPublish(changeName, routingKey, properties, msg.getBytes(StandardCharsets.UTF_8));
+            } else {
+                if (StrUtil.isNotBlank(changeName)) {
+                    AMQP.BasicProperties properties = props.build();
+                    channel.basicPublish(changeName, routingKey, properties, msg.getBytes(StandardCharsets.UTF_8));
+                } else {
+                    props.priority(null);
+                    AMQP.BasicProperties properties = props.build();
+                    channel.basicPublish(routingKey, queueName, properties, msg.getBytes(StandardCharsets.UTF_8));
                 }
             }
-        } while (reTry);
-
-        return sendErrMsg;
-    }
-
-
-    /**
-     * 消费消息
-     *
-     * @param queueName   队列名称
-     * @param isAutoClose 是否关闭持续监听
-     * @param dealMessage 消息处理函数
-     * @throws IOException          io异常
-     * @throws InterruptedException 中断异常
-     * @throws TimeoutException     超时异常
-     */
-    public static void consumeMsg(String queueName, boolean isAutoClose, Function<String, ConsumeAction> dealMessage) throws IOException, InterruptedException, TimeoutException {
-        final Connection connection = MqHelper.createMqConnectionInPoolNew();
-        consumeMsg(connection, queueName, true, isAutoClose, dealMessage);
-    }
-
-
-    /**
-     * 消费消息
-     *
-     * @param queueName   队列名称
-     * @param durable     是否持久化
-     * @param isAutoClose 是否关闭持续监听
-     * @param dealMessage 消息处理函数
-     * @throws IOException          io异常
-     * @throws InterruptedException 中断异常
-     * @throws TimeoutException     超时异常
-     */
-    public static void consumeMsg(String queueName, boolean durable, boolean isAutoClose, Function<String, ConsumeAction> dealMessage) throws IOException, InterruptedException, TimeoutException {
-        final Connection connection = MqHelper.createMqConnectionInPoolNew();
-        consumeMsg(connection, queueName, durable, isAutoClose, dealMessage);
+        } catch (Exception e) {
+            if (isAutoClose) {
+                closeChannelAndConnection(channel, connection);
+            } else {
+                closeConnection(connection);
+            }
+            countChannel(sendChannelCount, channel);
+        }
     }
 
     /**
      * 消费消息
      *
-     * @param connection  连接
-     * @param queueName   队列名称
-     * @param durable     是否持久化
-     * @param isAutoClose 是否关闭持续监听
-     * @param dealMessage 消息处理函数
+     * @param connection     连接
+     * @param successMessage 消息处理函数
      * @throws IOException      io异常
      * @throws TimeoutException 超时异常
      */
-    public static void consumeMsg(Connection connection, String queueName, boolean durable, boolean isAutoClose, Function<String, ConsumeAction> dealMessage) throws IOException {
-        if (!isAutoClose) {
-            log.info("rabbitMq 消费启动, 监听队列:{}, 持久化:{}", queueName, (durable ? "是" : "否"));
+    private static void consumeMsg(Connection connection,
+                                   MqConfig mqConfig,
+                                   Function<String, ConsumeAction> successMessage) throws IOException {
+        ExchangeType exchangeType = mqConfig.getExchangeType();
+        Boolean durable = mqConfig.getDurable();
+        String routingKey = mqConfig.getRoutingKey();
+        Boolean isAutoClose = mqConfig.getIsAutoClose();
+        final String changeName = mqConfig.getChangeName();
+        final String queueName = mqConfig.getQueueName();
+        final DeadConfig deadConfig = mqConfig.getDeadConfig();
+
+        if (exchangeType == null) {
+            exchangeType = ExchangeType.direct;
         }
+        if (durable == null) {
+            durable = true;
+        }
+        if (isAutoClose == null) {
+            isAutoClose = false;
+        }
+        if (StrUtil.isBlankOrUndefined(routingKey)) {
+            routingKey = "#";
+        }
+//        if (!isAutoClose) {
+//            log.info("rabbitMq 消费启动, 监听队列:{}, 持久化:{}", queueName, (durable ? "是" : "否"));
+//        }
+        Channel channel = null;
         try {
-            Channel channel = connection.createChannel();
+            channel = connection.createChannel();
+            consumerChannelCount.incrementAndGet();
+            Map<String, Object> args = new HashMap<>();
+            if (deadConfig != null) {
+                final String deadChangeName = deadConfig.getChangeName();
+                final String deadQueueName = deadConfig.getQueueName();
+                String deadRoutingKey = deadConfig.getRoutingKey();
+                if (StrUtil.isBlankOrUndefined(deadRoutingKey)) {
+                    deadRoutingKey = "#";
+                }
+                channel.queueDeclare(deadQueueName, durable, false, false, args); //获取队列
+                args.put("x-dead-letter-exchange", deadChangeName);
+                args.put("x-dead-letter-routing-key", deadRoutingKey);
 
-            final String changeName = "exchange.normal";
-            channel.queueDeclare(queueName, durable, false, false, null); //获取队列
-            // 绑定路由
-            channel.queueBind(queueName, changeName, "");
+                if (!StrUtil.isBlankOrUndefined(deadChangeName)) {
+                    channel.exchangeDeclare(deadChangeName, exchangeType.name(), durable);
+                    // 绑定
+                    channel.queueBind(deadQueueName, deadChangeName, deadRoutingKey);
+                }
+            }
 
+            channel.queueDeclare(queueName, durable, false, false, args); //获取队列
+            if (StrUtil.isNotBlank(changeName)) {
+                /*
+                 * 声明一个交换机
+                 * 参数1：交换机的名称，取值任意
+                 * 参数2：交换机的类型，取值为：direct、fanout、topic、headers
+                 * 参数3：是否为持久化的交换机
+                 * 注意：
+                 *      1) 声明交换机时，如果这个交换机已经存在，则放弃声明；如果交换机不存在，则声明该交换机
+                 *      2) 这行代码可有可无，但是使用前要确保该交换机已存在
+                 */
+                channel.exchangeDeclare(changeName, exchangeType.name(), durable);
+                // 绑定路由
+                channel.queueBind(queueName, changeName, routingKey);
+            }
             channel.basicQos(0, 1, false); //分发机制为触发式
+
             //建立消费者
-            Consumer consumer = new DefaultConsumer(channel) {
+            boolean finalIsAutoClose = isAutoClose;
+            Channel finalChannel = channel;
+            Consumer consumer = new DefaultConsumer(finalChannel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     long deliveryTag = envelope.getDeliveryTag();
                     ConsumeAction consumeResult = ConsumeAction.RETRY;
                     try {
                         String message = new String(body, StandardCharsets.UTF_8);
-//                        System.out.println("Customer Received '" + message + "'");
-                        consumeResult = dealMessage.apply(message);
+                        consumeResult = successMessage.apply(message);
+                        //消息丢到死信 或 从死信直接丢弃
+                        if (consumeResult == ConsumeAction.ACCEPT) {
+                            // 确认消息消费
+                            finalChannel.basicAck(deliveryTag, false);
+                        } else {
+                            finalChannel.basicNack(deliveryTag, false, consumeResult == ConsumeAction.RETRY); //消息重回队列
+                        }
+                        if (finalIsAutoClose) {
+                            closeChannelAndConnection(finalChannel, connection);
+                        } else {
+                            closeConnection(connection);
+                        }
+                        countChannel(consumerChannelCount, finalChannel);
                     } catch (Exception e) {
-                        if (isAutoClose) {
-                            try {
-                                channel.close();
-                            } catch (TimeoutException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        }
                         log.error("异常: {}", ExceptionUtil.stacktraceToString(e));
-                        throw new RuntimeException(e);
-                    }
-
-                    if (consumeResult == ConsumeAction.ACCEPT) {
-                        // 确认消息消费
-                        channel.basicAck(deliveryTag, false);
-                    } else if (consumeResult == ConsumeAction.RETRY) {
-                        channel.basicNack(deliveryTag, false, true); //消息重回队列
-                    } else {
-                        channel.basicNack(deliveryTag, false, false); //消息直接丢弃
-                    }
-                    if (isAutoClose) {
-                        try {
-                            channel.close();
-                        } catch (TimeoutException e) {
-                            throw new RuntimeException(e);
+                        if (finalIsAutoClose) {
+                            closeChannelAndConnection(finalChannel, connection);
+                        } else {
+                            closeConnection(connection);
                         }
+                        countChannel(consumerChannelCount, finalChannel);
+                        throw new RuntimeException(e);
                     }
                 }
             };
             // 从左到右参数意思分别是：队列名称、是否读取消息后直接删除消息，消费者
             channel.basicConsume(queueName, false, consumer);
         } catch (Exception ex) {
-            log.error("QueueName:" + queueName, ex);
-            throw ex;
-        } finally {
+            log.error("异常: {}", ExceptionUtil.stacktraceToString(ex));
             if (isAutoClose) {
-                resetMQConnectionToFree(connection);
+                closeChannelAndConnection(channel, connection);
+            } else {
+                closeConnection(connection);
             }
+            countChannel(consumerChannelCount, channel);
+            throw ex;
         }
+    }
+
+    private static void countChannel(AtomicInteger channelCount, Channel channel) {
+        ThreadUtil.execute(() -> {
+            while (true) {
+                try {
+                    if (!channel.isOpen()) {
+                        channelCount.decrementAndGet();
+                    }
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        });
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @param msg 消息
+     * @return {@link String}
+     * @throws IOException          io异常
+     * @throws TimeoutException     超时异常
+     * @throws InterruptedException 中断异常
+     */
+    public static void sendMsg(MqConfig mqConfig, String msg, java.util.function.Consumer<SendAction> sendFunc) {
+        final Connection connection = mqPool.getConnection();
+        sendMsg(connection, mqConfig, msg, null, sendFunc);
+    }
+
+
+    public static void consumeMsg(MqConfig mqConfig,
+                                  Function<String, ConsumeAction> successMessage) throws IOException {
+        final Connection connection = mqPool.getConnection();
+        consumeMsg(connection, mqConfig,
+                successMessage);
     }
 
 
     /**
      * 获取消息数
      *
-     * @param QueueName 队列名称
+     * @param queueName 队列名称
      * @return int
-     * @throws IOException          ioexception
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
+     * @throws IOException      io异常
+     * @throws TimeoutException 超时异常
      */
-    public static int getMessageCount(String QueueName) throws IOException, TimeoutException, InterruptedException {
-        return getMessageCount(createMqConnectionInPoolNew(), QueueName);
+    public static int getMessageCount(String queueName) throws IOException, TimeoutException {
+        final Connection connection = mqPool.getConnection();
+        return getMessageCount(connection, queueName);
     }
-
 
     /**
      * 获取消息数
      *
      * @param connection 连接
-     * @param QueueName  队列名称
+     * @param queueName  队列名称
      * @return int
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
+     * @throws IOException      io异常
+     * @throws TimeoutException 超时异常
      */
-    public static int getMessageCount(Connection connection, String QueueName) throws IOException, TimeoutException, InterruptedException {
+    public static int getMessageCount(Connection connection, String queueName) throws IOException, TimeoutException {
         int msgCount = 0;
-        boolean reTry = false;
-        int reTryCount = 0;
-
-        do {
-            reTry = false;
-            Channel channel = connection.createChannel();
-            try {
-                channel.queueDeclare(QueueName, true, false, false, null); //获取队列
-                msgCount = (int) channel.messageCount(QueueName);
-            } catch (Exception ex) {
-                if (ex instanceof SocketException) {
-                    if ((++reTryCount) <= DEFAULT_RETRY_CONNECTION_COUNT)//可重试1次
-                    {
-                        resetMQConnectionToFree(connection);
-                        connection = createMqConnectionInPoolNew();
-                        reTry = true;
-                    }
-                }
-
-                throw ex;
-            } finally {
-                channel.close();
-                if (!reTry) {
-                    resetMQConnectionToFree(connection);
-                }
-            }
-        } while (reTry);
-
+        try (Channel channel = connection.createChannel()) {
+            channel.queueDeclare(queueName, true, false, false, null); //获取队列
+            msgCount = (int) channel.messageCount(queueName);
+        } finally {
+            mqPool.returnConnection(connection);
+        }
         return msgCount;
     }
 
+    private static void closeChannelAndConnection(Channel channel, Connection connection) {
+        if (channel != null) {
+            try {
+                channel.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (connection != null) {
+            mqPool.returnConnection(connection);
+        }
+    }
+
+
+    private static void closeConnection(Connection connection) {
+        if (connection != null) {
+            mqPool.returnConnection(connection);
+        }
+    }
+
+    public static AtomicInteger getSendChannelCount() {
+        return sendChannelCount;
+    }
+
+    public static AtomicInteger getConsumerChannelCount() {
+        return consumerChannelCount;
+    }
 }

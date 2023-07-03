@@ -43,7 +43,6 @@
             <artifactId>xm-request-trace-id</artifactId>
         </dependency>
 
-
         <!-- 异常自动记录入库，可关闭依赖，停止该功能 -->
         <!--        <dependency>-->
         <!--            <groupId>com.xunmo</groupId>-->
@@ -86,21 +85,10 @@
             <artifactId>xm-exception</artifactId>
         </dependency>
 
-        <!-- 通用web包，可关闭依赖，停止该功能 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-web</artifactId>
-        </dependency>
-
         <!--        <dependency>-->
         <!--            <groupId>org.noear</groupId>-->
         <!--            <artifactId>sa-token-solon-plugin</artifactId>-->
         <!--        </dependency>-->
-
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>redisx</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.noear</groupId>

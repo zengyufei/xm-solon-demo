@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Component;
 import org.noear.solon.annotation.Inject;
 import org.noear.solon.core.handle.Context;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -66,18 +65,6 @@ public class XmGlobalException {
 
     @ExceptionHandler(ArithmeticException.class)
     public AjaxJson handlerArithmeticException(Context ctx, Exception e) {
-        log.error(ExceptionUtil.stacktraceToString(e));
-
-        // 打印请求和异常信息
-        printRequestInfo(ctx, e);
-
-        final AjaxJson error = AjaxJson.getError(e.getMessage());
-        error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
-        return error;
-    }
-
-    @ExceptionHandler(JedisConnectionException.class)
-    public AjaxJson handlerJedisConnectionException(Context ctx, JedisConnectionException e) {
         log.error(ExceptionUtil.stacktraceToString(e));
 
         // 打印请求和异常信息
