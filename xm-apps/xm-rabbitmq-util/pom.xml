@@ -27,6 +27,11 @@
             <artifactId>amqp-client</artifactId>
             <version>5.13.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-test</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 

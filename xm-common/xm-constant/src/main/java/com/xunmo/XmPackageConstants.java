@@ -13,8 +13,6 @@ public interface XmPackageConstants {
 	String XM_SOLON = "xm-solon";
 	String XM_TEST = "xm-test";
 	String XM_WEB = "xm-web";
-	String XM_P6SPY = "xm-p6spy";
-	String XM_ORM_MP_MYSQL = "xm-orm-mp-mysql";
 	String XM_HEALTH = "xm-health";
 	String XM_EXCEPTION_RECORD = "xm-exception-record";
 	String XM_EXCEPTION = "xm-exception";

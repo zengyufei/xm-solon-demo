@@ -16,6 +16,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <xm.version>1.0.0</xm.version>
         <solon.version>2.3.6</solon.version>
+        <jimmer.version>0.7.107</jimmer.version>
+        <mapstruct-plus.version>1.3.2</mapstruct-plus.version>
     </properties>
 
     <modules>

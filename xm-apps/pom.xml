@@ -22,7 +22,7 @@
 
     <modules>
         <module>./xm-biz-base</module>
-        <module>./xm-exception-record</module>
+<!--        <module>./xm-exception-record</module>-->
         <module>./xm-exception</module>
         <module>./xm-health</module>
         <module>./xm-rabbitmq-util</module>

@@ -50,11 +50,11 @@
                 <version>${xm.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.xunmo</groupId>
-                <artifactId>xm-exception-record</artifactId>
-                <version>${xm.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.xunmo</groupId>-->
+<!--                <artifactId>xm-exception-record</artifactId>-->
+<!--                <version>${xm.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>com.xunmo</groupId>
@@ -117,11 +117,7 @@
                 <version>${xm.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.xunmo</groupId>
-                <artifactId>xm-orm-mp-mysql</artifactId>
-                <version>${xm.version}</version>
-            </dependency>
+
 
             <dependency>
                 <groupId>com.xunmo</groupId>
