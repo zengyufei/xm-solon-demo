@@ -1,4 +1,4 @@
-package com.xunmo.utils;
+package com.xunmo.rabbitmq;
 
 
 import com.rabbitmq.client.Connection;
@@ -7,11 +7,11 @@ import com.xunmo.pool.impl.GenericObjectPool;
 import java.io.Closeable;
 
 
-public class MqPool implements Closeable {
+public class MqConnectionPool implements Closeable {
     private final GenericObjectPool<Connection, RuntimeException> internalPool;
 
-    public MqPool(MqConnectionPoolObjectFactory factory) {
-        this.internalPool = new GenericObjectPool<>(factory, factory.getMqPoolConfig());
+    public MqConnectionPool(MqConnectionPoolObjectFactory factory) {
+        this.internalPool = new GenericObjectPool<>(factory, factory.getMqConnectionPoolConfig());
     }
 
     // 获取连接

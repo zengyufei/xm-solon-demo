@@ -1,4 +1,4 @@
-package com.xunmo.enums;
+package com.xunmo.rabbitmq.enums;
 
 public enum SendAction {
     SUCCESS,  // 发送成功

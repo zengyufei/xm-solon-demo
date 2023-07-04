@@ -1,4 +1,4 @@
-package com.xunmo.enums;
+package com.xunmo.rabbitmq.enums;
 
 public enum ConsumeAction {
     ACCEPT,  // 消费成功

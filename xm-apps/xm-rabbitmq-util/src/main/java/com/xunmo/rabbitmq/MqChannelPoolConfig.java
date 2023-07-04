@@ -1,22 +1,18 @@
-package com.xunmo.utils;
+package com.xunmo.rabbitmq;
 
 
-import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
 import com.xunmo.pool.impl.GenericObjectPoolConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class MqPoolConfig extends GenericObjectPoolConfig<Connection> {
+public class MqChannelPoolConfig extends GenericObjectPoolConfig<Channel> {
 
     private final static int DEFAULT_MAX_CONNECTION_USING_COUNT = 300; //默认最大连接可访问次数
-    private String host;
-    private String username;
-    private String password;
-    private int port;
 
-    public MqPoolConfig() {
+    public MqChannelPoolConfig() {
         setMaxTotal(10);
         setMaxIdle(5);
         setMinIdle(2);

@@ -1,4 +1,4 @@
-package com.xunmo.utils;
+package com.xunmo.rabbitmq;
 
 import cn.hutool.json.JSONUtil;
 import com.rabbitmq.client.Connection;
@@ -16,29 +16,29 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public class MqConnectionPoolObjectFactory extends BasePooledObjectFactory<Connection, RuntimeException> {
     @Getter
-    private MqPoolConfig mqPoolConfig;
+    private MqConnectionPoolConfig mqConnectionPoolConfig;
     private ConnectionFactory connectionFactory = new ConnectionFactory();
 
-    public MqConnectionPoolObjectFactory(MqPoolConfig mqPoolConfig) {
+    public MqConnectionPoolObjectFactory(MqConnectionPoolConfig mqConnectionPoolConfig) {
         super();
-        this.mqPoolConfig = mqPoolConfig;
+        this.mqConnectionPoolConfig = mqConnectionPoolConfig;
 
         // 设置服务地址
-        connectionFactory.setHost(mqPoolConfig.getHost());
+        connectionFactory.setHost(mqConnectionPoolConfig.getHost());
         // 设置账号信息，用户名、密码、vhost
-        connectionFactory.setUsername(mqPoolConfig.getUsername());
-        connectionFactory.setPassword(mqPoolConfig.getPassword());
-        connectionFactory.setPort(mqPoolConfig.getPort());
+        connectionFactory.setUsername(mqConnectionPoolConfig.getUsername());
+        connectionFactory.setPassword(mqConnectionPoolConfig.getPassword());
+        connectionFactory.setPort(mqConnectionPoolConfig.getPort());
         connectionFactory.setConnectionTimeout(300);
         connectionFactory.setChannelRpcTimeout(300);
-        connectionFactory.setAutomaticRecoveryEnabled(false); // 自动重连
-        connectionFactory.setTopologyRecoveryEnabled(false);
+        connectionFactory.setAutomaticRecoveryEnabled(true); // 自动重连
+        connectionFactory.setTopologyRecoveryEnabled(true);
     }
 
 
     @Override
     public Connection create() throws RuntimeException {
-        log.trace("在对象池中创建对象 {}", JSONUtil.toJsonPrettyStr(mqPoolConfig));
+        log.trace("在对象池中创建对象 {}", JSONUtil.toJsonPrettyStr(mqConnectionPoolConfig));
         try {
             return connectionFactory.newConnection();
         } catch (IOException | TimeoutException e) {

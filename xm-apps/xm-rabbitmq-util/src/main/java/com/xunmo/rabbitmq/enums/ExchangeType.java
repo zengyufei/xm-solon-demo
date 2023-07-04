@@ -1,4 +1,4 @@
-package com.xunmo.enums;
+package com.xunmo.rabbitmq.enums;
 
 public enum ExchangeType {
     direct,  // direct 类型的行为是"先匹配, 再投送". 即在绑定时设定一个 routingkey, 消息的routingkey 匹配时, 才会被交换器投送到绑定的队列中去.
