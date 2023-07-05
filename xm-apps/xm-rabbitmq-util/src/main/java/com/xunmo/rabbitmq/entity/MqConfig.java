@@ -16,6 +16,7 @@ import java.util.Objects;
 @Builder(builderMethodName = "of")
 public class MqConfig {
 
+    private String title;
     private String changeName;
     private String queueName;
     private String routingKey;
@@ -35,8 +36,12 @@ public class MqConfig {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MqConfig mqConfig = (MqConfig) o;
         return Objects.equals(changeName, mqConfig.changeName) && Objects.equals(queueName, mqConfig.queueName) && Objects.equals(routingKey, mqConfig.routingKey) && Objects.equals(durable, mqConfig.durable) && exchangeType == mqConfig.exchangeType && Objects.equals(ttl, mqConfig.ttl) && Objects.equals(max, mqConfig.max) && Objects.equals(deadConfig, mqConfig.deadConfig);
     }
