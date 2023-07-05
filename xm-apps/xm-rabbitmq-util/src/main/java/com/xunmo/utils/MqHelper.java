@@ -105,13 +105,6 @@ public class MqHelper {
             }
             // 设置服务地址
             // 设置账号信息，用户名、密码、vhost
-//            connectionFactory.setHost(host);
-//            connectionFactory.setUsername(username);
-//            connectionFactory.setPassword(password);
-//            connectionFactory.setPort(port);
-//            connectionFactory.setAutomaticRecoveryEnabled(false); // 自动重连
-//            connectionFactory.setTopologyRecoveryEnabled(false);
-
             final MqConnectionPoolConfig mqPoolConfig = new MqConnectionPoolConfig();
             mqPoolConfig.setHost(host);
             mqPoolConfig.setUsername(username);
@@ -726,10 +719,6 @@ public class MqHelper {
 
     private static void closeConnec(Connection connection) {
         mqConnectionPool.returnConnection(connection);
-    }
-
-    public static AtomicInteger getSendChannelCount() {
-        return sendChannelCount;
     }
 
     public static AtomicInteger getConsumerChannelCount() {
