@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 @Slf4j
 public class MqHelper {
     private final static int tryCountMax = 3;
-    private final static int channelUseMaxCount = 3;
+    private final static int channelUseMaxCount = 30;
     private final static AtomicBoolean isInit = new AtomicBoolean(false);
     private final static Object initLock = new Object();
     private static final AtomicInteger sendChannelCount = new AtomicInteger(1);
