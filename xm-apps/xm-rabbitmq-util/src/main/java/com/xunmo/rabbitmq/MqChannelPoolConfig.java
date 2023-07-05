@@ -11,6 +11,10 @@ import lombok.EqualsAndHashCode;
 public class MqChannelPoolConfig extends GenericObjectPoolConfig<Channel> {
 
     private final static int DEFAULT_MAX_CONNECTION_USING_COUNT = 300; //默认最大连接可访问次数
+    private String host;
+    private String username;
+    private String password;
+    private int port;
 
     public MqChannelPoolConfig() {
         setMaxTotal(10);

@@ -5,9 +5,7 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.rabbitmq.client.*;
-import com.xunmo.rabbitmq.MqConnectionPool;
-import com.xunmo.rabbitmq.MqConnectionPoolConfig;
-import com.xunmo.rabbitmq.MqConnectionPoolObjectFactory;
+import com.xunmo.rabbitmq.*;
 import com.xunmo.rabbitmq.entity.DeadConfig;
 import com.xunmo.rabbitmq.entity.MqConfig;
 import com.xunmo.rabbitmq.enums.ConsumeAction;
@@ -36,27 +34,12 @@ public class MqHelper {
     private static final AtomicInteger sendChannelCount = new AtomicInteger(1);
     private static final AtomicInteger consumerChannelCount = new AtomicInteger(1);
     private static final Map<MqConfig, List<Channel>> channelMap = new ConcurrentHashMap<>();
-    private static final Map<Channel, Integer> channelUseCountMap = new ConcurrentHashMap<>();
-    private static final ConcurrentLinkedQueue<Channel> stayCloseList = new ConcurrentLinkedQueue<>();
     private static final List<String> sendExistsChannelNames = new CopyOnWriteArrayList<>();
     private static final List<String> consumerExistsChannelNames = new CopyOnWriteArrayList<>();
     private static final List<String> closeChannelNames = new CopyOnWriteArrayList<>();
-    private static MqConnectionPool mqConnectionPool;
+    private static MqChannelPool mqChannelPool;
 
     static {
-        Timer timer = new Timer();
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (CollUtil.isNotEmpty(stayCloseList)) {
-                    while (stayCloseList.size() > 2) {
-                        final Channel channel = stayCloseList.poll();
-                        closeChannel(channel);
-                    }
-                }
-            }
-        }, 1000L, 10000L);
     }
 
     // 构造方法私有化 防止直接通过类创建实例
@@ -76,16 +59,16 @@ public class MqHelper {
                 final SolonProps cfg = Solon.cfg();
 
                 // 设置账号信息，用户名、密码、vhost
-                final MqConnectionPoolConfig mqPoolConfig = new MqConnectionPoolConfig();
-                mqPoolConfig.setHost(cfg.get("xm.mq.host"));
-                mqPoolConfig.setUsername(cfg.get("xm.mq.username"));
-                mqPoolConfig.setPassword(cfg.get("xm.mq.password"));
-                mqPoolConfig.setPort(cfg.getInt("xm.mq.port", 5432));
-                mqPoolConfig.setMaxIdle(10);
-                mqPoolConfig.setMaxTotal(20);
-                mqPoolConfig.setMinIdle(1);
-                final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
-                mqConnectionPool = new MqConnectionPool(mqConnectionPoolObjectFactory);
+                final MqChannelPoolConfig mqChannelPoolConfig = new MqChannelPoolConfig();
+                mqChannelPoolConfig.setHost(cfg.get("xm.mq.host"));
+                mqChannelPoolConfig.setUsername(cfg.get("xm.mq.username"));
+                mqChannelPoolConfig.setPassword(cfg.get("xm.mq.password"));
+                mqChannelPoolConfig.setPort(cfg.getInt("xm.mq.port", 5432));
+                mqChannelPoolConfig.setMaxIdle(10);
+                mqChannelPoolConfig.setMaxTotal(20);
+                mqChannelPoolConfig.setMinIdle(1);
+                final MqChannelPoolObjectFactory mqChannelPoolObjectFactory = new MqChannelPoolObjectFactory(mqChannelPoolConfig);
+                mqChannelPool = new MqChannelPool(mqChannelPoolObjectFactory);
                 isInit.compareAndSet(false, true);
             }
         }
@@ -103,18 +86,18 @@ public class MqHelper {
             if (isInit.get()) {
                 return;
             }
-            // 设置服务地址
+
             // 设置账号信息，用户名、密码、vhost
-            final MqConnectionPoolConfig mqPoolConfig = new MqConnectionPoolConfig();
-            mqPoolConfig.setHost(host);
-            mqPoolConfig.setUsername(username);
-            mqPoolConfig.setPassword(password);
-            mqPoolConfig.setPort(port);
-            mqPoolConfig.setMaxIdle(10);
-            mqPoolConfig.setMaxTotal(20);
-            mqPoolConfig.setMinIdle(1);
-            final MqConnectionPoolObjectFactory mqConnectionPoolObjectFactory = new MqConnectionPoolObjectFactory(mqPoolConfig);
-            mqConnectionPool = new MqConnectionPool(mqConnectionPoolObjectFactory);
+            final MqChannelPoolConfig mqChannelPoolConfig = new MqChannelPoolConfig();
+            mqChannelPoolConfig.setHost(host);
+            mqChannelPoolConfig.setUsername(username);
+            mqChannelPoolConfig.setPassword(password);
+            mqChannelPoolConfig.setPort(port);
+            mqChannelPoolConfig.setMaxIdle(10);
+            mqChannelPoolConfig.setMaxTotal(20);
+            mqChannelPoolConfig.setMinIdle(1);
+            final MqChannelPoolObjectFactory mqChannelPoolObjectFactory = new MqChannelPoolObjectFactory(mqChannelPoolConfig);
+            mqChannelPool = new MqChannelPool(mqChannelPoolObjectFactory);
             isInit.compareAndSet(false, true);
         }
     }
@@ -123,10 +106,20 @@ public class MqHelper {
     /**
      * 发送消息
      *
-     * @param connection 连接
+     */
+    public static void sendMsg(
+            MqConfig mqConfig,
+            String msg,
+            java.util.function.BiConsumer<Channel, SendAction> sendFunc
+    ) throws IOException {
+        sendMsg(mqConfig, msg, null, sendFunc);
+    }
+
+    /**
+     * 发送消息
+     *
      */
     private static void sendMsg(
-            Connection connection,
             MqConfig mqConfig,
             String msg,
             Integer expiration,
@@ -181,7 +174,7 @@ public class MqHelper {
                 .deadConfig(deadConfig)
                 .build();
 
-        Channel channel = getSendChannel(connection, newConfig);
+        Channel channel = getSendChannel(newConfig);
         final ConfirmListener confirmListener = new ConfirmListener() {
             // 消息正确到达 broker
             @Override
@@ -232,17 +225,8 @@ public class MqHelper {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (channel.isOpen()) {
-                final Integer count = channelUseCountMap.computeIfAbsent(channel, k -> 0);
-                channelUseCountMap.put(channel, count + 1);
-            }
-
             if (isAutoClose) {
-                closeChannelAndConnection(channel, connection);
             } else {
-                if (connection != null) {
-                    closeConnection(connection);
-                }
             }
             countChannel(sendChannelCount, channel);
         }
@@ -252,13 +236,11 @@ public class MqHelper {
     /**
      * 消费消息
      *
-     * @param connection     连接
      * @param successMessage 消息处理函数
      * @throws IOException      io异常
      * @throws TimeoutException 超时异常
      */
-    private static void consumeMsg(Connection connection,
-                                   MqConfig mqConfig,
+    public static void consumeMsg(MqConfig mqConfig,
                                    BiFunction<Channel, String, ConsumeAction> successMessage) throws IOException {
         ExchangeType exchangeType = mqConfig.getExchangeType();
         Boolean durable = mqConfig.getDurable();
@@ -297,7 +279,7 @@ public class MqHelper {
                 .deadConfig(deadConfig)
                 .build();
 
-        final Channel channel = getConsumeChannel(connection, newConfig);
+        final Channel channel = getConsumeChannel(newConfig);
         try {
             //建立消费者
             Consumer consumer = new DefaultConsumer(channel) {
@@ -327,68 +309,39 @@ public class MqHelper {
             log.error("异常: {}", ExceptionUtil.stacktraceToString(ex));
             throw ex;
         } finally {
-            if (channel.isOpen()) {
-                final Integer count = channelUseCountMap.computeIfAbsent(channel, k -> 0);
-                channelUseCountMap.put(channel, count + 1);
-            }
-
             if (isAutoClose) {
-                closeChannelAndConnection(channel, connection);
             } else {
-                if (connection != null) {
-                    closeConnection(connection);
-                }
             }
             countChannel(consumerChannelCount, channel);
         }
     }
 
-    private static Channel getSendChannel(Connection connection, MqConfig mqConfig) throws IOException {
+    private static Channel getSendChannel(MqConfig mqConfig) throws IOException {
+        mqConfig.setType("0");
         Channel channel;
         if (channelMap.containsKey(mqConfig)) {
             final List<Channel> channelList = channelMap.get(mqConfig);
             channel = getActiveChannel(channelList);
             if (channel == null) {
-                channel = initSendChannel(connection, mqConfig);
-            } else if (channelUseCountMap.containsKey(channel) && channelUseCountMap.get(channel) > channelUseMaxCount) {
-                final String title = mqConfig.getTitle();
-                if (channel.isOpen()) {
-                    log.warn("{} send channel {} 超出使用次数限制, 重新制作新的 channel", title, channel.getChannelNumber());
-                } else {
-                    log.warn("{} send channel 超出使用次数限制, 重新制作新的 channel", title);
-                }
-                Channel oldChannel = channel;
-                channel = initSendChannel(connection, mqConfig);
-                channelUseCountMap.remove(oldChannel);
-                stayCloseList.add(oldChannel);
+                channel = mqChannelPool.getChannel(mqConfig);
             }
         } else {
-            channel = initSendChannel(connection, mqConfig);
+            channel = mqChannelPool.getChannel(mqConfig);
         }
         return channel;
     }
 
-    private static Channel getConsumeChannel(Connection connection, MqConfig mqConfig) throws IOException {
+    private static Channel getConsumeChannel(MqConfig mqConfig) throws IOException {
+        mqConfig.setType("1");
         Channel channel;
         if (channelMap.containsKey(mqConfig)) {
             final List<Channel> channelList = channelMap.get(mqConfig);
             channel = getActiveChannel(channelList);
             if (channel == null) {
-                channel = initConsumeChannel(connection, mqConfig);
-            } else if (channelUseCountMap.containsKey(channel) && channelUseCountMap.get(channel) > channelUseMaxCount) {
-                final String title = mqConfig.getTitle();
-                if (channel.isOpen()) {
-                    log.warn("{} consume channel {} 超出使用次数限制, 重新制作新的 channel", title, channel.getChannelNumber());
-                } else {
-                    log.warn("{} consume channel 超出使用次数限制, 重新制作新的 channel", title);
-                }
-                Channel oldChannel = channel;
-                channel = initConsumeChannel(connection, mqConfig);
-                channelUseCountMap.remove(oldChannel);
-                stayCloseList.add(oldChannel);
+                channel = mqChannelPool.getChannel(mqConfig);
             }
         } else {
-            channel = initConsumeChannel(connection, mqConfig);
+            channel = mqChannelPool.getChannel(mqConfig);
         }
         return channel;
     }
@@ -406,156 +359,6 @@ public class MqHelper {
         return null;
     }
 
-
-    private static Channel initSendChannel(Connection connection, MqConfig mqConfig) throws IOException {
-        final String changeName = mqConfig.getChangeName();
-        final String queueName = mqConfig.getQueueName();
-        final String routingKey = mqConfig.getRoutingKey();
-        final Boolean durable = mqConfig.getDurable();
-        final Boolean isDelay = mqConfig.getIsDelay();
-        final ExchangeType exchangeType = mqConfig.getExchangeType();
-        final Long ttl = mqConfig.getTtl();
-        final Long max = mqConfig.getMax();
-        final DeadConfig deadConfig = mqConfig.getDeadConfig();
-
-        Channel channel;
-        channel = tryReturn(() -> {
-            try {
-                return connection.createChannel();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }, () -> "获取 channel 异常");
-        final ArrayList<Channel> channels = new ArrayList<>();
-        channels.add(channel);
-        channelMap.put(mqConfig, channels);
-
-        // 注意，因为要等待broker的confirm消息，暂时不关闭channel和connection
-        final String channelString = channel.toString();
-        sendExistsChannelNames.add(channelString);
-
-        sendChannelCount.incrementAndGet();
-
-        Map<String, Object> args = new HashMap<>();
-        // 队列设置最大长度
-        if (max != null) {
-            args.put("x-max-length", max);
-        }
-        //设置队列有效期为10秒
-        if (ttl != null) {
-            args.put("x-message-ttl", ttl);
-        }
-        if (deadConfig != null) {
-            final String deadChangeName = deadConfig.getChangeName();
-            String deadRoutingKey = deadConfig.getRoutingKey();
-            if (StrUtil.isBlankOrUndefined(deadRoutingKey)) {
-                deadRoutingKey = "#";
-            }
-            args.put("x-dead-letter-exchange", deadChangeName);
-            args.put("x-dead-letter-routing-key", deadRoutingKey);
-        }
-
-        if (isDelay) {
-            // 延迟交换器  https://xie.infoq.cn/article/e0c56c9d10a047fb179bc3aba
-            args.put("x-delayed-type", exchangeType.name());
-            // exchange 持久化
-            channel.exchangeDeclare(changeName, "x-delayed-message", durable, false, args);
-        } else if (StrUtil.isNotBlank(changeName)) {
-            /*
-             * 声明一个交换机
-             * 参数1：交换机的名称，取值任意
-             * 参数2：交换机的类型，取值为：direct、fanout、topic、headers
-             * 参数3：是否为持久化的交换机
-             * 注意：
-             *      1) 声明交换机时，如果这个交换机已经存在，则放弃声明；如果交换机不存在，则声明该交换机
-             *      2) 这行代码可有可无，但是使用前要确保该交换机已存在
-             */
-            channel.exchangeDeclare(changeName, exchangeType.name(), durable, false, args);
-            /*
-             * 将队列绑定到交换机
-             * 参数1：队列的名称
-             * 参数2：交换机的名称
-             * 参数3：消息的RoutingKey（就是BindingKey）
-             * 注意：
-             *      1) 在进行队列和交换机绑定时，必须要确保交换机和队列已经成功声明
-             */
-            channel.queueBind(queueName, changeName, routingKey);
-        }
-
-        // 参数从前面开始分别意思为：队列名称，是否持久化，独占的队列，不使用时是否自动删除，其他参数
-        tryDo(() -> channel.queueDeclare(queueName, durable, false, false, args), () -> "获取队列异常");
-        channel.confirmSelect();// 开启发送方确认模式
-        return channel;
-    }
-
-
-    private static Channel initConsumeChannel(Connection connection, MqConfig mqConfig) throws IOException {
-        final String changeName = mqConfig.getChangeName();
-        final String queueName = mqConfig.getQueueName();
-        final String routingKey = mqConfig.getRoutingKey();
-        final Boolean durable = mqConfig.getDurable();
-        final Boolean isDelay = mqConfig.getIsDelay();
-        final ExchangeType exchangeType = mqConfig.getExchangeType();
-        final Long ttl = mqConfig.getTtl();
-        final Long max = mqConfig.getMax();
-        final DeadConfig deadConfig = mqConfig.getDeadConfig();
-
-        Channel channel;
-        channel = tryReturn(() -> {
-            try {
-                return connection.createChannel();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }, () -> "获取 channel 异常");
-        final ArrayList<Channel> channels = new ArrayList<>();
-        channels.add(channel);
-        channelMap.put(mqConfig, channels);
-
-
-        final String channelString = channel.toString();
-        consumerExistsChannelNames.add(channelString);
-        consumerChannelCount.incrementAndGet();
-        Map<String, Object> args = new HashMap<>();
-        if (deadConfig != null) {
-            final String deadChangeName = deadConfig.getChangeName();
-            final String deadQueueName = deadConfig.getQueueName();
-            String deadRoutingKey = deadConfig.getRoutingKey();
-            if (StrUtil.isBlankOrUndefined(deadRoutingKey)) {
-                deadRoutingKey = "#";
-            }
-
-            tryDo(() -> channel.queueDeclare(deadQueueName, durable, false, false, args), () -> "获取队列异常");
-
-
-            args.put("x-dead-letter-exchange", deadChangeName);
-            args.put("x-dead-letter-routing-key", deadRoutingKey);
-
-            if (!StrUtil.isBlankOrUndefined(deadChangeName)) {
-                tryDo(() -> channel.exchangeDeclare(deadChangeName, exchangeType.name(), durable), () -> "创建死信交换机失败");
-                String finalDeadRoutingKey = deadRoutingKey;
-                tryDo(() -> channel.queueBind(deadQueueName, deadChangeName, finalDeadRoutingKey), () -> "绑定死信交换机和死信队列失败");
-            }
-        }
-
-        tryDo(() -> channel.queueDeclare(queueName, durable, false, false, args), () -> "获取队列失败");
-        if (StrUtil.isNotBlank(changeName)) {
-            /*
-             * 声明一个交换机
-             * 参数1：交换机的名称，取值任意
-             * 参数2：交换机的类型，取值为：direct、fanout、topic、headers
-             * 参数3：是否为持久化的交换机
-             * 注意：
-             *      1) 声明交换机时，如果这个交换机已经存在，则放弃声明；如果交换机不存在，则声明该交换机
-             *      2) 这行代码可有可无，但是使用前要确保该交换机已存在
-             */
-            tryDo(() -> channel.exchangeDeclare(changeName, exchangeType.name(), durable), () -> "创建交换机失败");
-            // 绑定路由
-            tryDo(() -> channel.queueBind(queueName, changeName, routingKey), () -> "绑定交换机和队列失败");
-        }
-        channel.basicQos(0, 1, false); //分发机制为触发式
-        return channel;
-    }
 
     private static void tryDo(TryDoing tryDoing, Supplier<String> errorMsg) {
         int tryCount = 3;
@@ -605,121 +408,23 @@ public class MqHelper {
             }
         });
     }
+//
+//    /**
+//     * 获取消息数
+//     *
+//     * @param queueName  队列名称
+//     * @return int
+//     * @throws IOException      io异常
+//     * @throws TimeoutException 超时异常
+//     */
+//    public static int getMessageCount(String queueName) throws IOException {
+//        int msgCount = 0;
+//        Channel channel = mqChannelPool.getChannel();
+//        channel.queueDeclare(queueName, true, false, false, null); //获取队列
+//        msgCount = (int) channel.messageCount(queueName);
+//        return msgCount;
+//    }
 
-    /**
-     * 发送消息
-     *
-     * @param msg 消息
-     * @return {@link String}
-     * @throws IOException          io异常
-     * @throws TimeoutException     超时异常
-     * @throws InterruptedException 中断异常
-     */
-    public static void sendMsg(MqConfig mqConfig, String msg, java.util.function.BiConsumer<Channel, SendAction> sendFunc) throws IOException {
-        final Connection connection = getMqPoolConnection();
-        sendMsg(connection, mqConfig, msg, null, sendFunc);
-    }
-
-    public static void consumeMsg(MqConfig mqConfig, BiFunction<Channel, String, ConsumeAction> successMessage) throws IOException {
-        final Connection connection = getMqPoolConnection();
-        consumeMsg(connection, mqConfig, successMessage);
-    }
-
-    private static Connection getMqPoolConnection() {
-        return mqConnectionPool.getConnection();
-    }
-
-    /**
-     * 获取消息数
-     *
-     * @param queueName 队列名称
-     * @return int
-     * @throws IOException      io异常
-     * @throws TimeoutException 超时异常
-     */
-    public static int getMessageCount(String queueName) throws IOException, TimeoutException {
-        final Connection connection = getMqPoolConnection();
-        return getMessageCount(connection, queueName);
-    }
-
-    /**
-     * 获取消息数
-     *
-     * @param connection 连接
-     * @param queueName  队列名称
-     * @return int
-     * @throws IOException      io异常
-     * @throws TimeoutException 超时异常
-     */
-    public static int getMessageCount(Connection connection, String queueName) throws IOException, TimeoutException {
-        int msgCount = 0;
-        try (Channel channel = connection.createChannel()) {
-            channel.queueDeclare(queueName, true, false, false, null); //获取队列
-            msgCount = (int) channel.messageCount(queueName);
-        } finally {
-            closeConnection(connection);
-        }
-        return msgCount;
-    }
-
-    private static void closeChannelAndConnection(Channel channel, Connection connection) {
-        String channelString = null;
-        if (channel != null) {
-            channelString = channel.toString();
-        }
-        while (channel == null || !channel.isOpen()) {
-            try {
-                channel.close();
-            } catch (IOException | TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (channelString != null) {
-            closeChannelNames.add(channelString);
-        }
-        log.trace("关闭channel");
-        if (connection != null) {
-            closeConnection(connection);
-        }
-    }
-
-    private static void closeChannel(Channel channel) {
-        String channelString = null;
-        if (channel != null) {
-            channelString = channel.toString();
-        }
-        while (channel == null || !channel.isOpen()) {
-            try {
-                channel.close();
-            } catch (IOException | TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (channelString != null) {
-            closeChannelNames.add(channelString);
-        }
-        log.trace("关闭channel");
-    }
-
-    private static void closeConnection(Connection connection) {
-        if (connection != null) {
-            closeConnec(connection);
-        }
-    }
-
-    private static void closeConnec(Connection connection) {
-        mqConnectionPool.returnConnection(connection);
-    }
 
     public static AtomicInteger getConsumerChannelCount() {
         return consumerChannelCount;
@@ -743,7 +448,7 @@ public class MqHelper {
     }
 
     @FunctionalInterface
-    interface TryDoing {
-        void tryDo() throws IOException;
+   public interface TryDoing {
+        public void tryDo() throws IOException;
     }
 }

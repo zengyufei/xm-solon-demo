@@ -23,28 +23,6 @@ import java.util.function.Consumer;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestMqHelper {
 
-    private static AtomicBoolean countSecond(CountDownLatch countDownLatch, int maxSecond, Consumer<Integer> consumer) {
-        AtomicBoolean isBreak = new AtomicBoolean(false);
-        AtomicInteger count = new AtomicInteger(1);
-        ThreadUtil.execute(() -> {
-            while (!isBreak.get()) {
-                final int andIncrement = count.getAndIncrement();
-                if (andIncrement >= maxSecond) {
-                    isBreak.set(true);
-                    countDownLatch.countDown();
-                } else {
-                    try {
-                        consumer.accept(andIncrement);
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        return isBreak;
-    }
-
     @Test
     public void test_001_run() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(3);
@@ -202,4 +180,26 @@ public class TestMqHelper {
     }
 
 
+
+    private static AtomicBoolean countSecond(CountDownLatch countDownLatch, int maxSecond, Consumer<Integer> consumer) {
+        AtomicBoolean isBreak = new AtomicBoolean(false);
+        AtomicInteger count = new AtomicInteger(1);
+        ThreadUtil.execute(() -> {
+            while (!isBreak.get()) {
+                final int andIncrement = count.getAndIncrement();
+                if (andIncrement >= maxSecond) {
+                    isBreak.set(true);
+                    countDownLatch.countDown();
+                } else {
+                    try {
+                        consumer.accept(andIncrement);
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        return isBreak;
+    }
 }

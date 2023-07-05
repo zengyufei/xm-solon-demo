@@ -17,6 +17,7 @@ import java.util.Objects;
 public class MqConfig {
 
     private String title;
+    private String type;
     private String changeName;
     private String queueName;
     private String routingKey;
