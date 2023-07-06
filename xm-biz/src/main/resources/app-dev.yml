@@ -12,13 +12,14 @@ sa-token-dao: #名字可以随意取
     maxTotal: 200
 
 xm:
+  web:
+    cache:
+      enable: true
+      db: 2 #默认为 0，可不配置
+      server: "vat:6379"
+      password: "*xun13@mo14!154RConf!*"
   exception:
     enable: true
-  cache:
-    enable: true
-    db: 2 #默认为 0，可不配置
-    server: "vat:6379"
-    password: "*xun13@mo14!154RConf!*"
   mq:
     enable: true
     host: vat
