@@ -40,14 +40,19 @@
 
         <dependency>
             <groupId>com.xunmo</groupId>
+            <artifactId>xm-biz-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
             <artifactId>xm-request-trace-id</artifactId>
         </dependency>
 
         <!-- 异常自动记录入库，可关闭依赖，停止该功能 -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.xunmo</groupId>-->
-        <!--            <artifactId>xm-exception-record</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-exception-record</artifactId>
+        </dependency>
 
         <!-- mq 封装工具类，纯工具类依赖 -->
         <dependency>

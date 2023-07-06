@@ -3,11 +3,14 @@ package com.xunmo.config;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.xunmo.XmConstants;
 import com.xunmo.annotations.ExceptionHandler;
 import com.xunmo.common.CustomException;
 import com.xunmo.common.ISystemStatus;
+import com.xunmo.mq.exceptionRecord.MqSendService;
 import com.xunmo.utils.AjaxJson;
+import com.xunmo.webs.exceptionRecord.input.ExceptionRecordInput;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Component;
 import org.noear.solon.annotation.Inject;
@@ -15,9 +18,11 @@ import org.noear.solon.core.handle.Context;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 统一异常处理器
@@ -32,6 +37,9 @@ public class XmGlobalException {
     // 是否开启异常记录
     @Inject("${xm.exception.enable:false}")
     private Boolean enable;
+    // 是否开启异常记录
+    @Inject
+    private MqSendService mqSendService;
 
     @ExceptionHandler(CustomException.class)
     public AjaxJson handlerCustomException(Context ctx, CustomException e) {
@@ -126,24 +134,25 @@ public class XmGlobalException {
 
         log.warn("请求信息：ip: {}, method: {}, uri: {}\nparams={}", ip, method, uri, params);
 
-//        // 需要记录
-//        try{
-//            if(needRecord && Objects.nonNull(this.enable) && this.enable){
-//                String stackTrace = ExceptionUtil.stacktraceToString(throwable);
-//                String userId = "admin";
-//                ExceptionRecord record = new ExceptionRecord()
-//                        .setUri(uri)
-//                        .setMethod(method)
-//                        .setParams(Objects.isNull(params)?null: JSONUtil.toJsonStr(params))
-//                        .setIp(ip)
-//                        .setUserId(userId)
-//                        .setHappenTime(System.currentTimeMillis())
-//                        .setStackTrace(stackTrace);
-//                SenderExceptionRecord.send(record);
-//            }
-//        }catch (Exception e){
-//
-//        }
+        // 需要记录
+        try{
+            if(needRecord && Objects.nonNull(this.enable) && this.enable){
+                String stackTrace = ExceptionUtil.stacktraceToString(throwable);
+                String userId = "admin";
+                ExceptionRecordInput record = ExceptionRecordInput.of()
+                        .uri(uri)
+                        .method(method)
+                        .params(Objects.isNull(params)?null: JSONUtil.toJsonStr(params))
+                        .ip(ip)
+                        .userId(userId)
+                        .happenTime(LocalDateTime.now())
+                        .stackTrace(stackTrace)
+                        .build();
+                mqSendService.send(record);
+            }
+        }catch (Exception e){
+
+        }
 
     }
 

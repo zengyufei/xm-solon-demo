@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>xm-exception-record</artifactId>
+    <artifactId>xm-biz-api</artifactId>
     <packaging>jar</packaging>
 
 
@@ -23,26 +23,45 @@
 
     <dependencies>
 
+
         <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-biz-api</artifactId>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.serialization.jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.linpeilie</groupId>
+            <artifactId>mapstruct-plus</artifactId>
+            <version>1.3.2</version>
         </dependency>
 
         <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-biz-base</artifactId>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-sql</artifactId>
+            <version>${jimmer.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-rabbitmq-util</artifactId>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-sql-kotlin</artifactId>
+            <version>${jimmer.version}</version>
+            <scope>compile</scope>
         </dependency>
-
         <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-core-web</artifactId>
+            <groupId>org.babyfish.jimmer</groupId>
+            <artifactId>jimmer-client</artifactId>
+            <version>${jimmer.version}</version>
+            <scope>compile</scope>
         </dependency>
-
 
     </dependencies>
 
@@ -54,8 +73,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <compilerArgument>-parameters</compilerArgument>
                     <encoding>UTF-8</encoding>
                     <annotationProcessorPaths>

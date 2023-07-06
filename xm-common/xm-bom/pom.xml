@@ -53,15 +53,21 @@
 
             <dependency>
                 <groupId>com.xunmo</groupId>
+                <artifactId>xm-biz-api</artifactId>
+                <version>${xm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xunmo</groupId>
                 <artifactId>xm-biz-base</artifactId>
                 <version>${xm.version}</version>
             </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>com.xunmo</groupId>-->
-            <!--                <artifactId>xm-exception-record</artifactId>-->
-            <!--                <version>${xm.version}</version>-->
-            <!--            </dependency>-->
+            <dependency>
+                <groupId>com.xunmo</groupId>
+                <artifactId>xm-exception-record</artifactId>
+                <version>${xm.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.xunmo</groupId>
