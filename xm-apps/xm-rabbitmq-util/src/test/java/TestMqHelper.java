@@ -23,6 +23,29 @@ import java.util.function.Consumer;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestMqHelper {
 
+    private static AtomicBoolean countSecond(CountDownLatch countDownLatch, int maxSecond, Consumer<Integer> consumer) {
+        AtomicBoolean isBreak = new AtomicBoolean(false);
+        AtomicInteger count   = new AtomicInteger(1);
+        ThreadUtil.execute(() -> {
+            while (!isBreak.get()) {
+                final int andIncrement = count.getAndIncrement();
+                if (andIncrement >= maxSecond) {
+                    isBreak.set(true);
+                    countDownLatch.countDown();
+                }
+                else {
+                    try {
+                        consumer.accept(andIncrement);
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        return isBreak;
+    }
+
     @Test
     public void test_001_run() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(3);
@@ -65,11 +88,7 @@ public class TestMqHelper {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", 32701);
         AtomicBoolean isBreak = countSecond(countDownLatch, 900, second -> {
-            log.debug("发送: {}秒, 复用 channel {}, 已创建发送 channel {}, 已创建消费 channel {}, 已关闭 channel {}", second,
-                    MqHelper.getChannelMap().values().size(),
-                    MqHelper.getSendExistsChannelNames().size(),
-                    MqHelper.getConsumerExistsChannelNames().size(),
-                    MqHelper.getCloseChannelNames().size());
+            log.debug("发送: {}秒", second);
         });
         ThreadUtil.execute(() -> {
             final MqConfig mqConfig = MqConfig.of()
@@ -90,7 +109,8 @@ public class TestMqHelper {
                         log.info("生产者 {}号 发送消息: {}", channel.getChannelNumber(), msg);
                         if (SendAction.SUCCESS.equals(sendAction)) {
                             log.debug("aaa 0号 生产者发送消息 mq 接收成功");
-                        } else {
+                        }
+                        else {
                             log.debug("aaa 0号 生产者发送消息 mq 接收失败");
                         }
                     });
@@ -110,7 +130,7 @@ public class TestMqHelper {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", 32701);
         AtomicBoolean isBreak = countSecond(countDownLatch, 900, second -> {
-            log.trace("消费: " + second + "秒, " + MqHelper.getConsumerChannelCount().get());
+            log.trace("消费: " + second + "秒");
         });
         ThreadUtil.execute(() -> {
             final MqConfig mqConfig = MqConfig.of()
@@ -146,7 +166,6 @@ public class TestMqHelper {
         System.out.println("consumer()  完成任务!");
     }
 
-
     @Test
     public void consumerDead() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -177,29 +196,5 @@ public class TestMqHelper {
         });
         countDownLatch.await();
         System.out.println("consumerDead()  完成任务!");
-    }
-
-
-
-    private static AtomicBoolean countSecond(CountDownLatch countDownLatch, int maxSecond, Consumer<Integer> consumer) {
-        AtomicBoolean isBreak = new AtomicBoolean(false);
-        AtomicInteger count = new AtomicInteger(1);
-        ThreadUtil.execute(() -> {
-            while (!isBreak.get()) {
-                final int andIncrement = count.getAndIncrement();
-                if (andIncrement >= maxSecond) {
-                    isBreak.set(true);
-                    countDownLatch.countDown();
-                } else {
-                    try {
-                        consumer.accept(andIncrement);
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        return isBreak;
     }
 }

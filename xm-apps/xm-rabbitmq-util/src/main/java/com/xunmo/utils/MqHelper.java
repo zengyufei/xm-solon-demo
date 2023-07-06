@@ -1,11 +1,10 @@
 package com.xunmo.utils;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.rabbitmq.client.*;
-import com.xunmo.rabbitmq.*;
+import com.xunmo.rabbitmq.MqChannelPool;
+import com.xunmo.rabbitmq.MqChannelPoolConfig;
 import com.xunmo.rabbitmq.entity.DeadConfig;
 import com.xunmo.rabbitmq.entity.MqConfig;
 import com.xunmo.rabbitmq.enums.ConsumeAction;
@@ -18,26 +17,23 @@ import org.noear.solon.SolonProps;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 @Slf4j
 public class MqHelper {
-    private final static int tryCountMax = 3;
-    private final static int channelUseMaxCount = 30;
-    private final static AtomicBoolean isInit = new AtomicBoolean(false);
-    private final static Object initLock = new Object();
-    private static final AtomicInteger sendChannelCount = new AtomicInteger(1);
-    private static final AtomicInteger consumerChannelCount = new AtomicInteger(1);
-    private static final Map<MqConfig, List<Channel>> channelMap = new ConcurrentHashMap<>();
-    private static final List<String> sendExistsChannelNames = new CopyOnWriteArrayList<>();
-    private static final List<String> consumerExistsChannelNames = new CopyOnWriteArrayList<>();
-    private static final List<String> closeChannelNames = new CopyOnWriteArrayList<>();
-    private static MqChannelPool mqChannelPool;
+    private final static int                          tryCountMax = 6;
+    private final static AtomicBoolean                isInit      = new AtomicBoolean(false);
+    private final static Object                       initLock    = new Object();
+    private static final Map<MqConfig, MqChannelPool> poolMap     = new ConcurrentHashMap<>();
+    private static       MqChannelPoolConfig          mqChannelPoolConfig;
 
     static {
     }
@@ -59,7 +55,7 @@ public class MqHelper {
                 final SolonProps cfg = Solon.cfg();
 
                 // 设置账号信息，用户名、密码、vhost
-                final MqChannelPoolConfig mqChannelPoolConfig = new MqChannelPoolConfig();
+                mqChannelPoolConfig = new MqChannelPoolConfig();
                 mqChannelPoolConfig.setHost(cfg.get("xm.mq.host"));
                 mqChannelPoolConfig.setUsername(cfg.get("xm.mq.username"));
                 mqChannelPoolConfig.setPassword(cfg.get("xm.mq.password"));
@@ -67,8 +63,6 @@ public class MqHelper {
                 mqChannelPoolConfig.setMaxIdle(10);
                 mqChannelPoolConfig.setMaxTotal(20);
                 mqChannelPoolConfig.setMinIdle(1);
-                final MqChannelPoolObjectFactory mqChannelPoolObjectFactory = new MqChannelPoolObjectFactory(mqChannelPoolConfig);
-                mqChannelPool = new MqChannelPool(mqChannelPoolObjectFactory);
                 isInit.compareAndSet(false, true);
             }
         }
@@ -88,7 +82,7 @@ public class MqHelper {
             }
 
             // 设置账号信息，用户名、密码、vhost
-            final MqChannelPoolConfig mqChannelPoolConfig = new MqChannelPoolConfig();
+            mqChannelPoolConfig = new MqChannelPoolConfig();
             mqChannelPoolConfig.setHost(host);
             mqChannelPoolConfig.setUsername(username);
             mqChannelPoolConfig.setPassword(password);
@@ -96,8 +90,6 @@ public class MqHelper {
             mqChannelPoolConfig.setMaxIdle(10);
             mqChannelPoolConfig.setMaxTotal(20);
             mqChannelPoolConfig.setMinIdle(1);
-            final MqChannelPoolObjectFactory mqChannelPoolObjectFactory = new MqChannelPoolObjectFactory(mqChannelPoolConfig);
-            mqChannelPool = new MqChannelPool(mqChannelPoolObjectFactory);
             isInit.compareAndSet(false, true);
         }
     }
@@ -105,36 +97,34 @@ public class MqHelper {
 
     /**
      * 发送消息
-     *
      */
     public static void sendMsg(
             MqConfig mqConfig,
             String msg,
             java.util.function.BiConsumer<Channel, SendAction> sendFunc
-    ) throws IOException {
+    ) throws IOException, TimeoutException {
         sendMsg(mqConfig, msg, null, sendFunc);
     }
 
     /**
      * 发送消息
-     *
      */
     private static void sendMsg(
             MqConfig mqConfig,
             String msg,
             Integer expiration,
             java.util.function.BiConsumer<Channel, SendAction> sendFunc
-    ) throws IOException {
+    ) throws IOException, TimeoutException {
 
-        final String changeName = mqConfig.getChangeName();
-        String routingKey = mqConfig.getRoutingKey();
-        Boolean durable = mqConfig.getDurable();
-        Boolean isDelay = mqConfig.getIsDelay();
-        ExchangeType exchangeType = mqConfig.getExchangeType();
-        Long delayTime = mqConfig.getDelayTime();
-        Boolean isAutoClose = mqConfig.getIsAutoClose();
-        final String queueName = mqConfig.getQueueName();
-        final DeadConfig deadConfig = mqConfig.getDeadConfig();
+        final String     changeName   = mqConfig.getChangeName();
+        String           routingKey   = mqConfig.getRoutingKey();
+        Boolean          durable      = mqConfig.getDurable();
+        Boolean          isDelay      = mqConfig.getIsDelay();
+        ExchangeType     exchangeType = mqConfig.getExchangeType();
+        Long             delayTime    = mqConfig.getDelayTime();
+        Boolean          isAutoClose  = mqConfig.getIsAutoClose();
+        final String     queueName    = mqConfig.getQueueName();
+        final DeadConfig deadConfig   = mqConfig.getDeadConfig();
 
         if (exchangeType == null) {
             exchangeType = ExchangeType.direct;
@@ -150,7 +140,8 @@ public class MqHelper {
         }
         if (isDelay == null) {
             isDelay = false;
-        } else {
+        }
+        else {
             if (isDelay && delayTime == null) {
                 delayTime = 1000L;
             }
@@ -174,61 +165,67 @@ public class MqHelper {
                 .deadConfig(deadConfig)
                 .build();
 
-        Channel channel = getSendChannel(newConfig);
+        AtomicReference<Channel> channelRef = new AtomicReference<>(getSendChannel(newConfig));
         final ConfirmListener confirmListener = new ConfirmListener() {
             // 消息正确到达 broker
             @Override
-            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+            public void handleAck(long deliveryTag, boolean multiple) {
                 log.debug("已收到消息，标识：{}", deliveryTag);
                 //做一些其他处理
-                sendFunc.accept(channel, SendAction.SUCCESS);
+                sendFunc.accept(channelRef.get(), SendAction.SUCCESS);
             }
 
             // RabbitMQ 因为自身内部错误导致消息丢失，就会发送一条nack消息
             @Override
-            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+            public void handleNack(long deliveryTag, boolean multiple) {
                 log.warn("未确认消息，标识：{}", deliveryTag);
                 //做一些其他处理，比如消息重发等
-                sendFunc.accept(channel, SendAction.MQ_FAIL);
+                sendFunc.accept(channelRef.get(), SendAction.MQ_FAIL);
             }
         };
-        channel.clearConfirmListeners();
-        channel.addConfirmListener(confirmListener);
+        channelRef.get().clearConfirmListeners();
+        channelRef.get().addConfirmListener(confirmListener);
 
         //建立通讯信道
         try {
             AMQP.BasicProperties.Builder props = new AMQP.BasicProperties.Builder();
+            props.deliveryMode(2); // message持久化
             if (expiration != null) {
                 props.expiration(expiration.toString());
             }
-            props.deliveryMode(2); // message持久化
-            String finalRoutingKey = routingKey;
-            final String sendErrorMsg = "发送消息异常";
+            String firstName;
+            String secondName;
             if (isDelay) {
-                // 绑定路由
-                channel.queueBind(queueName, changeName, routingKey);
                 Map<String, Object> headers = new HashMap<>();
                 headers.put("x-delay", delayTime);
                 props.headers(headers);
-                tryDo(() -> channel.basicPublish(changeName, finalRoutingKey, props.build(), msg.getBytes(StandardCharsets.UTF_8)),
-                        () -> sendErrorMsg);
-            } else {
+                firstName = changeName;
+                secondName = routingKey;
+            }
+            else {
                 if (StrUtil.isNotBlank(changeName)) {
-                    tryDo(() -> channel.basicPublish(changeName, finalRoutingKey, props.build(), msg.getBytes(StandardCharsets.UTF_8)),
-                            () -> sendErrorMsg);
-                } else {
+                    firstName = changeName;
+                    secondName = routingKey;
+                }
+                else {
+                    firstName = routingKey;
+                    secondName = queueName;
                     props.priority(null);
-                    tryDo(() -> channel.basicPublish(finalRoutingKey, queueName, props.build(), msg.getBytes(StandardCharsets.UTF_8)),
-                            () -> sendErrorMsg);
                 }
             }
+            String finalFirstName  = firstName;
+            String finalSecondName = secondName;
+            tryDo(() -> {
+                        log.trace("系统发送发送消息前记录: {} {}", channelRef.get().getChannelNumber(), msg);
+                        channelRef.get().basicPublish(finalFirstName, finalSecondName, props.build(), msg.getBytes(StandardCharsets.UTF_8));
+                        log.trace("系统发送发送消息: {} {}", channelRef.get().getChannelNumber(), msg);
+                    },
+                    () -> "发送消息异常",
+                    () -> channelRef.set(getSendChannel(newConfig)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (isAutoClose) {
-            } else {
-            }
-            countChannel(sendChannelCount, channel);
+            returnChannel(newConfig, channelRef.get());
         }
     }
 
@@ -237,18 +234,16 @@ public class MqHelper {
      * 消费消息
      *
      * @param successMessage 消息处理函数
-     * @throws IOException      io异常
-     * @throws TimeoutException 超时异常
      */
     public static void consumeMsg(MqConfig mqConfig,
-                                   BiFunction<Channel, String, ConsumeAction> successMessage) throws IOException {
-        ExchangeType exchangeType = mqConfig.getExchangeType();
-        Boolean durable = mqConfig.getDurable();
-        String routingKey = mqConfig.getRoutingKey();
-        Boolean isAutoClose = mqConfig.getIsAutoClose();
-        final String changeName = mqConfig.getChangeName();
-        final String queueName = mqConfig.getQueueName();
-        final DeadConfig deadConfig = mqConfig.getDeadConfig();
+                                  BiFunction<Channel, String, ConsumeAction> successMessage) throws IOException, TimeoutException {
+        ExchangeType     exchangeType = mqConfig.getExchangeType();
+        Boolean          durable      = mqConfig.getDurable();
+        String           routingKey   = mqConfig.getRoutingKey();
+        Boolean          isAutoClose  = mqConfig.getIsAutoClose();
+        final String     changeName   = mqConfig.getChangeName();
+        final String     queueName    = mqConfig.getQueueName();
+        final DeadConfig deadConfig   = mqConfig.getDeadConfig();
 
         if (exchangeType == null) {
             exchangeType = ExchangeType.direct;
@@ -279,23 +274,27 @@ public class MqHelper {
                 .deadConfig(deadConfig)
                 .build();
 
-        final Channel channel = getConsumeChannel(newConfig);
+        AtomicReference<Channel> channelRef = new AtomicReference<>(getConsumeChannel(newConfig));
         try {
             //建立消费者
-            Consumer consumer = new DefaultConsumer(channel) {
+            Consumer consumer = new DefaultConsumer(channelRef.get()) {
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    long deliveryTag = envelope.getDeliveryTag();
-                    ConsumeAction consumeResult = ConsumeAction.RETRY;
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
+                    long                           deliveryTag      = envelope.getDeliveryTag();
+                    AtomicReference<ConsumeAction> consumeResultRef = new AtomicReference<>(ConsumeAction.RETRY);
                     try {
                         String message = new String(body, StandardCharsets.UTF_8);
-                        consumeResult = successMessage.apply(channel, message);
+                        consumeResultRef.set(successMessage.apply(channelRef.get(), message));
                         //消息丢到死信 或 从死信直接丢弃
-                        if (consumeResult == ConsumeAction.ACCEPT) {
-                            // 确认消息消费
-                            channel.basicAck(deliveryTag, false);
-                        } else {
-                            channel.basicNack(deliveryTag, false, consumeResult == ConsumeAction.RETRY); //消息重回队列
+                        if (consumeResultRef.get() == ConsumeAction.ACCEPT) {
+                            tryDo(() -> channelRef.get().basicAck(deliveryTag, false),
+                                    () -> "确认消息消费失败",
+                                    () -> channelRef.set(getConsumeChannel(newConfig)));
+                        }
+                        else {
+                            tryDo(() -> channelRef.get().basicNack(deliveryTag, false, consumeResultRef.get() == ConsumeAction.RETRY),
+                                    () -> "消息重回队列失败失败",
+                                    () -> channelRef.set(getConsumeChannel(newConfig)));
                         }
                     } catch (Exception e) {
                         log.error("异常: {}", ExceptionUtil.stacktraceToString(e));
@@ -304,110 +303,135 @@ public class MqHelper {
                 }
             };
             // 从左到右参数意思分别是：队列名称、是否读取消息后直接删除消息，消费者
-            tryDo(() -> channel.basicConsume(queueName, false, consumer), () -> "消费回信应答失败");
+            tryDo(() -> channelRef.get().basicConsume(queueName, false, consumer),
+                    () -> "消费回信应答失败",
+                    () -> channelRef.set(getConsumeChannel(newConfig)));
         } catch (Exception ex) {
             log.error("异常: {}", ExceptionUtil.stacktraceToString(ex));
             throw ex;
         } finally {
-            if (isAutoClose) {
-            } else {
-            }
-            countChannel(consumerChannelCount, channel);
+            returnChannel(newConfig, channelRef.get());
         }
     }
 
-    private static Channel getSendChannel(MqConfig mqConfig) throws IOException {
+    private static Channel getSendChannel(MqConfig mqConfig) throws IOException, TimeoutException {
         mqConfig.setType("0");
-        Channel channel;
-        if (channelMap.containsKey(mqConfig)) {
-            final List<Channel> channelList = channelMap.get(mqConfig);
-            channel = getActiveChannel(channelList);
-            if (channel == null) {
-                channel = mqChannelPool.getChannel(mqConfig);
-            }
-        } else {
-            channel = mqChannelPool.getChannel(mqConfig);
-        }
-        return channel;
+        MqChannelPool pool = getMqChannelPool(mqConfig);
+        return pool.getChannel();
     }
 
-    private static Channel getConsumeChannel(MqConfig mqConfig) throws IOException {
+    private static Channel getConsumeChannel(MqConfig mqConfig) throws IOException, TimeoutException {
         mqConfig.setType("1");
-        Channel channel;
-        if (channelMap.containsKey(mqConfig)) {
-            final List<Channel> channelList = channelMap.get(mqConfig);
-            channel = getActiveChannel(channelList);
-            if (channel == null) {
-                channel = mqChannelPool.getChannel(mqConfig);
-            }
-        } else {
-            channel = mqChannelPool.getChannel(mqConfig);
-        }
-        return channel;
+        MqChannelPool pool = getMqChannelPool(mqConfig);
+        return pool.getChannel();
     }
 
-    private static Channel getActiveChannel(final List<Channel> channelList) {
-        final Iterator<Channel> iterator = channelList.iterator();
-        while (iterator.hasNext()) {
-            final Channel next = iterator.next();
-            if (next.isOpen()) {
-                return next;
-            } else {
-                iterator.remove();
-            }
+    private static MqChannelPool getMqChannelPool(MqConfig mqConfig) throws IOException, TimeoutException {
+        MqChannelPool pool;
+        if (poolMap.containsKey(mqConfig)) {
+            pool = poolMap.get(mqConfig);
         }
-        return null;
+        else {
+            pool = new MqChannelPool(mqChannelPoolConfig, mqConfig);
+            poolMap.put(mqConfig, pool);
+        }
+        return pool;
     }
 
+    private static void returnChannel(MqConfig mqConfig, Channel channel) throws IOException, TimeoutException {
+        MqChannelPool pool = getMqChannelPool(mqConfig);
+        pool.returnChannel(channel);
+    }
 
-    private static void tryDo(TryDoing tryDoing, Supplier<String> errorMsg) {
-        int tryCount = 3;
+    public static void tryDo(TryDoing tryDoing, Supplier<String> errorMsg) throws TimeoutException, IOException, AlreadyClosedException {
+        int tryCount = tryCountMax;
         do {
             try {
                 tryDoing.tryDo();
                 break;
-            } catch (IOException e) {
-                log.error("{}, 重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+            } catch (AlreadyClosedException e) {
+                log.error("{}, 重连重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
                 tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+            } catch (IOException e) {
+                log.error("{}, 连接重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+                tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+            } catch (TimeoutException e) {
+                log.error("{}, 超时重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+                tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         } while (tryCount > 0);
     }
 
-    private static <T> T tryReturn(Supplier<T> tryDoing, Supplier<String> errorMsg) throws IOException {
-        final String s = errorMsg.get();
-        int tryCount = 3;
+
+    public static void tryDo(TryDoing tryDoing, Supplier<String> errorMsg, TryDoing tryDoing2) throws IOException, TimeoutException, AlreadyClosedException {
+        int tryCount = tryCountMax;
+        do {
+            try {
+                tryDoing.tryDo();
+                break;
+            } catch (AlreadyClosedException e) {
+                log.error("{}, 重连重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+                tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+                tryDoing2.tryDo();
+                break;
+            } catch (IOException e) {
+                log.error("{}, 连接重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+                tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+            } catch (TimeoutException e) {
+                log.error("{}, 超时重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
+                tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } while (true);
+    }
+
+    public static <T> T tryReturn(TryReturn<T> tryDoing, Supplier<String> errorMsg) throws Exception {
+        int tryCount = tryCountMax;
         do {
             try {
                 return tryDoing.get();
             } catch (Exception e) {
-                log.error("{}, 重试第{}次获取!", s, (tryCountMax - tryCount));
+                log.error("{}, 重试第{}次获取!", errorMsg.get(), (tryCountMax - tryCount));
                 tryCount--;
+                if (tryCount <= 0) {
+                    throw e;
+                }
             }
-        } while (tryCount > 0);
-
-        throw new IOException(StrUtil.format("无法继续执行, 因为{} 错误!", s));
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        } while (true);
     }
 
-    private static void countChannel(AtomicInteger channelCount, Channel channel) {
-        ThreadUtil.execute(() -> {
-            int count = 3;
-            while (true) {
-                if (count <= 0) {
-                    break;
-                }
-                if (channel == null || !channel.isOpen()) {
-                    channelCount.decrementAndGet();
-                    break;
-                }
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                count--;
-            }
-        });
-    }
 //
 //    /**
 //     * 获取消息数
@@ -426,29 +450,13 @@ public class MqHelper {
 //    }
 
 
-    public static AtomicInteger getConsumerChannelCount() {
-        return consumerChannelCount;
-    }
-
-    public static List<String> getCloseChannelNames() {
-        return closeChannelNames;
-    }
-
-    public static List<String> getConsumerExistsChannelNames() {
-        return consumerExistsChannelNames;
-    }
-
-    public static List<String> getSendExistsChannelNames() {
-        return sendExistsChannelNames;
-    }
-
-
-    public static Map<MqConfig, List<Channel>> getChannelMap() {
-        return channelMap;
+    @FunctionalInterface
+    public interface TryDoing {
+        void tryDo() throws IOException, TimeoutException;
     }
 
     @FunctionalInterface
-   public interface TryDoing {
-        public void tryDo() throws IOException;
+    public interface TryReturn<T> {
+        T get() throws IOException, TimeoutException;
     }
 }
