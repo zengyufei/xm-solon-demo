@@ -14,7 +14,6 @@ import com.xunmo.webs.role.entity.RoleFetcher;
 import com.xunmo.webs.user.entity.User;
 import com.xunmo.webs.user.entity.UserFetcher;
 import com.xunmo.webs.user.entity.UserTable;
-import com.xunmo.webs.user.entity.UserTableEx;
 import com.xunmo.webs.user.input.UserInput;
 import com.xunmo.webs.user.query.UserQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -60,68 +59,84 @@ public class UserController extends BaseController {
     @Post
     @Mapping("/list")
     public ResponseEntity<Page<User>> list(@Validated @Body UserQuery query, @Param PageRequest pageRequest) throws Exception {
-        final String userId = query.getUserId();
+        final String        userId          = query.getUserId();
+        final String        userName        = query.getUserName();
         final LocalDateTime beginCreateTime = query.getBeginCreateTime();
-        final LocalDateTime endCreateTime = query.getEndCreateTime();
-        final String orgId = query.getOrgId();
-        final String orgName = query.getOrgName();
-        final String roleId = query.getRoleId();
-        final String roleName = query.getRoleName();
-        final String permissionId = query.getPermissionId();
-        final String permissionName = query.getPermissionName();
+        final LocalDateTime endCreateTime   = query.getEndCreateTime();
+        final String        orgId           = query.getOrgId();
+        final String        orgName         = query.getOrgName();
+        final String        roleId          = query.getRoleId();
+        final String        roleName        = query.getRoleName();
+        final String        permissionId    = query.getPermissionId();
+        final String        permissionName  = query.getPermissionName();
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest)
                 .execute(sqlClient
                         .createQuery(TABLE)
+                        // 根据 用户id 查询
                         .whereIf(
                                 StrUtil.isNotBlank(userId),
                                 () -> TABLE.userId().eq(userId)
                         )
+                        // 根据 用户名称 模糊查询
+                        .whereIf(
+                                StrUtil.isNotBlank(userName),
+                                () -> TABLE.userName().like(userName)
+                        )
+                        // 根据 组织机构id 查询
                         .whereIf(
                                 StrUtil.isNotBlank(orgId),
                                 () -> TABLE.organization().organizationId().eq(orgId)
                         )
+                        // 根据 组织机构名称 模糊查询
                         .whereIf(
                                 StrUtil.isNotBlank(orgName),
                                 () -> TABLE.organization().organizationName().like(orgName)
                         )
+                        // 根据 角色id 查询
                         .whereIf(
                                 StrUtil.isNotBlank(roleId),
-                                () -> UserTableEx.$.roles().roleId().eq(roleId)
+                                () -> TABLE.asTableEx().roles().roleId().eq(roleId)
                         )
+                        // 根据 角色名称 模糊查询
                         .whereIf(
                                 StrUtil.isNotBlank(roleName),
-                                () -> UserTableEx.$.roles().roleName().like(roleName)
+                                () -> TABLE.asTableEx().roles().roleName().like(roleName)
                         )
-                        .whereIf(
-                                StrUtil.isNotBlank(roleId),
-                                () -> UserTableEx.$.roles().roleId().eq(roleId)
-                        )
+                        // 根据 权限id 查询
                         .whereIf(
                                 StrUtil.isNotBlank(permissionId),
-                                () -> UserTableEx.$.roles().permissions().permissionId().like(permissionId)
+                                () -> TABLE.asTableEx().roles().permissions().permissionId().like(permissionId)
                         )
+                        // 根据 权限名称 模糊查询
                         .whereIf(
                                 StrUtil.isNotBlank(permissionName),
-                                () -> UserTableEx.$.roles().permissions().permissionName().like(permissionName)
+                                () -> TABLE.asTableEx().roles().permissions().permissionName().like(permissionName)
                         )
+                        // 根据 创建时间 大于等于查询
                         .whereIf(
                                 beginCreateTime != null,
                                 () -> TABLE.createTime().ge(beginCreateTime)
                         )
+                        // 根据 创建时间 小于等于查询
                         .whereIf(
                                 endCreateTime != null,
                                 () -> TABLE.createTime().le(endCreateTime)
                         )
+                        // 默认排序 创建时间 倒排
                         .orderBy(
                                 TABLE.createTime().desc()
                         )
                         .select(
                                 TABLE.fetch(
+                                        // 查询 用户表 所有属性（非对象）
                                         FETCHER.allScalarFields()
+                                                // 查询 创建者 对象，只显示 姓名
                                                 .create(UserFetcher.$
                                                         .userName())
+                                                // 查询 修改者 对象，只显示 姓名
                                                 .update(UserFetcher.$
                                                         .userName())
+                                                // 查询 组织机构者 对象，只显示 姓名
                                                 .organization(OrganizationFetcher.$
                                                         .organizationName())
                                                 .roles(RoleFetcher.$
