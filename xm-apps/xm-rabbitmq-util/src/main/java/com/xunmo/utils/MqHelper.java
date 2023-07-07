@@ -29,11 +29,11 @@ import java.util.function.Supplier;
 
 @Slf4j
 public class MqHelper {
-    private final static int                          tryCountMax = 6;
-    private final static AtomicBoolean                isInit      = new AtomicBoolean(false);
-    private final static Object                       initLock    = new Object();
-    private static final Map<MqConfig, MqChannelPool> poolMap     = new ConcurrentHashMap<>();
-    private static       MqChannelPoolConfig          mqChannelPoolConfig;
+    private final static int tryCountMax = 6;
+    private final static AtomicBoolean isInit = new AtomicBoolean(false);
+    private final static Object initLock = new Object();
+    private static final Map<MqConfig, MqChannelPool> poolMap = new ConcurrentHashMap<>();
+    private static MqChannelPoolConfig mqChannelPoolConfig;
 
     static {
     }
@@ -42,7 +42,7 @@ public class MqHelper {
     private MqHelper() {
     }
 
-    public static synchronized void initMq() {
+    public static synchronized void initFromSolon() {
         if (isInit.get()) {
             return;
         }
@@ -68,7 +68,7 @@ public class MqHelper {
         }
     }
 
-    public static synchronized void initMq(
+    public static synchronized void initArgs(
             String host,
             String username,
             String password,

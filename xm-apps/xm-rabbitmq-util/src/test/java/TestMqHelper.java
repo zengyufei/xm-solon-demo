@@ -86,7 +86,7 @@ public class TestMqHelper {
     @Test
     public void send() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", 32701);
+        MqHelper.initArgs("vat", "root", "*xun13@mo14!154RConf!*", 32701);
         AtomicBoolean isBreak = countSecond(countDownLatch, 900, second -> {
             log.debug("发送: {}秒", second);
         });
@@ -128,7 +128,7 @@ public class TestMqHelper {
     @Test
     public void consumer() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", 32701);
+        MqHelper.initArgs("vat", "root", "*xun13@mo14!154RConf!*", 32701);
         AtomicBoolean isBreak = countSecond(countDownLatch, 900, second -> {
             log.trace("消费: " + second + "秒");
         });
@@ -169,7 +169,7 @@ public class TestMqHelper {
     @Test
     public void consumerDead() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        MqHelper.initMq("vat", "root", "*xun13@mo14!154RConf!*", 32701);
+        MqHelper.initArgs("vat", "root", "*xun13@mo14!154RConf!*", 32701);
         AtomicBoolean isBreak = countSecond(countDownLatch, 900, second -> {
             log.trace("死信: " + second + "秒");
         });

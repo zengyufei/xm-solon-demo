@@ -1,14 +1,20 @@
 package com.xunmo.webs.exceptionRecord.input;
 
-import java.time.LocalDateTime;
-
 import com.xunmo.webs.exceptionRecord.entity.ExceptionRecord;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.babyfish.jimmer.Input;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 异常记录表(ExceptionRecord)输入类
@@ -18,16 +24,20 @@ import org.mapstruct.factory.Mappers;
  */
 @Data
 @Accessors
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(builderMethodName = "of")
-public class ExceptionRecordInput implements Input<ExceptionRecord> {
+public class ExceptionRecordInput implements Input<ExceptionRecord>, Serializable {
+
+    private static final long serialVersionUID = -4185267394446332219L;
 
     private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
-    
+
     /**
      * [PK]用户ID
      */
     private String id;
-    
+
     /**
      * 请求地址
      */
@@ -138,10 +148,28 @@ public class ExceptionRecordInput implements Input<ExceptionRecord> {
         return CONVERTER.toExceptionRecord(this);
     }
 
-    @Mapper
+    public ExceptionRecordInput toUpdate() {
+        return CONVERTER.toUpdate(this);
+    }
+
+    @Mapper(imports = {
+            LocalDateTime.class
+    })
     interface Converter {
 
         @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
         ExceptionRecord toExceptionRecord(ExceptionRecordInput input);
+
+        @Mapping(target = ExceptionRecord.FieldNames.createUser, constant = "system")
+        @Mapping(target = ExceptionRecord.FieldNames.createUserName, constant = "system")
+        @Mapping(target = ExceptionRecord.FieldNames.createTime, expression = "java(LocalDateTime.now())")
+        @Mapping(target = ExceptionRecord.FieldNames.disabled, constant = "0")
+        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateUser, constant = "system")
+        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateUserName, constant = "system")
+        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateTime, expression = "java(LocalDateTime.now())")
+        @Mapping(target = ExceptionRecord.FieldNames.sourceType, constant = "system")
+        @Mapping(target = ExceptionRecord.FieldNames.tenantId, constant = "-1")
+        @Mapping(target = ExceptionRecord.FieldNames.appId, constant = "-1")
+        ExceptionRecordInput toUpdate(ExceptionRecordInput input);
     }
 }
