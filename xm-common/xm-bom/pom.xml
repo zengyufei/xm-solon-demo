@@ -35,7 +35,7 @@
 
             <dependency>
                 <groupId>com.xunmo</groupId>
-                <artifactId>xm-web</artifactId>
+                <artifactId>xm-zip</artifactId>
                 <version>${xm.version}</version>
             </dependency>
 

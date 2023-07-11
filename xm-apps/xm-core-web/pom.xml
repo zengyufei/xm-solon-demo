@@ -70,10 +70,9 @@
             <artifactId>xm-core</artifactId>
         </dependency>
 
-        <!-- 通用web包，可关闭依赖，停止该功能 -->
         <dependency>
             <groupId>com.xunmo</groupId>
-            <artifactId>xm-web</artifactId>
+            <artifactId>xm-zip</artifactId>
         </dependency>
 
         <dependency>
@@ -130,36 +129,64 @@
             <artifactId>javers-core</artifactId>
         </dependency>
 
-        <!-- 7z 依赖 begin -->
         <dependency>
-            <groupId>org.tukaani</groupId>
-            <artifactId>xz</artifactId>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.cache.redisson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.opensagres.xdocreport</groupId>
-            <artifactId>xdocreport</artifactId>
-        </dependency>
-        <!-- 7z 依赖 end -->
-        <!-- zip 依赖 -->
-        <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-        </dependency>
-        <!-- rar 依赖 begin -->
-        <dependency>
-            <groupId>net.sf.sevenzipjbinding</groupId>
-            <artifactId>sevenzipjbinding</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.sevenzipjbinding</groupId>
-            <artifactId>sevenzipjbinding-all-platforms</artifactId>
-        </dependency>
-        <!-- rar 依赖 end -->
 
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-times-console</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-args-console</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xunmo</groupId>
+            <artifactId>xm-request-xss-filter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-lib</artifactId>
+        </dependency>
+
+        <!-- Json序列化支持组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.serialization.jackson</artifactId>
+        </dependency>
+
+        <!-- 静态文件支持组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.web.staticfiles</artifactId>
+        </dependency>
+
+        <!-- 跨域处理组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.web.cors</artifactId>
+        </dependency>
+
+        <!-- 本地SessionSate支持组件 -->
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.sessionstate.local</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon.cache.redisson</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

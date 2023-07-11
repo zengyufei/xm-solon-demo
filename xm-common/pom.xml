@@ -27,7 +27,7 @@
         <module>./xm-constant</module>
         <module>./xm-annotation</module>
         <module>./xm-core</module>
-        <module>./xm-web</module>
+        <module>./xm-zip</module>
         <module>./xm-auto-tran</module>
         <module>./xm-package-util</module>
         <!--        <module>./xm-log-sync</module>-->

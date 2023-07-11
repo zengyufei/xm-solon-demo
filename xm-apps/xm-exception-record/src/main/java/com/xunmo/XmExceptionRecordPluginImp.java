@@ -1,5 +1,6 @@
 package com.xunmo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.xunmo.mq.exceptionRecord.MqConsumerService;
 import com.xunmo.mq.exceptionRecord.MqSendService;
 import com.xunmo.utils.MqHelper;
@@ -22,29 +23,30 @@ public class XmExceptionRecordPluginImp implements Plugin {
         final boolean isExceptionEnable = props.getBool("xm.exception.enable", true);
 
         if (isExceptionEnable) {
-            MqHelper.initFromSolon();
+            ThreadUtil.execute(() -> {
+                MqHelper.initFromSolon();
 
-            MqSendService mqSendService = new MqSendService();
-            mqSendService.init();
-            //可以进行手动字段注入
-            context.beanInject(mqSendService);
-            //生成普通的Bean（只是注册，不会做别的处理；身上的注解会被乎略掉）
-            Solon.context().wrapAndPut(MqSendService.class, mqSendService);
+                MqSendService mqSendService = new MqSendService();
+                mqSendService.init();
+                //可以进行手动字段注入
+                context.beanInject(mqSendService);
+                //生成普通的Bean（只是注册，不会做别的处理；身上的注解会被乎略掉）
+                Solon.context().wrapAndPut(MqSendService.class, mqSendService);
 
-            final MqConsumerService mqConsumerService = new MqConsumerService();
-            mqConsumerService.init();
-            //可以进行手动字段注入
-            context.beanInject(mqConsumerService);
-            //生成普通的Bean（只是注册，不会做别的处理；身上的注解会被乎略掉）
-            Solon.context().wrapAndPut(MqConsumerService.class, mqConsumerService);
+                final MqConsumerService mqConsumerService = new MqConsumerService();
+                mqConsumerService.init();
+                //可以进行手动字段注入
+                context.beanInject(mqConsumerService);
+                //生成普通的Bean（只是注册，不会做别的处理；身上的注解会被乎略掉）
+                Solon.context().wrapAndPut(MqConsumerService.class, mqConsumerService);
 
-            EventBus.subscribe(AppLoadEndEvent.class, mqConsumerService);
+                EventBus.subscribe(AppLoadEndEvent.class, mqConsumerService);
+            });
         }
 
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageConstants.XM_EXCEPTION_RECORD);
-        }
-        else {
+        } else {
             System.out.println(XmPackageConstants.XM_EXCEPTION_RECORD + " 包加载完毕!");
         }
     }
@@ -53,8 +55,7 @@ public class XmExceptionRecordPluginImp implements Plugin {
     public void stop() throws Throwable {
         if (XmPackageConstants.IS_CONSOLE_LOG) {
             log.info("{} 插件关闭!", XmPackageConstants.XM_EXCEPTION_RECORD);
-        }
-        else {
+        } else {
             System.out.println(XmPackageConstants.XM_EXCEPTION_RECORD + " 插件关闭!");
         }
     }
