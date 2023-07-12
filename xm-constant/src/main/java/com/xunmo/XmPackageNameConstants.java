@@ -1,6 +1,6 @@
 package com.xunmo;
 
-public interface XmPackageConstants {
+public interface XmPackageNameConstants {
 
     boolean IS_CONSOLE_LOG = true;
 
@@ -13,7 +13,7 @@ public interface XmPackageConstants {
     String XM_REQUEST_XSS_FILTER = "xm-request-xss-filter";
     String XM_SOLON = "xm-solon";
     String XM_TEST = "xm-test";
-    String XM_WEB = "xm-web";
+    String XM_ZIP = "xm-zip";
     String XM_HEALTH = "xm-health";
     String XM_EXCEPTION_RECORD = "xm-exception-record";
     String XM_EXCEPTION = "xm-exception";

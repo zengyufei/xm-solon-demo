@@ -13,7 +13,7 @@ public class XmHealthPluginImp implements Plugin {
     @Override
     public void start(AopContext context) {
         final Props props = context.cfg();
-        props.loadAddIfAbsent(XmPackageConstants.XM_HEALTH + ".yml");
+        props.loadAddIfAbsent(XmPackageNameConstants.XM_HEALTH + ".yml");
 //            final SolonApp app = Solon.app();
 
         final boolean isEnabled = props.getBool("xm.health.enable", true);
@@ -22,19 +22,19 @@ public class XmHealthPluginImp implements Plugin {
             HealthChecker.addIndicator("preflight", Result::succeed);
         }
 
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 包加载完毕!", XmPackageConstants.XM_HEALTH);
-        }else {
-            System.out.println(XmPackageConstants.XM_HEALTH + " 包加载完毕!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 包加载完毕!", XmPackageNameConstants.XM_HEALTH);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_HEALTH + " 包加载完毕!");
         }
     }
 
     @Override
     public void stop() throws Throwable {
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 插件关闭!", XmPackageConstants.XM_HEALTH);
-        }else {
-            System.out.println(XmPackageConstants.XM_HEALTH + " 插件关闭!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 插件关闭!", XmPackageNameConstants.XM_HEALTH);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_HEALTH + " 插件关闭!");
         }
     }
 }

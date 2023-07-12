@@ -2,7 +2,6 @@ package com.xunmo.request.args.filter;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Action;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.Handler;
@@ -12,8 +11,8 @@ import org.noear.solon.core.wrap.MethodWrap;
 import java.lang.reflect.Method;
 
 @Slf4j
-@Component
-public class ArgsConsoleFilterDefault implements ArgsConsoleFilterExt {
+//@Component
+public class ArgsConsoleFilterDefault implements ArgsConsoleFilter {
 
     @Override
     public void doIntercept(Context ctx, Handler mainHandler, RouterInterceptorChain chain) throws Throwable {

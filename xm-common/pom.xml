@@ -24,7 +24,6 @@
     <modules>
         <module>./xm-bom</module>
         <module>./xm-pool</module>
-        <module>./xm-constant</module>
         <module>./xm-annotation</module>
         <module>./xm-core</module>
         <module>./xm-zip</module>

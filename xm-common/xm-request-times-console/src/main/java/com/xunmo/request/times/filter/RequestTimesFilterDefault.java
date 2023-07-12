@@ -3,14 +3,13 @@ package com.xunmo.request.times.filter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.Handler;
 import org.noear.solon.core.route.RouterInterceptorChain;
 
 @Slf4j
-@Component
-public class RequestTimesFilterDefault implements RequestTimesConsoleFilterExt {
+//@Component
+public class RequestTimesFilterDefault implements RequestTimesConsoleFilter {
     @Override
     public void doIntercept(Context ctx, Handler mainHandler, RouterInterceptorChain chain) throws Throwable {
         if (mainHandler != null) {

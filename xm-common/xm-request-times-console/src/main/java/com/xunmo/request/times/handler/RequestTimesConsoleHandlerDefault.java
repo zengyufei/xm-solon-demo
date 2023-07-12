@@ -3,12 +3,11 @@ package com.xunmo.request.times.handler;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Context;
 
 @Slf4j
-@Component
-public class RequestTimesConsoleHandlerDefault implements RequestTimesConsoleHandlerExt {
+//@Component
+public class RequestTimesConsoleHandlerDefault implements RequestTimesConsoleHandler {
 
     @Override
     public void before(Context ctx) {

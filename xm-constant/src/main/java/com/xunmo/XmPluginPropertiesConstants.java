@@ -1,6 +1,6 @@
 package com.xunmo;
 
-public interface XmPluginConfig {
+public interface XmPluginPropertiesConstants {
 
     // tran
     String xmTranEnable = "xm.tran.enable";

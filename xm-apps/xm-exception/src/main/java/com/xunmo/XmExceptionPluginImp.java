@@ -15,7 +15,7 @@ public class XmExceptionPluginImp implements Plugin {
     @Override
     public void start(AopContext context) {
         final Props props = context.cfg();
-        props.loadAddIfAbsent(XmPackageConstants.XM_EXCEPTION + ".yml");
+        props.loadAddIfAbsent(XmPackageNameConstants.XM_EXCEPTION + ".yml");
 
         // 统一异常处理
         context.beanExtractorAdd(ExceptionHandler.class, (bw, method, anno) -> {
@@ -31,19 +31,19 @@ public class XmExceptionPluginImp implements Plugin {
         });
 
 
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 包加载完毕!", XmPackageConstants.XM_EXCEPTION);
-        }else {
-            System.out.println(XmPackageConstants.XM_EXCEPTION + " 包加载完毕!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 包加载完毕!", XmPackageNameConstants.XM_EXCEPTION);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_EXCEPTION + " 包加载完毕!");
         }
     }
 
     @Override
     public void stop() throws Throwable {
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 插件关闭!", XmPackageConstants.XM_EXCEPTION);
-        }else {
-            System.out.println(XmPackageConstants.XM_EXCEPTION + " 插件关闭!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 插件关闭!", XmPackageNameConstants.XM_EXCEPTION);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_EXCEPTION + " 插件关闭!");
         }
     }
 

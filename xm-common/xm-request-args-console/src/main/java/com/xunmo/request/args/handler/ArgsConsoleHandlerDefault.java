@@ -2,7 +2,6 @@ package com.xunmo.request.args.handler;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Action;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.wrap.MethodWrap;
@@ -11,8 +10,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 @Slf4j
-@Component
-public class ArgsConsoleHandlerDefault implements ArgsConsoleHandlerExt {
+//@Component
+public class ArgsConsoleHandlerDefault implements ArgsConsoleHandler {
 
     @Override
     public void before(Context ctx) throws IOException {

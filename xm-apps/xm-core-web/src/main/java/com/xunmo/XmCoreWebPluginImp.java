@@ -19,16 +19,16 @@ public class XmCoreWebPluginImp implements Plugin {
     @Override
     public void start(AopContext context) {
         final Props props = context.cfg();
-        props.loadAddIfAbsent(XmPackageConstants.XM_CORE_WEB + ".yml");
+        props.loadAddIfAbsent(XmPackageNameConstants.XM_CORE_WEB + ".yml");
         final SolonApp app = Solon.app();
 
 
-        final boolean isEnableSuperController = props.getBool(XmPluginConfig.xmWebScanSuperControllerEnable, true);
-        final boolean isEnableBind = props.getBool(XmPluginConfig.xmWebScanGenericBindEnable, true);
-        final boolean isEnableCors = props.getBool(XmPluginConfig.xmWebCorsEnable, true);
-        final boolean isEnableArgsTrim = props.getBool(XmPluginConfig.xmWebArgsTrimEnable, true);
-        final boolean isEnableJsonTrim = props.getBool(XmPluginConfig.xmWebJsonTrimEnable, true);
-        final boolean isEnableDecodeDatetime = props.getBool(XmPluginConfig.xmWebJsonDecodeDatetimeEnable, true);
+        final boolean isEnableSuperController = props.getBool(XmPluginPropertiesConstants.xmWebScanSuperControllerEnable, true);
+        final boolean isEnableBind = props.getBool(XmPluginPropertiesConstants.xmWebScanGenericBindEnable, true);
+        final boolean isEnableCors = props.getBool(XmPluginPropertiesConstants.xmWebCorsEnable, true);
+        final boolean isEnableArgsTrim = props.getBool(XmPluginPropertiesConstants.xmWebArgsTrimEnable, true);
+        final boolean isEnableJsonTrim = props.getBool(XmPluginPropertiesConstants.xmWebJsonTrimEnable, true);
+        final boolean isEnableDecodeDatetime = props.getBool(XmPluginPropertiesConstants.xmWebJsonDecodeDatetimeEnable, true);
 
         if (isEnableCors) {
             // 解决 cros 跨域 问题;
@@ -84,19 +84,19 @@ public class XmCoreWebPluginImp implements Plugin {
         //        }
 
 
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 包加载完毕!", XmPackageConstants.XM_CORE_WEB);
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
         } else {
-            System.out.println(XmPackageConstants.XM_CORE_WEB + " 包加载完毕!");
+            System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
         }
     }
 
     @Override
     public void stop() throws Throwable {
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 插件关闭!", XmPackageConstants.XM_CORE_WEB);
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE_WEB);
         } else {
-            System.out.println(XmPackageConstants.XM_CORE_WEB + " 插件关闭!");
+            System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 插件关闭!");
         }
     }
 

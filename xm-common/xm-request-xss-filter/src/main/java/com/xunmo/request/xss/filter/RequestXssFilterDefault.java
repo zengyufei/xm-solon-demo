@@ -3,7 +3,6 @@ package com.xunmo.request.xss.filter;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.request.xss.utils.XssUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.Handler;
 import org.noear.solon.core.route.RouterInterceptorChain;
@@ -11,8 +10,8 @@ import org.noear.solon.core.route.RouterInterceptorChain;
 import java.util.Map;
 
 @Slf4j
-@Component
-public class RequestXssFilterDefault implements RequestXssFilterExt {
+//@Component
+public class RequestXssFilterDefault implements RequestXssFilter {
 
     @Override
     public void doIntercept(Context ctx, Handler mainHandler, RouterInterceptorChain chain) throws Throwable {
@@ -44,7 +43,7 @@ public class RequestXssFilterDefault implements RequestXssFilterExt {
     }
 
     private String cleanXss(String input) {
-        if(StrUtil.isBlankOrUndefined(input)){
+        if (StrUtil.isBlankOrUndefined(input)) {
             return input;
         }
 

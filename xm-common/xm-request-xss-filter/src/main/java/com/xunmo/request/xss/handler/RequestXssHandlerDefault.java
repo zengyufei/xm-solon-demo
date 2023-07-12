@@ -3,15 +3,14 @@ package com.xunmo.request.xss.handler;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.request.xss.utils.XssUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Context;
 
 import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
-@Component
-public class RequestXssHandlerDefault implements RequestXssHandlerExt {
+//@Component
+public class RequestXssHandlerDefault implements RequestXssHandler {
 
     @Override
     public void before(Context ctx) throws IOException {

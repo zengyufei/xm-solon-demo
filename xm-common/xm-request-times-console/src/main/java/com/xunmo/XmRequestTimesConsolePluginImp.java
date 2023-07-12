@@ -1,10 +1,10 @@
 package com.xunmo;
 
 import cn.hutool.core.util.StrUtil;
-import com.xunmo.request.times.filter.RequestTimesConsoleFilterExt;
+import com.xunmo.request.times.filter.RequestTimesConsoleFilter;
 import com.xunmo.request.times.filter.RequestTimesFilterDefault;
+import com.xunmo.request.times.handler.RequestTimesConsoleHandler;
 import com.xunmo.request.times.handler.RequestTimesConsoleHandlerDefault;
-import com.xunmo.request.times.handler.RequestTimesConsoleHandlerExt;
 import com.xunmo.utils.HandlerExtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.core.AopContext;
@@ -20,33 +20,33 @@ public class XmRequestTimesConsolePluginImp implements Plugin {
     @Override
     public void start(AopContext context) {
         final Props props = context.cfg();
-        props.loadAddIfAbsent(XmPackageConstants.XM_REQUEST_TIMES_CONSOLE + ".yml");
+        props.loadAddIfAbsent(XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE + ".yml");
 
-        final boolean isEnabled = props.getBool(XmPluginConfig.xmWebConsoleRequestTimesEnable, true);
+        final boolean isEnabled = props.getBool(XmPluginPropertiesConstants.xmWebConsoleRequestTimesEnable, true);
         // type = handler(default) or filter
-        final String type = props.get(XmPluginConfig.xmWebConsoleRequestTimesType, defaultType);
+        final String type = props.get(XmPluginPropertiesConstants.xmWebConsoleRequestTimesType, defaultType);
 
         if (isEnabled) {
             if (StrUtil.equalsIgnoreCase(type, defaultType)) {
-                HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestTimesConsoleHandlerExt.class, RequestTimesConsoleHandlerDefault.class);
+                HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestTimesConsoleHandler.class, RequestTimesConsoleHandlerDefault.class);
             } else {
-                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestTimesConsoleFilterExt.class, RequestTimesFilterDefault.class);
+                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestTimesConsoleFilter.class, RequestTimesFilterDefault.class);
             }
         }
 
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 包加载完毕!", XmPackageConstants.XM_REQUEST_TIMES_CONSOLE);
-        }else {
-            System.out.println(XmPackageConstants.XM_REQUEST_TIMES_CONSOLE + " 包加载完毕!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 包加载完毕!", XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE + " 包加载完毕!");
         }
     }
 
     @Override
     public void stop() throws Throwable {
-        if (XmPackageConstants.IS_CONSOLE_LOG) {
-            log.info("{} 插件关闭!", XmPackageConstants.XM_REQUEST_TIMES_CONSOLE);
-        }else {
-            System.out.println(XmPackageConstants.XM_REQUEST_TIMES_CONSOLE + " 插件关闭!");
+        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+            log.info("{} 插件关闭!", XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE);
+        } else {
+            System.out.println(XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE + " 插件关闭!");
         }
     }
 

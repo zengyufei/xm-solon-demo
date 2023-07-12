@@ -3,15 +3,30 @@ package com.xunmo.request.trace.filter;
 import cn.hutool.core.util.IdUtil;
 import com.xunmo.XmConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.Handler;
 import org.noear.solon.core.route.RouterInterceptorChain;
 import org.slf4j.MDC;
 
 @Slf4j
-@Component
-public class TraceIdFilterDefault implements TraceIdFilterExt {
+//@Component
+public class TraceIdFilterDefault implements TraceIdFilter {
+
+    public static void removeMdc() {
+        MDC.remove(XmConstants.REQ_ID);
+    }
+
+    public static void putMdc(String reqId) {
+        MDC.put(XmConstants.REQ_ID, reqId);
+    }
+
+    public static void putMdc() {
+        MDC.put(XmConstants.REQ_ID, getReqId());
+    }
+
+    public static String getReqId() {
+        return IdUtil.fastSimpleUUID();
+    }
 
     @Override
     public void doIntercept(Context ctx, Handler mainHandler, RouterInterceptorChain chain) throws Throwable {
@@ -33,22 +48,5 @@ public class TraceIdFilterDefault implements TraceIdFilterExt {
         } finally {
             removeMdc();
         }
-    }
-
-
-    public static void removeMdc() {
-        MDC.remove(XmConstants.REQ_ID);
-    }
-
-    public static void putMdc(String reqId) {
-        MDC.put(XmConstants.REQ_ID, reqId);
-    }
-
-    public static void putMdc() {
-        MDC.put(XmConstants.REQ_ID, getReqId());
-    }
-
-    public static String getReqId() {
-        return IdUtil.fastSimpleUUID();
     }
 }

@@ -24,6 +24,7 @@
         <module>xm-common</module>
         <module>xm-apps</module>
         <module>xm-biz</module>
+        <module>xm-constant</module>
     </modules>
 
     <dependencies>
