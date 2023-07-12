@@ -1,6 +1,7 @@
 package com.xunmo.webs.user.controller;
 
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
@@ -59,16 +60,16 @@ public class UserController extends BaseController {
     @Post
     @Mapping("/list")
     public ResponseEntity<Page<User>> list(@Validated @Body UserQuery query, @Param PageRequest pageRequest) throws Exception {
-        final String        userId          = query.getUserId();
-        final String        userName        = query.getUserName();
+        final String userId = query.getUserId();
+        final String userName = query.getUserName();
         final LocalDateTime beginCreateTime = query.getBeginCreateTime();
-        final LocalDateTime endCreateTime   = query.getEndCreateTime();
-        final String        orgId           = query.getOrgId();
-        final String        orgName         = query.getOrgName();
-        final String        roleId          = query.getRoleId();
-        final String        roleName        = query.getRoleName();
-        final String        permissionId    = query.getPermissionId();
-        final String        permissionName  = query.getPermissionName();
+        final LocalDateTime endCreateTime = query.getEndCreateTime();
+        final String orgId = query.getOrgId();
+        final String orgName = query.getOrgName();
+        final String roleId = query.getRoleId();
+        final String roleName = query.getRoleName();
+        final String permissionId = query.getPermissionId();
+        final String permissionName = query.getPermissionName();
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest)
                 .execute(sqlClient
                         .createQuery(TABLE)
@@ -200,6 +201,17 @@ public class UserController extends BaseController {
     public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
         final DeleteResult result = this.sqlClient.deleteByIds(User.class, ids);
         return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getTotalAffectedRowCount());
+    }
+
+
+    /**
+     * 主动抛出异常 - 用于测试
+     */
+    @Get
+    @Mapping("/exception")
+    @Tran
+    public ResponseEntity<Boolean> exception() throws Exception {
+        throw new NullPointerException("主动抛出异常 - 用于测试 " + DateUtil.now());
     }
 
 

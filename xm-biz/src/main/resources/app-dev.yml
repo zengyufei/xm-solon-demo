@@ -30,6 +30,6 @@ xm:
   datasource.db:
     type: "com.zaxxer.hikari.HikariDataSource"
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&stringtype=unspecified&allowMultiQueries=true
+    jdbcUrl: jdbc:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified&allowMultiQueries=true
     username: root
     password: "root"

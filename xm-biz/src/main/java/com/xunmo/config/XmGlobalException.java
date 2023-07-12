@@ -43,7 +43,7 @@ public class XmGlobalException {
 
     @ExceptionHandler(CustomException.class)
     public AjaxJson handlerCustomException(Context ctx, CustomException e) {
-        log.error(ExceptionUtil.stacktraceToString(e));
+        log.error("", e);
 
         // 打印请求和异常信息
         printRequestInfo(ctx, e);
@@ -61,7 +61,7 @@ public class XmGlobalException {
 
     @ExceptionHandler(NullPointerException.class)
     public AjaxJson handlerNullPointerException(Context ctx, Exception e) {
-        log.error(ExceptionUtil.stacktraceToString(e));
+        log.error("", e);
 
         // 打印请求和异常信息
         printRequestInfo(ctx, e);
@@ -73,7 +73,7 @@ public class XmGlobalException {
 
     @ExceptionHandler(ArithmeticException.class)
     public AjaxJson handlerArithmeticException(Context ctx, Exception e) {
-        log.error(ExceptionUtil.stacktraceToString(e));
+        log.error("", e);
 
         // 打印请求和异常信息
         printRequestInfo(ctx, e);
@@ -85,7 +85,7 @@ public class XmGlobalException {
 
     @ExceptionHandler
     public AjaxJson handlerThrowable(Context ctx, Throwable e) {
-        log.error(ExceptionUtil.stacktraceToString(e));
+        log.error("", e);
 
         // 打印请求和异常信息
         printRequestInfo(ctx, e);
@@ -135,14 +135,14 @@ public class XmGlobalException {
         log.warn("请求信息：ip: {}, method: {}, uri: {}\nparams={}", ip, method, uri, params);
 
         // 需要记录
-        try{
-            if(needRecord && Objects.nonNull(this.enable) && this.enable){
+        try {
+            if (needRecord && Objects.nonNull(this.enable) && this.enable) {
                 String stackTrace = ExceptionUtil.stacktraceToString(throwable);
                 String userId = "admin";
                 ExceptionRecordInput record = ExceptionRecordInput.of()
                         .uri(uri)
                         .method(method)
-                        .params(Objects.isNull(params)?null: JSONUtil.toJsonStr(params))
+                        .params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
                         .ip(ip)
                         .userId(userId)
                         .happenTime(LocalDateTime.now())
@@ -150,7 +150,7 @@ public class XmGlobalException {
                         .build();
                 mqSendService.send(record);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
