@@ -77,12 +77,12 @@ public class XmCoreWebPluginImp implements Plugin {
                 if (redisCacheService != null) {
                     //可以进行手动字段注入
                     context.beanInject(redisCacheService);
-                    //包装Bean（指定类型的）
-                    BeanWrap beanWrap = new BeanWrap(context, CacheService.class, redisCacheService, null, true);
-                    //以类型注册
-                    context.putWrap(CacheService.class, beanWrap);
                     //添加缓存控制支持
                     CacheLib.cacheServiceAdd("", redisCacheService);
+                    //包装Bean（指定类型的）
+                    //以类型注册
+                    context.putWrap(RedissonCacheService.class, new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
+                    context.putWrap(CacheService.class, new BeanWrap(context, CacheService.class, redisCacheService, null, true));
                 }
             });
         }

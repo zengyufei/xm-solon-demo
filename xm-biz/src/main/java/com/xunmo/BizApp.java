@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
+import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
@@ -42,10 +43,17 @@ public class BizApp {
             LogUtil.globalSet(new LogUtilToSlf4j());  //v1.10.11 后支持
 
             app.get("/", ctx -> {
-                //                ctx.forward("/railway-bureau-test/index.html");
+                // ctx.forward("/railway-bureau-test/index.html");
                 ctx.redirect("/dict/view/tree");
-                //                ctx.redirect("/employee_info/view/index");
+                // ctx.redirect("/employee_info/view/index");
             });
+
+            //异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
+            Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
+                //bean 获取后，可以做些后续处理。。。
+                System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
+            });
+
 
             //2.添加资源路径
             //StaticMappings.add("/railway-bureau-test", false, new ClassPathStaticRepository("railway-bureau-test"));
