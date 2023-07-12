@@ -14,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
-import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.RenderManager;
 import org.noear.solon.core.util.LogUtil;
+import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.extend.quartz.EnableQuartz;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
 import org.noear.solon.serialization.StringSerializerRender;
@@ -37,7 +37,7 @@ public class BizApp {
 
     public static void main(String[] args) throws NoSuchFieldException {
         Solon.start(BizApp.class, args, app -> {
-//            app.enableCaching(false);
+            app.enableCaching(false);
 
             //转发日志到 Slf4j 接口
             LogUtil.globalSet(new LogUtilToSlf4j());  //v1.10.11 后支持
@@ -49,10 +49,17 @@ public class BizApp {
             });
 
             //异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
-            Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
+            Solon.context().getBeanAsync(CacheService.class, bean -> {
                 //bean 获取后，可以做些后续处理。。。
-                System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
+                System.out.println("异步订阅 CacheService, 执行初始化缓存动作");
             });
+
+
+            //异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
+//            Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
+//                //bean 获取后，可以做些后续处理。。。
+//                System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
+//            });
 
 
             //2.添加资源路径

@@ -7,6 +7,12 @@ import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.*;
+import org.noear.solon.data.annotation.Cache;
+import org.noear.solon.data.annotation.CachePut;
+import org.noear.solon.data.annotation.CacheRemove;
+import org.noear.solon.data.around.CacheInterceptor;
+import org.noear.solon.data.around.CachePutInterceptor;
+import org.noear.solon.data.around.CacheRemoveInterceptor;
 import org.noear.solon.data.cache.CacheLib;
 import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.web.cors.CrossHandler;
@@ -81,10 +87,13 @@ public class XmCoreWebPluginImp implements Plugin {
                     CacheLib.cacheServiceAdd("", redisCacheService);
                     //包装Bean（指定类型的）
                     //以类型注册
-                    context.putWrap(RedissonCacheService.class, new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
+//                    context.putWrap(RedissonCacheService.class, new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
                     context.putWrap(CacheService.class, new BeanWrap(context, CacheService.class, redisCacheService, null, true));
                 }
             });
+            context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
+            context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);
+            context.beanAroundAdd(Cache.class, new CacheInterceptor(), 111);
         }
 
 
