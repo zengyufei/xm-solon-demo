@@ -18,10 +18,6 @@ public interface XmPluginPropertiesConstants {
     String xmWebXssEnable = "xm.web.xss.enable";
     String xmWebXssType = "xm.web.xss.type";
     // web
-    String xmWebScanSuperControllerEnable = "xm.web.scan.super-controller.enable";
-    String xmWebScanGenericBindEnable = "xm.web.scan.generic-bind.enable";
     String xmWebCorsEnable = "xm.web.cors.enable";
     String xmWebArgsTrimEnable = "xm.web.args.trim.enable";
-    String xmWebJsonTrimEnable = "xm.web.json.trim.enable";
-    String xmWebJsonDecodeDatetimeEnable = "xm.web.json.decode-datetime.enable";
 }

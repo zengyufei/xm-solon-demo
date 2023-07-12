@@ -29,22 +29,13 @@ public class XmCoreWebPluginImp implements Plugin {
         props.loadAddIfAbsent(XmPackageNameConstants.XM_CORE_WEB + ".yml");
         final SolonApp app = Solon.app();
 
-
-        final boolean isEnableSuperController = props.getBool(XmPluginPropertiesConstants.xmWebScanSuperControllerEnable, true);
-        final boolean isEnableBind = props.getBool(XmPluginPropertiesConstants.xmWebScanGenericBindEnable, true);
         final boolean isEnableCors = props.getBool(XmPluginPropertiesConstants.xmWebCorsEnable, true);
         final boolean isEnableArgsTrim = props.getBool(XmPluginPropertiesConstants.xmWebArgsTrimEnable, true);
-        final boolean isEnableJsonTrim = props.getBool(XmPluginPropertiesConstants.xmWebJsonTrimEnable, true);
-        final boolean isEnableDecodeDatetime = props.getBool(XmPluginPropertiesConstants.xmWebJsonDecodeDatetimeEnable, true);
 
         if (isEnableCors) {
             // 解决 cros 跨域 问题;
             app.before(new CrossHandler().allowedOrigins("*"));
         }
-        //        if (isEnableDecodeDatetime) {
-        //            // 定制化 json 对日期类型的处理;
-        //            app.onEvent(SnackRenderFactory.class, XmZipPluginImp::initMvcJsonCustom);
-        //        }
         if (isEnableArgsTrim) {
             // 处理参数左右空白, 空字符串入参设置为null;
             app.before(ctx -> {
@@ -65,19 +56,10 @@ public class XmCoreWebPluginImp implements Plugin {
             });
         }
 
-        if (isEnableSuperController) {
-            // 自动扫描父类接口
-            //            Solon.context().beanBuilderAdd(Controller.class, (clz, bw, anno) -> {
-            //                if (clz.isInterface()) {
-            //                    return;
-            //                }
-            //                new HandlerLoaderPlus(bw).load(app);
-            //            });
-        }
-
         // 手动注册缓存
         final boolean isEnabled = props.getBool("xm.web.cache.enable", true);
         if (isEnabled) {
+            app.enableCaching(false);
             ThreadUtil.execute(() -> {
                 RedissonCacheService redisCacheService = props.getBean("xm.web.cache", RedissonCacheService.class);
                 if (redisCacheService != null) {
@@ -113,13 +95,4 @@ public class XmCoreWebPluginImp implements Plugin {
         }
     }
 
-
-    //初始化json定制（需要在插件运行前定制）
-    //    private static void initMvcJsonCustom(SnackRenderFactory factory) {
-    //        //示例1：通过转换器，做简单类型的定制
-    //        factory.addConvertor(Date.class, s -> DateUtil.date(s).toString());
-    //        factory.addConvertor(LocalDateTime.class, s -> DateUtil.date(s).toString());
-    //        factory.addConvertor(LocalDate.class, s -> DateUtil.date(s).toString("yyyy-MM-dd"));
-    ////        factory.addConvertor(Double.class, String::valueOf);
-    //    }
 }

@@ -37,7 +37,6 @@ public class BizApp {
 
     public static void main(String[] args) throws NoSuchFieldException {
         Solon.start(BizApp.class, args, app -> {
-            app.enableCaching(false);
 
             //转发日志到 Slf4j 接口
             LogUtil.globalSet(new LogUtilToSlf4j());  //v1.10.11 后支持
