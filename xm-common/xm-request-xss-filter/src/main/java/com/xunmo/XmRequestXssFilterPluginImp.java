@@ -1,5 +1,6 @@
 package com.xunmo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.request.xss.filter.RequestXssFilter;
 import com.xunmo.request.xss.filter.RequestXssFilterDefault;
@@ -27,11 +28,13 @@ public class XmRequestXssFilterPluginImp implements Plugin {
         final String type = props.get(XmPluginPropertiesConstants.xmWebXssType, defaultType);
 
         if (isEnabled) {
-            if (StrUtil.equalsIgnoreCase(type, defaultType)) {
-                HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestXssHandler.class, RequestXssHandlerDefault.class);
-            } else {
-                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestXssFilter.class, RequestXssFilterDefault.class);
-            }
+            ThreadUtil.execute(() -> {
+                if (StrUtil.equalsIgnoreCase(type, defaultType)) {
+                    HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestXssHandler.class, RequestXssHandlerDefault.class);
+                } else {
+                    HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestXssFilter.class, RequestXssFilterDefault.class);
+                }
+            });
         }
 
 

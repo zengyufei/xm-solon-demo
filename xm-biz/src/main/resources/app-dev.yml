@@ -15,7 +15,8 @@ xm:
   web:
     cache:
       enable: true
-      db: 2 #默认为 0，可不配置
+      driverType: "redis"
+      db: 3 #默认为 0，可不配置
       server: "vat:6379"
       password: "*xun13@mo14!154RConf!*"
   exception:

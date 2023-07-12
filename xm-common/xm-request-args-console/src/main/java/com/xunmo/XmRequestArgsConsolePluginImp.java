@@ -1,6 +1,7 @@
 package com.xunmo;
 
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.request.args.filter.ArgsConsoleFilter;
 import com.xunmo.request.args.filter.ArgsConsoleFilterDefault;
@@ -28,12 +29,16 @@ public class XmRequestArgsConsolePluginImp implements Plugin {
         final String type = props.get(XmPluginPropertiesConstants.xmWebConsoleArgsType, defaultType);
 
         if (isEnabled) {
-            if (StrUtil.equalsIgnoreCase(type, defaultType)) {
-                HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, ArgsConsoleHandler.class, ArgsConsoleHandlerDefault.class);
-            } else {
-                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, ArgsConsoleFilter.class, ArgsConsoleFilterDefault.class);
-            }
+            ThreadUtil.execute(() -> {
+                if (StrUtil.equalsIgnoreCase(type, defaultType)) {
+                    HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, ArgsConsoleHandler.class, ArgsConsoleHandlerDefault.class);
+                } else {
+                    HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, ArgsConsoleFilter.class, ArgsConsoleFilterDefault.class);
+                }
+            });
         }
+
+
         if (XmPackageNameConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageNameConstants.XM_REQUEST_ARGS_CONSOLE);
         } else {

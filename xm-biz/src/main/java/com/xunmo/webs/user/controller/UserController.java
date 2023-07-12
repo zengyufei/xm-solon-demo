@@ -22,6 +22,8 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.DeleteResult;
 import org.babyfish.jimmer.sql.ast.mutation.SimpleSaveResult;
 import org.noear.solon.annotation.*;
+import org.noear.solon.data.annotation.Cache;
+import org.noear.solon.data.annotation.CacheRemove;
 import org.noear.solon.data.annotation.Tran;
 import org.noear.solon.validation.annotation.NotBlank;
 import org.noear.solon.validation.annotation.NotNull;
@@ -59,6 +61,7 @@ public class UserController extends BaseController {
      */
     @Post
     @Mapping("/list")
+    @Cache(tags = "user", seconds = 60)
     public ResponseEntity<Page<User>> list(@Validated @Body UserQuery query, @Param PageRequest pageRequest) throws Exception {
         final String userId = query.getUserId();
         final String userName = query.getUserName();
@@ -210,6 +213,7 @@ public class UserController extends BaseController {
     @Get
     @Mapping("/exception")
     @Tran
+    @CacheRemove(tags = "user")
     public ResponseEntity<Boolean> exception() throws Exception {
         throw new NullPointerException("主动抛出异常 - 用于测试 " + DateUtil.now());
     }

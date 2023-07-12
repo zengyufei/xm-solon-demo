@@ -1,6 +1,7 @@
 package com.xunmo;
 
 import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -27,6 +28,7 @@ import org.noear.solon.serialization.jackson.JacksonSerializer;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Slf4j
 @EnableQuartz
@@ -34,6 +36,7 @@ public class BizApp {
 
     public static void main(String[] args) throws NoSuchFieldException {
         Solon.start(BizApp.class, args, app -> {
+//            app.enableCaching(false);
 
             //转发日志到 Slf4j 接口
             LogUtil.globalSet(new LogUtilToSlf4j());  //v1.10.11 后支持
@@ -164,20 +167,6 @@ public class BizApp {
         // Instant 反序列化
         immutableModule.addDeserializer(Instant.class, InstantDeserializer.INSTANT);
 
-
-//        immutableModule.addSerializer(LocalDateTime.class, new StdSerializer<LocalDateTime>(LocalDateTime.class) {
-//            @Override
-//            public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-//                gen.writeString(value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-//            }
-//        });
-//        immutableModule.addDeserializer(LocalDateTime.class, new StdDeserializer<LocalDateTime>(LocalDateTime.class) {
-//            @Override
-//            public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-//                final String text = p.getText();
-//                return DateUtil.toLocalDateTime(DateUtil.parse(text));
-//            }
-//        });
         immutableModule.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
             private static final long serialVersionUID = -2186517763342421483L;
 
@@ -187,6 +176,75 @@ public class BizApp {
                     return null;
                 }
                 return StrUtil.trim(jsonParser.getValueAsString());
+            }
+        });
+        immutableModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
+            private static final long serialVersionUID = -2186517763342421483L;
+            private final String[] DATE_FORMAT_STRS = new String[]{
+                    "yyyy",
+
+                    "yyyy-M",
+                    "yyyy/M",
+                    "yyyy.M",
+
+                    "yyyy-M",
+                    "yyyy/M",
+                    "yyyy.M",
+
+                    "yyyy-MM",
+                    "yyyy/MM",
+                    "yyyy.MM",
+
+                    "yyyy年M月",
+                    "yyyy年M月",
+                    "yyyy年MM月",
+
+                    "yyyyM",
+                    "yyyyM",
+                    "yyyyMM",
+
+                    "yyyy-M-dd",
+                    "yyyy/M/dd",
+                    "yyyy.M.dd",
+
+                    "yyyy-M-d",
+                    "yyyy/M/d",
+                    "yyyy.M.d",
+
+                    "yyyy-MM-d",
+                    "yyyy/MM/d",
+                    "yyyy.MM.d",
+
+                    "yyyy年M月dd日",
+                    "yyyy年M月d日",
+                    "yyyy年MM月d日",
+
+                    "yyyyMdd",
+                    "yyyyMd",
+                    "yyyyMMd",
+            };
+
+            @Override
+            public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
+                String text = jsonParser.getText();
+                if (StrUtil.isBlank(text)) {
+                    return null;
+                }
+                return formatToDate(text);
+            }
+
+            public Date formatToDate(String parameter) {
+                try {
+                    return DateUtil.parse(parameter);
+                } catch (Exception e) {
+                    for (String dateFormatStr : DATE_FORMAT_STRS) {
+                        try {
+                            return DateUtil.parse(parameter, dateFormatStr);
+                        } catch (Exception ignored2) {
+                        }
+                    }
+                    throw e;
+                }
             }
         });
     }

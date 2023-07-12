@@ -1,13 +1,14 @@
 package com.xunmo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
-import org.noear.solon.core.AopContext;
-import org.noear.solon.core.NvMap;
-import org.noear.solon.core.Plugin;
-import org.noear.solon.core.Props;
+import org.noear.solon.cache.redisson.RedissonCacheService;
+import org.noear.solon.core.*;
+import org.noear.solon.data.cache.CacheLib;
+import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.web.cors.CrossHandler;
 
 import java.util.Iterator;
@@ -69,19 +70,22 @@ public class XmCoreWebPluginImp implements Plugin {
         }
 
         // 手动注册缓存
-        //        final boolean isEnabled = props.getBool("xm.cache.enable", true);
-        //        if (isEnabled) {
-        //            //获取bean（根据配置集合自动生成）
-        //            RedisCacheService redisCacheService = props.getBean("xm.cache", RedisCacheService.class);
-        //            if (redisCacheService != null) {
-        //                //可以进行手动字段注入
-        //                context.beanInject(redisCacheService);
-        //                //包装Bean（指定类型的）
-        //                BeanWrap beanWrap = new BeanWrap(context, CacheService.class, redisCacheService, null, true);
-        //                //以类型注册
-        //                context.putWrap(CacheService.class, beanWrap);
-        //            }
-        //        }
+        final boolean isEnabled = props.getBool("xm.web.cache.enable", true);
+        if (isEnabled) {
+            ThreadUtil.execute(() -> {
+                RedissonCacheService redisCacheService = props.getBean("xm.web.cache", RedissonCacheService.class);
+                if (redisCacheService != null) {
+                    //可以进行手动字段注入
+                    context.beanInject(redisCacheService);
+                    //包装Bean（指定类型的）
+                    BeanWrap beanWrap = new BeanWrap(context, CacheService.class, redisCacheService, null, true);
+                    //以类型注册
+                    context.putWrap(CacheService.class, beanWrap);
+                    //添加缓存控制支持
+                    CacheLib.cacheServiceAdd("", redisCacheService);
+                }
+            });
+        }
 
 
         if (XmPackageNameConstants.IS_CONSOLE_LOG) {

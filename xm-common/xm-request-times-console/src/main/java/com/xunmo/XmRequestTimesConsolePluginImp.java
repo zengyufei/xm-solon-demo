@@ -1,5 +1,6 @@
 package com.xunmo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.request.times.filter.RequestTimesConsoleFilter;
 import com.xunmo.request.times.filter.RequestTimesFilterDefault;
@@ -27,12 +28,15 @@ public class XmRequestTimesConsolePluginImp implements Plugin {
         final String type = props.get(XmPluginPropertiesConstants.xmWebConsoleRequestTimesType, defaultType);
 
         if (isEnabled) {
-            if (StrUtil.equalsIgnoreCase(type, defaultType)) {
-                HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestTimesConsoleHandler.class, RequestTimesConsoleHandlerDefault.class);
-            } else {
-                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestTimesConsoleFilter.class, RequestTimesFilterDefault.class);
-            }
+            ThreadUtil.execute(() -> {
+                if (StrUtil.equalsIgnoreCase(type, defaultType)) {
+                    HandlerExtUtil.toBuildExtRequestHandler(context, defaultIndex, RequestTimesConsoleHandler.class, RequestTimesConsoleHandlerDefault.class);
+                } else {
+                    HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, RequestTimesConsoleFilter.class, RequestTimesFilterDefault.class);
+                }
+            });
         }
+
 
         if (XmPackageNameConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageNameConstants.XM_REQUEST_TIMES_CONSOLE);

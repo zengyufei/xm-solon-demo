@@ -1,6 +1,7 @@
 package com.xunmo;
 
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.xunmo.request.trace.filter.TraceIdFilter;
 import com.xunmo.request.trace.filter.TraceIdFilterDefault;
 import com.xunmo.utils.HandlerExtUtil;
@@ -25,12 +26,16 @@ public class XmTraceIdPluginImp implements Plugin {
         final boolean isEnabledThreadTraceId = props.getBool(XmPluginPropertiesConstants.xmLogTraceidThreadEnable, true);
 
         if (isEnabledTraceId) {
-            HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, TraceIdFilter.class, TraceIdFilterDefault.class);
-            if (isEnabledThreadTraceId) {
-                // 设置一个 reqId 到 MDC 类中, 可传给子线程(特殊情况下无法传递);
-                TtlMDCAdapter.getInstance();
-            }
+
+            ThreadUtil.execute(() -> {
+                HandlerExtUtil.toBuildExtRequestFilter(context, defaultIndex, TraceIdFilter.class, TraceIdFilterDefault.class);
+                if (isEnabledThreadTraceId) {
+                    // 设置一个 reqId 到 MDC 类中, 可传给子线程(特殊情况下无法传递);
+                    TtlMDCAdapter.getInstance();
+                }
+            });
         }
+
 
         if (XmPackageNameConstants.IS_CONSOLE_LOG) {
             log.info("{} 包加载完毕!", XmPackageNameConstants.XM_REQUEST_TRACE_ID);

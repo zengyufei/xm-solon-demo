@@ -42,7 +42,7 @@ xm:
         enable: false
     cache:
       enable: true
-      db: 2
+      db: 3
       server: localhost:6379
       #password: ""
     xss:
