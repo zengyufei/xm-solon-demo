@@ -11,6 +11,4 @@ import org.noear.solon.validation.annotation.Valid;
 @Mapping("/test")
 public class TestController {
 
-
-
 }

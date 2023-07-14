@@ -19,119 +19,127 @@ import java.time.LocalDateTime;
 @Data
 public class PermissionInput implements Input<Permission> {
 
-    private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
+	private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
-    /**
-     * 权限ID
-     */
-    private String permissionId;
+	/**
+	 * 权限ID
+	 */
+	private String permissionId;
 
-    /**
-     * 权限名称
-     */
-    private String permissionName;
+	/**
+	 * 权限名称
+	 */
+	private String permissionName;
 
-    /**
-     * 权限类型
-     */
-    private String permissionType;
+	/**
+	 * 权限类型
+	 */
+	private String permissionType;
 
-    /**
-     * 父权限ID
-     */
-    private String parentPermissionId;
+	/**
+	 * 父权限ID
+	 */
+	private String parentPermissionId;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-    private LocalDateTime beginCreateTime;
-    private LocalDateTime endCreateTime;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
 
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
-    private LocalDateTime beginUpdateTime;
-    private LocalDateTime endUpdateTime;
+	private LocalDateTime beginCreateTime;
 
-    /**
-     * 创建人ID
-     */
-    private String createId;
+	private LocalDateTime endCreateTime;
 
-    /**
-     * 修改人ID
-     */
-    private String updateId;
+	/**
+	 * 修改时间
+	 */
+	private LocalDateTime updateTime;
 
-    /**
-     * 审批状态
-     */
-    private String approvalStatus;
+	private LocalDateTime beginUpdateTime;
 
-    /**
-     * 审批人id
-     */
-    private String approverId;
+	private LocalDateTime endUpdateTime;
 
-    /**
-     * 审批意见
-     */
-    private String approvalComment;
+	/**
+	 * 创建人ID
+	 */
+	private String createId;
 
-    /**
-     * 审批时间
-     */
-    private LocalDateTime approvalTime;
-    private LocalDateTime beginApprovalTime;
-    private LocalDateTime endApprovalTime;
+	/**
+	 * 修改人ID
+	 */
+	private String updateId;
 
-    /**
-     * 是否导入
-     */
-    private Integer isImported;
+	/**
+	 * 审批状态
+	 */
+	private String approvalStatus;
 
-    /**
-     * 导入时间
-     */
-    private LocalDateTime importTime;
-    private LocalDateTime beginImportTime;
-    private LocalDateTime endImportTime;
+	/**
+	 * 审批人id
+	 */
+	private String approverId;
 
-    /**
-     * 是否系统默认
-     */
-    private Integer isSystemDefault;
+	/**
+	 * 审批意见
+	 */
+	private String approvalComment;
 
-    /**
-     * 租户id
-     */
-    private String tenantId;
+	/**
+	 * 审批时间
+	 */
+	private LocalDateTime approvalTime;
 
-    /**
-     * 乐观锁版本号
-     */
-    private Integer version;
+	private LocalDateTime beginApprovalTime;
 
-    /**
-     * 状态
-     */
-    private String status;
+	private LocalDateTime endApprovalTime;
 
+	/**
+	 * 是否导入
+	 */
+	private Integer isImported;
 
-    // ---------- 转换方法 ----------
+	/**
+	 * 导入时间
+	 */
+	private LocalDateTime importTime;
 
+	private LocalDateTime beginImportTime;
 
-    @Override
-    public Permission toEntity() {
-        return CONVERTER.toPermission(this);
-    }
+	private LocalDateTime endImportTime;
 
-    @Mapper
-    interface Converter {
+	/**
+	 * 是否系统默认
+	 */
+	private Integer isSystemDefault;
 
-        @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        Permission toPermission(PermissionInput input);
-    }
+	/**
+	 * 租户id
+	 */
+	private String tenantId;
+
+	/**
+	 * 乐观锁版本号
+	 */
+	private Integer version;
+
+	/**
+	 * 状态
+	 */
+	private String status;
+
+	// ---------- 转换方法 ----------
+
+	@Override
+	public Permission toEntity() {
+		return CONVERTER.toPermission(this);
+	}
+
+	@Mapper
+	interface Converter {
+
+		@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+		Permission toPermission(PermissionInput input);
+
+	}
+
 }

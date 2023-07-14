@@ -19,34 +19,35 @@ package com.xunmo.pool;
 import java.time.Instant;
 
 /**
- * Allows pooled objects to make information available about when and how they were used available to the object pool.
- * The object pool may, but is not required, to use this information to make more informed decisions when determining
- * the state of a pooled object - for instance whether or not the object has been abandoned.
+ * Allows pooled objects to make information available about when and how they were used
+ * available to the object pool. The object pool may, but is not required, to use this
+ * information to make more informed decisions when determining the state of a pooled
+ * object - for instance whether or not the object has been abandoned.
  *
  * @since 2.0
  */
 public interface TrackedUse {
 
-    /**
-     * Gets the last time this object was used in milliseconds.
-     *
-     * @return the last time this object was used in milliseconds.
-     * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
-     */
-    @Deprecated
-    long getLastUsed();
+	/**
+	 * Gets the last time this object was used in milliseconds.
+	 * @return the last time this object was used in milliseconds.
+	 * @deprecated Use {@link #getLastUsedInstant()} which offers the best precision.
+	 */
+	@Deprecated
+	long getLastUsed();
 
-    /**
-     * Gets the last Instant this object was used.
-     * <p>
-     * Starting with Java 9, the JRE {@code SystemClock} precision is increased usually down to microseconds, or tenth
-     * of microseconds, depending on the OS, Hardware, and JVM implementation.
-     * </p>
-     *
-     * @return the last Instant this object was used.
-     * @since 2.11.0
-     */
-    default Instant getLastUsedInstant() {
-        return Instant.ofEpochMilli(getLastUsed());
-    }
+	/**
+	 * Gets the last Instant this object was used.
+	 * <p>
+	 * Starting with Java 9, the JRE {@code SystemClock} precision is increased usually
+	 * down to microseconds, or tenth of microseconds, depending on the OS, Hardware, and
+	 * JVM implementation.
+	 * </p>
+	 * @return the last Instant this object was used.
+	 * @since 2.11.0
+	 */
+	default Instant getLastUsedInstant() {
+		return Instant.ofEpochMilli(getLastUsed());
+	}
+
 }

@@ -4,4 +4,5 @@ import org.noear.solon.annotation.ProxyComponent;
 
 @ProxyComponent
 public class UserService {
+
 }

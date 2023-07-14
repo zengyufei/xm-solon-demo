@@ -5,6 +5,6 @@
 
 package com.xunmo.common.base;
 
-
 public interface Repository<T, ID> {
+
 }

@@ -10,26 +10,29 @@ import org.jetbrains.annotations.Nullable;
 @MappedSuperclass
 public interface TenantEntity {
 
-    /**
-     * 租户id
-     */
-    @Nullable
-    @Column(name = Columns.tenantId)
-    String tenantId();
+	/**
+	 * 租户id
+	 */
+	@Nullable
+	@Column(name = Columns.tenantId)
+	String tenantId();
 
-    /**
-     * 表字段名
-     */
-    interface Columns {
-        String tenantId = "tenant_id"; // 租户id
-    }
+	/**
+	 * 表字段名
+	 */
+	interface Columns {
 
-    /**
-     * 实体字段名
-     */
-    interface FieldNames {
-        String tenantId = "tenantId"; // 租户id
-    }
+		String tenantId = "tenant_id"; // 租户id
 
+	}
+
+	/**
+	 * 实体字段名
+	 */
+	interface FieldNames {
+
+		String tenantId = "tenantId"; // 租户id
+
+	}
 
 }

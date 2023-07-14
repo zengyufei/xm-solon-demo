@@ -7,27 +7,20 @@
     <parent>
         <groupId>com.xunmo</groupId>
         <artifactId>xm-parent</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>xm-apps</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <modules>
-        <module>./xm-biz-api</module>
-        <module>./xm-biz-base</module>
-        <module>./xm-exception-record</module>
-        <module>./xm-exception</module>
-        <module>./xm-health</module>
-        <module>./xm-rabbitmq-util</module>
-        <module>./xm-core-web</module>
-    </modules>
+	<modules>
+		<module>./xm-biz-api</module>
+		<module>./xm-exception-record</module>
+		<module>./xm-rabbitmq-util</module>
+		<module>./xm-rabbitmq-util2</module>
+		<module>./xm-execl</module>
+		<module>./xm-core-web</module>
+	</modules>
 
 </project>

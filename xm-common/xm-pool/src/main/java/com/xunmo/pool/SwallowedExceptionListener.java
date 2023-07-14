@@ -17,20 +17,20 @@
 package com.xunmo.pool;
 
 /**
- * Pools that unavoidably swallow exceptions may be configured with an instance
- * of this listener so the user may receive notification of when this happens.
- * The listener should not throw an exception when called but pools calling
- * listeners should protect themselves against exceptions anyway.
+ * Pools that unavoidably swallow exceptions may be configured with an instance of this
+ * listener so the user may receive notification of when this happens. The listener should
+ * not throw an exception when called but pools calling listeners should protect
+ * themselves against exceptions anyway.
  *
  * @since 2.0
  */
 public interface SwallowedExceptionListener {
 
-    /**
-     * Notifies this instance every time the implementation unavoidably swallows
-     * an exception.
-     *
-     * @param e The exception that was swallowed
-     */
-    void onSwallowException(Exception e);
+	/**
+	 * Notifies this instance every time the implementation unavoidably swallows an
+	 * exception.
+	 * @param e The exception that was swallowed
+	 */
+	void onSwallowException(Exception e);
+
 }

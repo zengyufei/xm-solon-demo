@@ -34,145 +34,146 @@ import java.util.Objects;
 @Component(index = 0)
 public class XmGlobalException {
 
-    // 是否开启异常记录
-    @Inject("${xm.exception.enable:false}")
-    private Boolean enable;
-    // 是否开启异常记录
-    @Inject
-    private MqSendService mqSendService;
+	// 是否开启异常记录
+	@Inject("${xm.exception.enable:false}")
+	private Boolean enable;
 
-    @ExceptionHandler(CustomException.class)
-    public AjaxJson handlerCustomException(Context ctx, CustomException e) {
-        log.error("", e);
+	// 是否开启异常记录
+	@Inject
+	private MqSendService mqSendService;
 
-        // 打印请求和异常信息
-        printRequestInfo(ctx, e);
+	@ExceptionHandler(CustomException.class)
+	public AjaxJson handlerCustomException(Context ctx, CustomException e) {
+		log.error("", e);
 
-        String msg = (String) e.getParams();
-        if (StrUtil.isBlank(msg)) {
-            final ISystemStatus status = e.getStatus();
-            msg = status.getMsg();
-        }
-        final AjaxJson error = AjaxJson.getError(msg);
-        error.setData(Convert.toStr(e.getField()));
-        error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
-        return error;
-    }
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
 
-    @ExceptionHandler(NullPointerException.class)
-    public AjaxJson handlerNullPointerException(Context ctx, Exception e) {
-        log.error("", e);
+		String msg = (String) e.getParams();
+		if (StrUtil.isBlank(msg)) {
+			final ISystemStatus status = e.getStatus();
+			msg = status.getMsg();
+		}
+		final AjaxJson error = AjaxJson.getError(msg);
+		error.setData(Convert.toStr(e.getField()));
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
 
-        // 打印请求和异常信息
-        printRequestInfo(ctx, e);
+	@ExceptionHandler(NullPointerException.class)
+	public AjaxJson handlerNullPointerException(Context ctx, Exception e) {
+		log.error("", e);
 
-        final AjaxJson error = AjaxJson.getError(e.getMessage());
-        error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
-        return error;
-    }
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
 
-    @ExceptionHandler(ArithmeticException.class)
-    public AjaxJson handlerArithmeticException(Context ctx, Exception e) {
-        log.error("", e);
+		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
 
-        // 打印请求和异常信息
-        printRequestInfo(ctx, e);
+	@ExceptionHandler(ArithmeticException.class)
+	public AjaxJson handlerArithmeticException(Context ctx, Exception e) {
+		log.error("", e);
 
-        final AjaxJson error = AjaxJson.getError(e.getMessage());
-        error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
-        return error;
-    }
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
 
-    @ExceptionHandler
-    public AjaxJson handlerThrowable(Context ctx, Throwable e) {
-        log.error("", e);
+		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
 
-        // 打印请求和异常信息
-        printRequestInfo(ctx, e);
+	@ExceptionHandler
+	public AjaxJson handlerThrowable(Context ctx, Throwable e) {
+		log.error("", e);
 
-        final AjaxJson error = AjaxJson.getError(e.getMessage());
-        error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
-        return error;
-    }
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
 
+		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
 
-    /**
-     * 打印请求信息
-     *
-     * @param ctx
-     * @param throwable
-     */
-    public void printRequestInfo(Context ctx, Throwable throwable) {
-        printRequestInfo(ctx, throwable, true);
-    }
+	/**
+	 * 打印请求信息
+	 * @param ctx
+	 * @param throwable
+	 */
+	public void printRequestInfo(Context ctx, Throwable throwable) {
+		printRequestInfo(ctx, throwable, true);
+	}
 
+	/**
+	 * 打印请求信息
+	 * @param ctx
+	 * @param throwable
+	 */
+	public void printRequestInfo(Context ctx, Throwable throwable, boolean needRecord) {
+		String uri = null;
+		String method = null;
+		Map<String, List<String>> params = null;
+		String ip = null;
+		try {
+			uri = ctx.uri().toString();
+			method = ctx.method().toUpperCase();
+			params = ctx.paramsMap();
+			ip = ctx.ip();
 
-    /**
-     * 打印请求信息
-     *
-     * @param ctx
-     * @param throwable
-     */
-    public void printRequestInfo(Context ctx, Throwable throwable, boolean needRecord) {
-        String uri = null;
-        String method = null;
-        Map<String, List<String>> params = null;
-        String ip = null;
-        try {
-            uri = ctx.uri().toString();
-            method = ctx.method().toUpperCase();
-            params = ctx.paramsMap();
-            ip = ctx.ip();
+		}
+		catch (Exception e) {
+			log.warn("打印请求信息时异常", e);
+			uri = "";
+			method = "";
+			params = new HashMap<>();
+			ip = "";
+		}
 
-        } catch (Exception e) {
-            log.warn("打印请求信息时异常", e);
-            uri = "";
-            method = "";
-            params = new HashMap<>();
-            ip = "";
-        }
+		log.warn("请求信息：ip: {}, method: {}, uri: {}\nparams={}", ip, method, uri, params);
 
-        log.warn("请求信息：ip: {}, method: {}, uri: {}\nparams={}", ip, method, uri, params);
+		// 需要记录
+		try {
+			if (needRecord && Objects.nonNull(this.enable) && this.enable) {
+				String stackTrace = ExceptionUtil.stacktraceToString(throwable);
+				String userId = "admin";
+				ExceptionRecordInput record = ExceptionRecordInput.of()
+					.uri(uri)
+					.method(method)
+					.params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
+					.ip(ip)
+					.userId(userId)
+					.happenTime(LocalDateTime.now())
+					.stackTrace(stackTrace)
+					.build();
+				mqSendService.send(record);
+			}
+		}
+		catch (Exception e) {
 
-        // 需要记录
-        try {
-            if (needRecord && Objects.nonNull(this.enable) && this.enable) {
-                String stackTrace = ExceptionUtil.stacktraceToString(throwable);
-                String userId = "admin";
-                ExceptionRecordInput record = ExceptionRecordInput.of()
-                        .uri(uri)
-                        .method(method)
-                        .params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
-                        .ip(ip)
-                        .userId(userId)
-                        .happenTime(LocalDateTime.now())
-                        .stackTrace(stackTrace)
-                        .build();
-                mqSendService.send(record);
-            }
-        } catch (Exception e) {
+		}
 
-        }
+	}
 
-    }
+	/**
+	 * 获取异常堆栈消息
+	 * @param throwable 异常
+	 * @return 堆栈消息
+	 */
+	public String getExceptionStackTrace(Throwable throwable) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
 
-    /**
-     * 获取异常堆栈消息
-     *
-     * @param throwable 异常
-     * @return 堆栈消息
-     */
-    public String getExceptionStackTrace(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
+		try {
+			throwable.printStackTrace(pw);
+			return sw.toString();
+		}
+		catch (Exception e) {
+			return throwable.getMessage();
+		}
+		finally {
+			pw.close();
+		}
+	}
 
-        try {
-            throwable.printStackTrace(pw);
-            return sw.toString();
-        } catch (Exception e) {
-            return throwable.getMessage();
-        } finally {
-            pw.close();
-        }
-    }
 }

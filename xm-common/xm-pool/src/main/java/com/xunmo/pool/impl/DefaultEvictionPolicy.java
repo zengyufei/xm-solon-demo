@@ -16,7 +16,6 @@
  */
 package com.xunmo.pool.impl;
 
-
 import com.xunmo.pool.PooledObject;
 
 /**
@@ -26,13 +25,13 @@ import com.xunmo.pool.PooledObject;
  * </p>
  * <ul>
  * <li>The object has been idle longer than
- *     {@link GenericObjectPool#getMinEvictableIdleDuration()} /
- *     {@link GenericKeyedObjectPool#getMinEvictableIdleDuration()}</li>
+ * {@link GenericObjectPool#getMinEvictableIdleDuration()} /
+ * {@link GenericKeyedObjectPool#getMinEvictableIdleDuration()}</li>
  * <li>There are more than {@link GenericObjectPool#getMinIdle()} /
- *     {@link GenericKeyedObjectPoolConfig#getMinIdlePerKey()} idle objects in
- *     the pool and the object has been idle for longer than
- *     {@link GenericObjectPool#getSoftMinEvictableIdleDuration()} /
- *     {@link GenericKeyedObjectPool#getSoftMinEvictableIdleDuration()}
+ * {@link GenericKeyedObjectPoolConfig#getMinIdlePerKey()} idle objects in the pool and
+ * the object has been idle for longer than
+ * {@link GenericObjectPool#getSoftMinEvictableIdleDuration()} /
+ * {@link GenericKeyedObjectPool#getSoftMinEvictableIdleDuration()}
  * </ul>
  * <p>
  * This class is immutable and thread-safe.
@@ -43,12 +42,13 @@ import com.xunmo.pool.PooledObject;
  */
 public class DefaultEvictionPolicy<T> implements EvictionPolicy<T> {
 
-    @Override
-    public boolean evict(final EvictionConfig config, final PooledObject<T> underTest, final int idleCount) {
-        // @formatter:off
+	@Override
+	public boolean evict(final EvictionConfig config, final PooledObject<T> underTest, final int idleCount) {
+		// @formatter:off
         return config.getIdleSoftEvictDuration().compareTo(underTest.getIdleDuration()) < 0 &&
                 config.getMinIdle() < idleCount ||
                 config.getIdleEvictDuration().compareTo(underTest.getIdleDuration()) < 0;
         // @formatter:on
-    }
+	}
+
 }

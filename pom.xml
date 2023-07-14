@@ -1,174 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.xunmo</groupId>
+		<artifactId>xm-bom</artifactId>
+		<version>${revision}</version>
+		<relativePath>xm-bom/pom.xml</relativePath>
+	</parent>
 
-    <groupId>com.xunmo</groupId>
-    <artifactId>xm-parent</artifactId>
-    <version>1.0.0</version>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>xm-parent</artifactId>
+	<version>${revision}</version>
+	<name>${project.artifactId}</name>
+	<packaging>pom</packaging>
 
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <xm.version>1.0.0</xm.version>
-        <solon.version>2.3.7</solon.version>
-        <jimmer.version>0.7.107</jimmer.version>
-        <mapstruct-plus.version>1.3.2</mapstruct-plus.version>
-    </properties>
+		<jimmer.version>0.7.115</jimmer.version>
+		<mapstruct-plus.version>1.3.2</mapstruct-plus.version>
+	</properties>
 
-    <modules>
-        <module>xm-common</module>
-        <module>xm-apps</module>
-        <module>xm-biz</module>
-        <module>xm-constant</module>
-    </modules>
+	<modules>
+		<module>xm-constant</module>
+		<module>xm-common</module>
+		<module>xm-apps</module>
+		<module>xm-biz</module>
+		<module>xm-plugin</module>
+	</modules>
 
-    <dependencies>
-        <!-- 基础常量 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-constant</artifactId>
-        </dependency>
-        <!--hutool-->
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.7.15</version>
-        </dependency>
-        <!--Lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>logback-solon-plugin</artifactId>
-        </dependency>
-    </dependencies>
-
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- 公共版本定义-->
-            <dependency>
-                <groupId>com.xunmo</groupId>
-                <artifactId>xm-bom</artifactId>
-                <version>${xm.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+	<dependencies>
+		<!-- 基础常量 -->
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-constant</artifactId>
+		</dependency>
+		<!--hutool-->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>5.7.15</version>
+		</dependency>
+		<!--Lombok-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>logback-solon-plugin</artifactId>
+		</dependency>
+	</dependencies>
 
 
-            <!-- boot 公共版本定义-->
-            <dependency>
-                <groupId>org.noear</groupId>
-                <artifactId>solon-parent</artifactId>
-                <version>${solon.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+	<dependencyManagement>
+		<dependencies>
+			<!-- 公共版本定义-->
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-bom</artifactId>
+				<version>${revision}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
-        </dependencies>
+		</dependencies>
 
-    </dependencyManagement>
+	</dependencyManagement>
 
 
-    <build>
-        <finalName>${project.name}</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-        <pluginManagement>
-            <plugins>
+	<build>
+		<finalName>${project.name}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		<pluginManagement>
+			<plugins>
+				<!-- 配置打包插件（设置主类，并打包成胖包） -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.3.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 
-                <!-- 配置编译插件 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                    <configuration>
-                        <compilerArgument>-parameters</compilerArgument>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                </plugin>
+		<plugins>
+			<!-- 配置编译插件 -->
+			<plugin>
+				<groupId>io.spring.javaformat</groupId>
+				<artifactId>spring-javaformat-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>validate</goal>
+						</goals>
+						<inherited>true</inherited>
+						<phase>validate</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 配置编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.verison}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgument>-parameters</compilerArgument>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.babyfish.jimmer</groupId>
+							<artifactId>jimmer-apt</artifactId>
+							<version>${jimmer.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.26</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.5.3.Final</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 
-                <!-- 配置打包插件（设置主类，并打包成胖包） -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
 
-            </plugins>
-        </pluginManagement>
+			<!-- 测试插件 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<configuration>
+					<flattenMode>resolveCiFriendliesOnly</flattenMode>
+					<updatePomFile>true</updatePomFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+					</execution>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 
-    </build>
+	</build>
 
-    <!--
-   使用时，可以项目的 pom.xml 里添加 repositories 内容
-   -->
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>tencent</id>
-            <name>tencent maven</name>
-            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>repo1</id>
-            <name>repo1 maven</name>
-            <url>https://repo1.maven.org/maven2/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <repositories>
-        <repository>
-            <id>tencent</id>
-            <name>tencent maven</name>
-            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>repo1</id>
-            <name>repo1 maven</name>
-            <url>https://repo1.maven.org/maven2/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+	<!--环境变量-->
+	<profiles>
+		<profile>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalJOption>-J-Dfile.encoding=UTF-8</additionalJOption>
+							<doclint>none</doclint>
+							<tags>
+								<tag>
+									<name>date</name>
+								</tag>
+							</tags>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<id>attach-javadocs</id>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+								<id>attach-sources</id>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<configuration>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<serverId>ossrh</serverId>
+							<stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
+						</configuration>
+						<extensions>true</extensions>
+					</plugin>
+				</plugins>
+			</build>
+			<id>ossrh</id>
+		</profile>
+		<profile>
+			<properties>
+				<profiles.active>dev</profiles.active>
+			</properties>
+			<activation>
+				<!-- 默认环境 -->
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<id>dev</id>
+		</profile>
+		<profile>
+			<properties>
+				<profiles.active>test</profiles.active>
+			</properties>
+			<id>test</id>
+		</profile>
+		<profile>
+			<properties>
+				<profiles.active>prod</profiles.active>
+			</properties>
+			<id>prod</id>
+		</profile>
+	</profiles>
 </project>

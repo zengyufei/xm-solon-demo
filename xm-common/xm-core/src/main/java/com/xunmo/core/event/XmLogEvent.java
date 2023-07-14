@@ -1,11 +1,18 @@
 package com.xunmo.core.event;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
-@Getter
+@Data
+@Accessors
+@Builder(builderMethodName = "of")
+@NoArgsConstructor
+@AllArgsConstructor
 public class XmLogEvent {
-    private String msg;
-    public XmLogEvent(String msg){
-        this.msg = msg;
-    }
+
+	private String msg;
+
 }

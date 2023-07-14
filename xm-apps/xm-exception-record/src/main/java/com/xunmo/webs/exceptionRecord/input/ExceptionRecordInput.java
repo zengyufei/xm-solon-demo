@@ -29,147 +29,151 @@ import java.time.LocalDateTime;
 @Builder(builderMethodName = "of")
 public class ExceptionRecordInput implements Input<ExceptionRecord>, Serializable {
 
-    private static final long serialVersionUID = -4185267394446332219L;
+	private static final long serialVersionUID = -4185267394446332219L;
 
-    private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
+	private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
-    /**
-     * [PK]用户ID
-     */
-    private String id;
+	/**
+	 * [PK]用户ID
+	 */
+	private String id;
 
-    /**
-     * 请求地址
-     */
-    private String uri;
+	/**
+	 * 请求地址
+	 */
+	private String uri;
 
-    /**
-     * 请求方法
-     */
-    private String method;
+	/**
+	 * 请求方法
+	 */
+	private String method;
 
-    /**
-     * 请求参数
-     */
-    private String params;
+	/**
+	 * 请求参数
+	 */
+	private String params;
 
-    /**
-     * IP
-     */
-    private String ip;
+	/**
+	 * IP
+	 */
+	private String ip;
 
-    /**
-     * 日志追踪id
-     */
-    private String reqid;
+	/**
+	 * 日志追踪id
+	 */
+	private String reqid;
 
-    /**
-     * 用户ID
-     */
-    private String userId;
+	/**
+	 * 用户ID
+	 */
+	private String userId;
 
-    /**
-     * 发生时间(时间戳)
-     */
-    private LocalDateTime happenTime;
-    private LocalDateTime beginHappenTime;
-    private LocalDateTime endHappenTime;
+	/**
+	 * 发生时间(时间戳)
+	 */
+	private LocalDateTime happenTime;
 
-    /**
-     * 异常堆栈消息
-     */
-    private String stackTrace;
+	private LocalDateTime beginHappenTime;
 
-    /**
-     * 是否有效:0-有效 1-禁用
-     */
-    private Integer disabled;
+	private LocalDateTime endHappenTime;
 
-    /**
-     * 租户ID
-     */
-    private String tenantId;
+	/**
+	 * 异常堆栈消息
+	 */
+	private String stackTrace;
 
-    /**
-     * appId
-     */
-    private String appId;
+	/**
+	 * 是否有效:0-有效 1-禁用
+	 */
+	private Integer disabled;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-    private LocalDateTime beginCreateTime;
-    private LocalDateTime endCreateTime;
+	/**
+	 * 租户ID
+	 */
+	private String tenantId;
 
-    /**
-     * 创建人
-     */
-    private String createUser;
+	/**
+	 * appId
+	 */
+	private String appId;
 
-    /**
-     * 创建人昵称
-     */
-    private String createUserName;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
 
-    /**
-     * 更新时间
-     */
-    private LocalDateTime lastUpdateTime;
-    private LocalDateTime beginLastUpdateTime;
-    private LocalDateTime endLastUpdateTime;
+	private LocalDateTime beginCreateTime;
 
-    /**
-     * 更新人
-     */
-    private String lastUpdateUser;
+	private LocalDateTime endCreateTime;
 
-    /**
-     * 更新人创建人昵称
-     */
-    private String lastUpdateUserName;
+	/**
+	 * 创建人
+	 */
+	private String createUser;
 
-    /**
-     * 数据来源
-     */
-    private String sourceType;
+	/**
+	 * 创建人昵称
+	 */
+	private String createUserName;
 
-    /**
-     * 说明
-     */
-    private String remark;
+	/**
+	 * 更新时间
+	 */
+	private LocalDateTime lastUpdateTime;
 
+	private LocalDateTime beginLastUpdateTime;
 
-    // ---------- 转换方法 ----------
+	private LocalDateTime endLastUpdateTime;
 
+	/**
+	 * 更新人
+	 */
+	private String lastUpdateUser;
 
-    @Override
-    public ExceptionRecord toEntity() {
-        return CONVERTER.toExceptionRecord(this);
-    }
+	/**
+	 * 更新人创建人昵称
+	 */
+	private String lastUpdateUserName;
 
-    public ExceptionRecordInput toUpdate() {
-        return CONVERTER.toUpdate(this);
-    }
+	/**
+	 * 数据来源
+	 */
+	private String sourceType;
 
-    @Mapper(imports = {
-            LocalDateTime.class
-    })
-    interface Converter {
+	/**
+	 * 说明
+	 */
+	private String remark;
 
-        @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        ExceptionRecord toExceptionRecord(ExceptionRecordInput input);
+	// ---------- 转换方法 ----------
 
-        @Mapping(target = ExceptionRecord.FieldNames.createUser, constant = "system")
-        @Mapping(target = ExceptionRecord.FieldNames.createUserName, constant = "system")
-        @Mapping(target = ExceptionRecord.FieldNames.createTime, expression = "java(LocalDateTime.now())")
-        @Mapping(target = ExceptionRecord.FieldNames.disabled, constant = "0")
-        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateUser, constant = "system")
-        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateUserName, constant = "system")
-        @Mapping(target = ExceptionRecord.FieldNames.lastUpdateTime, expression = "java(LocalDateTime.now())")
-        @Mapping(target = ExceptionRecord.FieldNames.sourceType, constant = "system")
-        @Mapping(target = ExceptionRecord.FieldNames.tenantId, constant = "-1")
-        @Mapping(target = ExceptionRecord.FieldNames.appId, constant = "-1")
-        ExceptionRecordInput toUpdate(ExceptionRecordInput input);
-    }
+	@Override
+	public ExceptionRecord toEntity() {
+		return CONVERTER.toExceptionRecord(this);
+	}
+
+	public ExceptionRecordInput toUpdate() {
+		return CONVERTER.toUpdate(this);
+	}
+
+	@Mapper(imports = { LocalDateTime.class })
+	interface Converter {
+
+		@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+		ExceptionRecord toExceptionRecord(ExceptionRecordInput input);
+
+		@Mapping(target = ExceptionRecord.FieldNames.createUser, constant = "system")
+		@Mapping(target = ExceptionRecord.FieldNames.createUserName, constant = "system")
+		@Mapping(target = ExceptionRecord.FieldNames.createTime, expression = "java(LocalDateTime.now())")
+		@Mapping(target = ExceptionRecord.FieldNames.disabled, constant = "0")
+		@Mapping(target = ExceptionRecord.FieldNames.lastUpdateUser, constant = "system")
+		@Mapping(target = ExceptionRecord.FieldNames.lastUpdateUserName, constant = "system")
+		@Mapping(target = ExceptionRecord.FieldNames.lastUpdateTime, expression = "java(LocalDateTime.now())")
+		@Mapping(target = ExceptionRecord.FieldNames.sourceType, constant = "system")
+		@Mapping(target = ExceptionRecord.FieldNames.tenantId, constant = "-1")
+		@Mapping(target = ExceptionRecord.FieldNames.appId, constant = "-1")
+		ExceptionRecordInput toUpdate(ExceptionRecordInput input);
+
+	}
+
 }

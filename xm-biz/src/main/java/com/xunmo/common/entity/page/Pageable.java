@@ -10,46 +10,48 @@ import cn.hutool.core.lang.Assert;
 import java.util.Optional;
 
 public interface Pageable {
-    static Pageable unpaged() {
-        return Unpaged.INSTANCE;
-    }
 
-    static Pageable ofSize(Integer pageSize) {
-        return PageRequest.of(0, pageSize);
-    }
+	static Pageable unpaged() {
+		return Unpaged.INSTANCE;
+	}
 
-    default boolean isPaged() {
-        return true;
-    }
+	static Pageable ofSize(Integer pageSize) {
+		return PageRequest.of(0, pageSize);
+	}
 
-    default boolean isUnpaged() {
-        return !this.isPaged();
-    }
+	default boolean isPaged() {
+		return true;
+	}
 
-    Integer getPageNumber();
+	default boolean isUnpaged() {
+		return !this.isPaged();
+	}
 
-    Integer getPageSize();
+	Integer getPageNumber();
 
-    long getOffset();
+	Integer getPageSize();
 
-    Sort getSort();
+	long getOffset();
 
-    default Sort getSortOr(Sort sort) {
-        Assert.notNull(sort, "Fallback Sort must not be null!");
-        return this.getSort().isSorted() ? this.getSort() : sort;
-    }
+	Sort getSort();
 
-    Pageable next();
+	default Sort getSortOr(Sort sort) {
+		Assert.notNull(sort, "Fallback Sort must not be null!");
+		return this.getSort().isSorted() ? this.getSort() : sort;
+	}
 
-    Pageable previousOrFirst();
+	Pageable next();
 
-    Pageable first();
+	Pageable previousOrFirst();
 
-    Pageable withPage(Integer pageNumber);
+	Pageable first();
 
-    boolean hasPrevious();
+	Pageable withPage(Integer pageNumber);
 
-    default Optional<Pageable> toOptional() {
-        return this.isUnpaged() ? Optional.empty() : Optional.of(this);
-    }
+	boolean hasPrevious();
+
+	default Optional<Pageable> toOptional() {
+		return this.isUnpaged() ? Optional.empty() : Optional.of(this);
+	}
+
 }

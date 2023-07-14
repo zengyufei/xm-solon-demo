@@ -18,12 +18,15 @@
 /**
  * Object pooling API implementations.
  * <p>
- * {@link org.apache.commons.pool2.impl.GenericObjectPool GenericObjectPool} ({@link org.apache.commons.pool2.impl.GenericKeyedObjectPool
- * GenericKeyedObjectPool}) provides a more robust (but also more complicated) implementation of {@link org.apache.commons.pool2.ObjectPool ObjectPool}
+ * {@link org.apache.commons.pool2.impl.GenericObjectPool GenericObjectPool}
+ * ({@link org.apache.commons.pool2.impl.GenericKeyedObjectPool GenericKeyedObjectPool})
+ * provides a more robust (but also more complicated) implementation of
+ * {@link org.apache.commons.pool2.ObjectPool ObjectPool}
  * ({@link org.apache.commons.pool2.KeyedObjectPool KeyedObjectPool}).
  * </p>
  * <p>
- * {@link org.apache.commons.pool2.impl.SoftReferenceObjectPool SoftReferenceObjectPool} provides a {@link java.lang.ref.SoftReference SoftReference} based
+ * {@link org.apache.commons.pool2.impl.SoftReferenceObjectPool SoftReferenceObjectPool}
+ * provides a {@link java.lang.ref.SoftReference SoftReference} based
  * {@link org.apache.commons.pool2.ObjectPool ObjectPool}.
  * </p>
  * <p>

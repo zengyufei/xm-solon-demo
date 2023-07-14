@@ -19,79 +19,70 @@ import java.util.function.Function;
 @Configuration
 public class JimmerConfig {
 
-    @Bean
-    public JSqlClient sqlClient(@Inject DataSource dataSource) {
-        return JSqlClient
-                .newBuilder()
-//                .setConnectionManager(
-//                        ConnectionManager
-//                                .simpleConnectionManager(dataSource)
-//                )
-                .setConnectionManager(
-                        new ConnectionManager() {
-                            @Override
-                            public <R> R execute(
-                                    Function<Connection, R> block
-                            ) {
-                                Connection con = null;
-                                R          var3;
-                                try {
-                                    con = dataSource.getConnection();
-                                    con.setAutoCommit(false);
-                                    var3 = block.apply(con);
-                                    con.commit();
-                                } catch (Throwable var6) {
-                                    if (con != null) {
-                                        try {
-                                            con.rollback();
-                                        } catch (SQLException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }
-                                    throw new RuntimeException(var6);
-                                } finally {
-                                    if (con != null) {
-                                        try {
-                                            con.close();
-                                        } catch (SQLException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }
-                                }
-                                return var3;
-                            }
-                        }
-                )
-                .setExecutor(new Executor() {
+	@Bean
+	public JSqlClient sqlClient(@Inject DataSource dataSource) {
+		return JSqlClient.newBuilder()
+			// .setConnectionManager(
+			// ConnectionManager
+			// .simpleConnectionManager(dataSource)
+			// )
+			.setConnectionManager(new ConnectionManager() {
+				@Override
+				public <R> R execute(Function<Connection, R> block) {
+					Connection con = null;
+					R var3;
+					try {
+						con = dataSource.getConnection();
+						con.setAutoCommit(false);
+						var3 = block.apply(con);
+						con.commit();
+					}
+					catch (Throwable var6) {
+						if (con != null) {
+							try {
+								con.rollback();
+							}
+							catch (SQLException e) {
+								throw new RuntimeException(e);
+							}
+						}
+						throw new RuntimeException(var6);
+					}
+					finally {
+						if (con != null) {
+							try {
+								con.close();
+							}
+							catch (SQLException e) {
+								throw new RuntimeException(e);
+							}
+						}
+					}
+					return var3;
+				}
+			})
+			.setExecutor(new Executor() {
 
-                    @Override
-                    public <R> R execute(
-                            @NotNull Args<R> args
-                    ) {
-                        long millis = System.currentTimeMillis();
-                        if (!args.sql.contains("t_exception_record")) {
-                            // Log SQL and variables.
-                            log.info(
-                                    "Execute sql : {}, variables: {}, purpose: {}",
-                                    args.sql,
-                                    args.variables,
-                                    args.purpose
-                            );
-                        }
-                        // Call DefaultExecutor
-                        R result = DefaultExecutor
-                                .INSTANCE
-                                .execute(args);
-                        millis = System.currentTimeMillis() - millis;
-                        if (millis > 5000) { // Slow SQL
+				@Override
+				public <R> R execute(@NotNull Args<R> args) {
+					long millis = System.currentTimeMillis();
+					if (!args.sql.contains("t_exception_record")) {
+						// Log SQL and variables.
+						log.info("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables,
+								args.purpose);
+					}
+					// Call DefaultExecutor
+					R result = DefaultExecutor.INSTANCE.execute(args);
+					millis = System.currentTimeMillis() - millis;
+					if (millis > 5000) { // Slow SQL
 
-                        }
-                        return result;
-                    }
-                })
-                .setDefaultBatchSize(256)
-                .setDefaultListBatchSize(32)
-                .build();
-    }
+					}
+					return result;
+				}
+			})
+			.setDefaultBatchSize(256)
+			.setDefaultListBatchSize(32)
+			.build();
+	}
 
 }

@@ -10,26 +10,29 @@ import org.jetbrains.annotations.Nullable;
 @MappedSuperclass
 public interface VersionEntity {
 
-    /**
-     * 乐观锁版本号
-     */
-    @Nullable
-    @Column(name = Columns.version)
-    Integer version();
+	/**
+	 * 乐观锁版本号
+	 */
+	@Nullable
+	@Column(name = Columns.version)
+	Integer version();
 
-    /**
-     * 表字段名
-     */
-    interface Columns {
-        String version = "version"; // 乐观锁版本号
-    }
+	/**
+	 * 表字段名
+	 */
+	interface Columns {
 
-    /**
-     * 实体字段名
-     */
-    interface FieldNames {
-        String version = "version"; // 乐观锁版本号
-    }
+		String version = "version"; // 乐观锁版本号
 
+	}
+
+	/**
+	 * 实体字段名
+	 */
+	interface FieldNames {
+
+		String version = "version"; // 乐观锁版本号
+
+	}
 
 }

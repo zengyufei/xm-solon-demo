@@ -12,38 +12,39 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class Slf4jMdcDemo {
 
-    public static void main(String[] args) throws Exception {
-        TtlMDCAdapter.getInstance();
-        // Log in Main Thread
-        log.info("Log in main!");
+	public static void main(String[] args) throws Exception {
+		TtlMDCAdapter.getInstance();
+		// Log in Main Thread
+		log.info("Log in main!");
 
-        final ExecutorService executorService = Executors.newFixedThreadPool(2);
+		final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        // Run task in thread pool
-        executorService.submit(createTask()).get();
+		// Run task in thread pool
+		executorService.submit(createTask()).get();
 
-        // Init Log Context, set TTL
-        // More KV if needed
-        final String TRACE_ID = "reqId";
-        final String TRACE_ID_VALUE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-        MDC.put(TRACE_ID, TRACE_ID_VALUE);
+		// Init Log Context, set TTL
+		// More KV if needed
+		final String TRACE_ID = "reqId";
+		final String TRACE_ID_VALUE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+		MDC.put(TRACE_ID, TRACE_ID_VALUE);
 
-        // Log in Main Thread
-        log.info("Log in main!");
+		// Log in Main Thread
+		log.info("Log in main!");
 
-        executorService.submit(createTask()).get();
+		executorService.submit(createTask()).get();
 
-        log.info("Exit main");
+		log.info("Exit main");
 
-        executorService.shutdown();
-    }
+		executorService.shutdown();
+	}
 
-    private static Runnable createTask() {
-        final Runnable task = () -> {
-            // Log in thread pool
-            MDC.put("task", new Date().toString());
-            log.info("Log in Runnable!");
-        };
-        return TtlRunnable.get(task);
-    }
+	private static Runnable createTask() {
+		final Runnable task = () -> {
+			// Log in thread pool
+			MDC.put("task", new Date().toString());
+			log.info("Log in Runnable!");
+		};
+		return TtlRunnable.get(task);
+	}
+
 }

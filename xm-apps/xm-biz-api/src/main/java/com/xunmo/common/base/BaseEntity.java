@@ -13,62 +13,69 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public interface BaseEntity {
 
-    /**
-     * 创建人ID
-     *
-     * @return {@link String}
-     */
-    @IdView
-    String createId();
+	/**
+	 * 创建人ID
+	 * @return {@link String}
+	 */
+	@IdView
+	String createId();
 
-    @ManyToOne
-    @JoinColumn(name = Columns.createId)
-    User create();
+	@ManyToOne
+	@JoinColumn(name = Columns.createId)
+	User create();
 
-    /**
-     * 修改人ID
-     *
-     * @return {@link String}
-     */
-    @IdView
-    @Nullable
-    String updateId();
+	/**
+	 * 修改人ID
+	 * @return {@link String}
+	 */
+	@IdView
+	@Nullable
+	String updateId();
 
-    @ManyToOne
-    @Nullable
-    @JoinColumn(name = Columns.updateId)
-    User update();
+	@ManyToOne
+	@Nullable
+	@JoinColumn(name = Columns.updateId)
+	User update();
 
-    /**
-     * 创建时间
-     *
-     * @return {@link LocalDateTime}
-     */
-    @Column(name = Columns.createTime)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime createTime();
+	/**
+	 * 创建时间
+	 * @return {@link LocalDateTime}
+	 */
+	@Column(name = Columns.createTime)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	LocalDateTime createTime();
 
-    /**
-     * 修改时间
-     *
-     * @return {@link LocalDateTime}
-     */
-    @Nullable
-    @Column(name = Columns.updateTime)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime updateTime();
+	/**
+	 * 修改时间
+	 * @return {@link LocalDateTime}
+	 */
+	@Nullable
+	@Column(name = Columns.updateTime)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	LocalDateTime updateTime();
 
-    interface Columns {
-        String createTime = "create_time"; // 创建时间
-        String updateTime = "update_time"; // 修改时间
-        String createId = "create_id"; // 创建人ID
-        String updateId = "update_id"; // 修改人ID
-    }
+	interface Columns {
 
-    interface FieldNames {
-        String createId = "createId"; // 创建人ID
-        String updateId = "updateId"; // 修改人ID
-        String createTime = "createTime"; // 创建时间
-        String updateTime = "updateTime"; // 修改时间
-    }
+		String createTime = "create_time"; // 创建时间
+
+		String updateTime = "update_time"; // 修改时间
+
+		String createId = "create_id"; // 创建人ID
+
+		String updateId = "update_id"; // 修改人ID
+
+	}
+
+	interface FieldNames {
+
+		String createId = "createId"; // 创建人ID
+
+		String updateId = "updateId"; // 修改人ID
+
+		String createTime = "createTime"; // 创建时间
+
+		String updateTime = "updateTime"; // 修改时间
+
+	}
+
 }

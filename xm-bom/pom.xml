@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.xunmo</groupId>
+	<artifactId>xm-bom</artifactId>
+	<version>${revision}</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<!-- 本系统 版本 -->
+		<!-- 自 Maven 3.5.0-beta-1 开始，可以使用 ${revision}, ${sha1} and/or ${changelist} 这样的变量作为版本占位符。-->
+		<!-- 只能命名成revision，不可以更改成其他命名；-->
+		<revision>1.0.0</revision>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+
+		<!-- bom 版本 -->
+		<solon.version>2.3.7</solon.version>
+		<hutool.version>5.7.15</hutool.version>
+
+		<!-- 依赖版本 -->
+		<easyexcel.version>3.0.5</easyexcel.version>
+
+		<!-- 插件版本 -->
+		<flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
+		<maven-compiler-plugin.verison>3.10.1</maven-compiler-plugin.verison>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<maven-release-plugin.version>3.0.0</maven-release-plugin.version>
+		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+		<maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
+		<nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+		<spring-javaformat-checkstyle.version>0.0.39</spring-javaformat-checkstyle.version>
+	</properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- ==================== 第三方 bom 导入 ================== -->
+			<!-- 注意 bom 导入有优先级顺序，写在前面的优先级高 -->
+
+			<!-- boot 公共版本定义-->
+			<dependency>
+				<groupId>org.noear</groupId>
+				<artifactId>solon-parent</artifactId>
+				<version>${solon.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- hutool工具类 -->
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-bom</artifactId>
+				<version>${hutool.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+
+
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+			<!-- xm-constant begin -->
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-constant</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<!-- xm-constant end -->
+
+
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+
+			<!-- plugin begin -->
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-auto-tran</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-exception-handler</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-health</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-request-args-console</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-request-times-console</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-request-trace-id</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-request-xss-filter</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<!-- plugin end -->
+
+
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+
+			<!-- common begin -->
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-annotation</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-core</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-exception</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-package-util</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-pool</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-test</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-zip</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<!-- common end -->
+
+
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+
+			<!-- app begin -->
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-biz-api</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-core-web</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-exception-record</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-execl</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-rabbitmq-util</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-rabbitmq-util2</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<!-- app end -->
+
+
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+			<!-- other begin -->
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>easyexcel</artifactId>
+				<version>${easyexcel.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>29.0-jre</version>
+			</dependency>
+
+			<!-- 对账 -->
+			<dependency>
+				<groupId>org.javers</groupId>
+				<artifactId>javers-core</artifactId>
+				<version>6.5.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.zaxxer</groupId>
+				<artifactId>HikariCP</artifactId>
+				<version>4.0.3</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.18</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.18.12</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- 7z 依赖 begin -->
+			<dependency>
+				<groupId>org.tukaani</groupId>
+				<artifactId>xz</artifactId>
+				<version>1.9</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.21</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.opensagres.xdocreport</groupId>
+				<artifactId>xdocreport</artifactId>
+				<version>1.0.6</version>
+			</dependency>
+			<!-- 7z 依赖 end -->
+			<!-- zip 依赖 -->
+			<dependency>
+				<groupId>net.lingala.zip4j</groupId>
+				<artifactId>zip4j</artifactId>
+				<version>2.9.0</version>
+			</dependency>
+			<!-- rar 依赖 begin -->
+			<dependency>
+				<groupId>net.sf.sevenzipjbinding</groupId>
+				<artifactId>sevenzipjbinding</artifactId>
+				<version>16.02-2.01</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.sevenzipjbinding</groupId>
+				<artifactId>sevenzipjbinding-all-platforms</artifactId>
+				<version>16.02-2.01</version>
+			</dependency>
+			<!-- rar 依赖 end -->
+
+			<!-- other end -->
+
+		</dependencies>
+	</dependencyManagement>
+
+	<!--环境变量-->
+	<profiles>
+		<profile>
+			<id>ossrh</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg-plugin.version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>${nexus-staging-maven-plugin.version}</version>
+						<configuration>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<serverId>ossrh</serverId>
+						</configuration>
+						<extensions>true</extensions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<!--结束环境变量-->
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.spring.javaformat</groupId>
+				<artifactId>spring-javaformat-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>validate</goal>
+						</goals>
+						<inherited>true</inherited>
+						<phase>validate</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<configuration>
+					<flattenMode>resolveCiFriendliesOnly</flattenMode>
+					<updatePomFile>true</updatePomFile>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+					</execution>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>io.spring.javaformat</groupId>
+					<artifactId>spring-javaformat-maven-plugin</artifactId>
+					<version>${spring-javaformat-checkstyle.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.verison}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${maven-gpg-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>${nexus-staging-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>${flatten-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.3.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+
+	<distributionManagement>
+		<repository>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>ossrh</id>
+		</repository>
+		<snapshotRepository>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>ossrh</id>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+	<repositories>
+		<repository>
+			<id>tencent</id>
+			<name>tencent maven</name>
+			<url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>repo1</id>
+			<name>repo1 maven</name>
+			<url>https://repo1.maven.org/maven2/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>tencent</id>
+			<name>tencent maven</name>
+			<url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>repo1</id>
+			<name>repo1 maven</name>
+			<url>https://repo1.maven.org/maven2/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+</project>

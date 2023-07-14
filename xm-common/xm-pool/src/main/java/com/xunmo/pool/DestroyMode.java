@@ -17,20 +17,22 @@
 package com.xunmo.pool;
 
 /**
- * Destroy context provided to object factories via {@code destroyObject} and {@code invalidateObject} methods. Values
- * provide information about why the pool is asking for a pooled object to be destroyed.
+ * Destroy context provided to object factories via {@code destroyObject} and
+ * {@code invalidateObject} methods. Values provide information about why the pool is
+ * asking for a pooled object to be destroyed.
  *
  * @since 2.9.0
  */
 public enum DestroyMode {
 
-    /**
-     * Normal destroy.
-     */
-    NORMAL,
+	/**
+	 * Normal destroy.
+	 */
+	NORMAL,
 
-    /**
-     * Destroy abandoned object.
-     */
-    ABANDONED
+	/**
+	 * Destroy abandoned object.
+	 */
+	ABANDONED
+
 }

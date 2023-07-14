@@ -1,53 +1,56 @@
 package com.xunmo.common.entity.page;
 
 enum Unpaged implements Pageable {
-    INSTANCE;
 
-    Unpaged() {
-    }
+	INSTANCE;
 
-    @Override
-    public boolean isPaged() {
-        return false;
-    }
+	Unpaged() {
+	}
 
-    public Pageable previousOrFirst() {
-        return this;
-    }
+	@Override
+	public boolean isPaged() {
+		return false;
+	}
 
-    public Pageable next() {
-        return this;
-    }
+	public Pageable previousOrFirst() {
+		return this;
+	}
 
-    public boolean hasPrevious() {
-        return false;
-    }
+	public Pageable next() {
+		return this;
+	}
 
-    public Sort getSort() {
-        return Sort.unsorted();
-    }
+	public boolean hasPrevious() {
+		return false;
+	}
 
-    public Integer getPageSize() {
-        throw new UnsupportedOperationException();
-    }
+	public Sort getSort() {
+		return Sort.unsorted();
+	}
 
-    public Integer getPageNumber() {
-        throw new UnsupportedOperationException();
-    }
+	public Integer getPageSize() {
+		throw new UnsupportedOperationException();
+	}
 
-    public long getOffset() {
-        throw new UnsupportedOperationException();
-    }
+	public Integer getPageNumber() {
+		throw new UnsupportedOperationException();
+	}
 
-    public Pageable first() {
-        return this;
-    }
+	public long getOffset() {
+		throw new UnsupportedOperationException();
+	}
 
-    public Pageable withPage(Integer pageNumber) {
-        if (pageNumber != null && pageNumber == 0) {
-            return this;
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
+	public Pageable first() {
+		return this;
+	}
+
+	public Pageable withPage(Integer pageNumber) {
+		if (pageNumber != null && pageNumber == 0) {
+			return this;
+		}
+		else {
+			throw new UnsupportedOperationException();
+		}
+	}
+
 }

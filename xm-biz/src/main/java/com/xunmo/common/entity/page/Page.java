@@ -9,17 +9,19 @@ import java.util.Collections;
 import java.util.function.Function;
 
 public interface Page<T> extends Slice<T> {
-    static <T> Page<T> empty() {
-        return empty(Pageable.unpaged());
-    }
 
-    static <T> Page<T> empty(Pageable pageable) {
-        return new PageImpl(Collections.emptyList(), pageable, 0L);
-    }
+	static <T> Page<T> empty() {
+		return empty(Pageable.unpaged());
+	}
 
-    int getTotalPages();
+	static <T> Page<T> empty(Pageable pageable) {
+		return new PageImpl(Collections.emptyList(), pageable, 0L);
+	}
 
-    long getTotalElements();
+	int getTotalPages();
 
-    <U> Page<U> map(Function<? super T, ? extends U> converter);
+	long getTotalElements();
+
+	<U> Page<U> map(Function<? super T, ? extends U> converter);
+
 }

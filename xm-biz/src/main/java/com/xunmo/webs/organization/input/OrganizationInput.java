@@ -19,114 +19,122 @@ import java.time.LocalDateTime;
 @Data
 public class OrganizationInput implements Input<Organization> {
 
-    private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
+	private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
-    /**
-     * 组织ID
-     */
-    private String organizationId;
+	/**
+	 * 组织ID
+	 */
+	private String organizationId;
 
-    /**
-     * 组织名称
-     */
-    private String organizationName;
+	/**
+	 * 组织名称
+	 */
+	private String organizationName;
 
-    /**
-     * 父组织ID
-     */
-    private String parentOrganizationId;
+	/**
+	 * 父组织ID
+	 */
+	private String parentOrganizationId;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-    private LocalDateTime beginCreateTime;
-    private LocalDateTime endCreateTime;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
 
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
-    private LocalDateTime beginUpdateTime;
-    private LocalDateTime endUpdateTime;
+	private LocalDateTime beginCreateTime;
 
-    /**
-     * 创建人ID
-     */
-    private String createId;
+	private LocalDateTime endCreateTime;
 
-    /**
-     * 修改人ID
-     */
-    private String updateId;
+	/**
+	 * 修改时间
+	 */
+	private LocalDateTime updateTime;
 
-    /**
-     * 审批状态
-     */
-    private String approvalStatus;
+	private LocalDateTime beginUpdateTime;
 
-    /**
-     * 审批人id
-     */
-    private String approverId;
+	private LocalDateTime endUpdateTime;
 
-    /**
-     * 审批意见
-     */
-    private String approvalComment;
+	/**
+	 * 创建人ID
+	 */
+	private String createId;
 
-    /**
-     * 审批时间
-     */
-    private LocalDateTime approvalTime;
-    private LocalDateTime beginApprovalTime;
-    private LocalDateTime endApprovalTime;
+	/**
+	 * 修改人ID
+	 */
+	private String updateId;
 
-    /**
-     * 是否导入
-     */
-    private Integer isImported;
+	/**
+	 * 审批状态
+	 */
+	private String approvalStatus;
 
-    /**
-     * 导入时间
-     */
-    private LocalDateTime importTime;
-    private LocalDateTime beginImportTime;
-    private LocalDateTime endImportTime;
+	/**
+	 * 审批人id
+	 */
+	private String approverId;
 
-    /**
-     * 是否系统默认
-     */
-    private Integer isSystemDefault;
+	/**
+	 * 审批意见
+	 */
+	private String approvalComment;
 
-    /**
-     * 租户id
-     */
-    private String tenantId;
+	/**
+	 * 审批时间
+	 */
+	private LocalDateTime approvalTime;
 
-    /**
-     * 乐观锁版本号
-     */
-    private Integer version;
+	private LocalDateTime beginApprovalTime;
 
-    /**
-     * 状态
-     */
-    private String status;
+	private LocalDateTime endApprovalTime;
 
+	/**
+	 * 是否导入
+	 */
+	private Integer isImported;
 
-    // ---------- 转换方法 ----------
+	/**
+	 * 导入时间
+	 */
+	private LocalDateTime importTime;
 
+	private LocalDateTime beginImportTime;
 
-    @Override
-    public Organization toEntity() {
-        return CONVERTER.toOrganization(this);
-    }
+	private LocalDateTime endImportTime;
 
-    @Mapper
-    interface Converter {
+	/**
+	 * 是否系统默认
+	 */
+	private Integer isSystemDefault;
 
-        @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        Organization toOrganization(OrganizationInput input);
-    }
+	/**
+	 * 租户id
+	 */
+	private String tenantId;
+
+	/**
+	 * 乐观锁版本号
+	 */
+	private Integer version;
+
+	/**
+	 * 状态
+	 */
+	private String status;
+
+	// ---------- 转换方法 ----------
+
+	@Override
+	public Organization toEntity() {
+		return CONVERTER.toOrganization(this);
+	}
+
+	@Mapper
+	interface Converter {
+
+		@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+		Organization toOrganization(OrganizationInput input);
+
+	}
+
 }

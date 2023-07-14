@@ -18,26 +18,33 @@
 /**
  * Object pooling API.
  * <p>
- * The <code>org.apache.commons.pool2</code> package defines a simple interface for a pool of object instances, and a handful of base classes that may be useful
- * when creating pool implementations.
+ * The <code>org.apache.commons.pool2</code> package defines a simple interface for a pool
+ * of object instances, and a handful of base classes that may be useful when creating
+ * pool implementations.
  * </p>
  * <p>
- * The <code>pool</code> package itself doesn't define a specific object pooling implementation, but rather a contract that implementations may support in order
- * to be fully interchangeable.
+ * The <code>pool</code> package itself doesn't define a specific object pooling
+ * implementation, but rather a contract that implementations may support in order to be
+ * fully interchangeable.
  * </p>
  * <p>
- * The <code>pool</code> package separates the way in which instances are pooled from the way in which they are created, resulting in a pair of interfaces:
+ * The <code>pool</code> package separates the way in which instances are pooled from the
+ * way in which they are created, resulting in a pair of interfaces:
  * </p>
  * <dl>
  * <dt>{@link org.apache.commons.pool2.ObjectPool ObjectPool}</dt>
- * <dd>defines a simple object pooling interface, with methods for borrowing instances from and returning them to the pool.</dd>
+ * <dd>defines a simple object pooling interface, with methods for borrowing instances
+ * from and returning them to the pool.</dd>
  * <dt>{@link org.apache.commons.pool2.PooledObjectFactory PooledObjectFactory}</dt>
- * <dd>defines lifecycle methods for object instances contained within a pool. By associating a factory with a pool, the pool can create new object instances as
+ * <dd>defines lifecycle methods for object instances contained within a pool. By
+ * associating a factory with a pool, the pool can create new object instances as
  * needed.</dd>
  * </dl>
  * <p>
- * The <code>pool</code> package also provides a keyed pool interface, which pools instances of multiple types, accessed according to an arbitrary key. See
- * {@link org.apache.commons.pool2.KeyedObjectPool KeyedObjectPool} and {@link org.apache.commons.pool2.KeyedPooledObjectFactory KeyedPooledObjectFactory}.
+ * The <code>pool</code> package also provides a keyed pool interface, which pools
+ * instances of multiple types, accessed according to an arbitrary key. See
+ * {@link org.apache.commons.pool2.KeyedObjectPool KeyedObjectPool} and
+ * {@link org.apache.commons.pool2.KeyedPooledObjectFactory KeyedPooledObjectFactory}.
  * </p>
  */
 package com.xunmo.pool;

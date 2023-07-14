@@ -5,26 +5,27 @@
 
 package com.xunmo.common.entity.page;
 
-
 import java.util.List;
 import java.util.function.Function;
 
 public interface Slice<T> extends Streamable<T> {
-    Integer getNumber();
 
-    Integer getSize();
+	Integer getNumber();
 
-    List<T> getContent();
+	Integer getSize();
 
-    Sort getSort();
+	List<T> getContent();
 
-    boolean hasNext();
+	Sort getSort();
 
-    boolean hasPrevious();
+	boolean hasNext();
 
-    default Pageable getPageable() {
-        return PageRequest.of(this.getNumber(), this.getSize(), this.getSort());
-    }
+	boolean hasPrevious();
 
-    <U> Slice<U> map(Function<? super T, ? extends U> converter);
+	default Pageable getPageable() {
+		return PageRequest.of(this.getNumber(), this.getSize(), this.getSort());
+	}
+
+	<U> Slice<U> map(Function<? super T, ? extends U> converter);
+
 }

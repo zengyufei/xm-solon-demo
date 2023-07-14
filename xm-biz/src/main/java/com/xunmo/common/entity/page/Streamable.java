@@ -27,88 +27,84 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-
 @FunctionalInterface
 public interface Streamable<T> extends Iterable<T>, Supplier<Stream<T>> {
 
-    @SafeVarargs
-    static <T> Streamable<T> of(T... t) {
-        return () -> Arrays.asList(t).iterator();
-    }
+	@SafeVarargs
+	static <T> Streamable<T> of(T... t) {
+		return () -> Arrays.asList(t).iterator();
+	}
 
-    static <T> Streamable<T> of(Iterable<T> iterable) {
+	static <T> Streamable<T> of(Iterable<T> iterable) {
 
-        Assert.notNull(iterable, "Iterable must not be null!");
+		Assert.notNull(iterable, "Iterable must not be null!");
 
-        return iterable::iterator;
-    }
+		return iterable::iterator;
+	}
 
-    static <T> Streamable<T> of(Supplier<? extends Stream<T>> supplier) {
-        return LazyStreamable.of(supplier);
-    }
+	static <T> Streamable<T> of(Supplier<? extends Stream<T>> supplier) {
+		return LazyStreamable.of(supplier);
+	}
 
+	default Stream<T> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 
-    default Stream<T> stream() {
-        return StreamSupport.stream(spliterator(), false);
-    }
+	default <R> Streamable<R> map(Function<? super T, ? extends R> mapper) {
 
-    default <R> Streamable<R> map(Function<? super T, ? extends R> mapper) {
+		Assert.notNull(mapper, "Mapping function must not be null!");
 
-        Assert.notNull(mapper, "Mapping function must not be null!");
+		return Streamable.of(() -> stream().map(mapper));
+	}
 
-        return Streamable.of(() -> stream().map(mapper));
-    }
+	default Streamable<T> filter(Predicate<? super T> predicate) {
 
+		Assert.notNull(predicate, "Filter predicate must not be null!");
 
-    default Streamable<T> filter(Predicate<? super T> predicate) {
+		return Streamable.of(() -> stream().filter(predicate));
+	}
 
-        Assert.notNull(predicate, "Filter predicate must not be null!");
+	default boolean isEmpty() {
+		return !iterator().hasNext();
+	}
 
-        return Streamable.of(() -> stream().filter(predicate));
-    }
+	default Streamable<T> and(Supplier<? extends Stream<? extends T>> stream) {
 
-    default boolean isEmpty() {
-        return !iterator().hasNext();
-    }
+		Assert.notNull(stream, "Stream must not be null!");
 
-    default Streamable<T> and(Supplier<? extends Stream<? extends T>> stream) {
+		return Streamable.of(() -> Stream.concat(this.stream(), stream.get()));
+	}
 
-        Assert.notNull(stream, "Stream must not be null!");
+	@SuppressWarnings("unchecked")
+	default Streamable<T> and(T... others) {
 
-        return Streamable.of(() -> Stream.concat(this.stream(), stream.get()));
-    }
+		Assert.notNull(others, "Other values must not be null!");
 
-    @SuppressWarnings("unchecked")
-    default Streamable<T> and(T... others) {
+		return Streamable.of(() -> Stream.concat(this.stream(), Arrays.stream(others)));
+	}
 
-        Assert.notNull(others, "Other values must not be null!");
+	default Streamable<T> and(Iterable<? extends T> iterable) {
 
-        return Streamable.of(() -> Stream.concat(this.stream(), Arrays.stream(others)));
-    }
+		Assert.notNull(iterable, "Iterable must not be null!");
 
-    default Streamable<T> and(Iterable<? extends T> iterable) {
+		return Streamable.of(() -> Stream.concat(this.stream(), StreamSupport.stream(iterable.spliterator(), false)));
+	}
 
-        Assert.notNull(iterable, "Iterable must not be null!");
+	default Streamable<T> and(Streamable<? extends T> streamable) {
+		return and((Supplier<? extends Stream<? extends T>>) streamable);
+	}
 
-        return Streamable.of(() -> Stream.concat(this.stream(), StreamSupport.stream(iterable.spliterator(), false)));
-    }
+	/**
+	 * Creates a new, unmodifiable {@link List}.
+	 * @return will never be {@literal null}.
+	 * @since 2.2
+	 */
+	default List<T> toList() {
+		return stream().collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+	}
 
-    default Streamable<T> and(Streamable<? extends T> streamable) {
-        return and((Supplier<? extends Stream<? extends T>>) streamable);
-    }
+	default Stream<T> get() {
+		return stream();
+	}
 
-    /**
-     * Creates a new, unmodifiable {@link List}.
-     *
-     * @return will never be {@literal null}.
-     * @since 2.2
-     */
-    default List<T> toList() {
-        return stream().collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
-    }
-
-
-    default Stream<T> get() {
-        return stream();
-    }
 }

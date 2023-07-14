@@ -27,9 +27,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A {@link CallStack} strategy using a {@link SecurityManager}. Obtaining the current call stack is much faster via a
- * SecurityManger, but access to the underlying method may be restricted by the current SecurityManager. In environments
- * where a SecurityManager cannot be created, {@link ThrowableCallStack} should be used instead.
+ * A {@link CallStack} strategy using a {@link SecurityManager}. Obtaining the current
+ * call stack is much faster via a SecurityManger, but access to the underlying method may
+ * be restricted by the current SecurityManager. In environments where a SecurityManager
+ * cannot be created, {@link ThrowableCallStack} should be used instead.
  *
  * @see RuntimePermission
  * @see SecurityManager#getClassContext()
@@ -37,83 +38,90 @@ import java.util.stream.Stream;
  */
 public class SecurityManagerCallStack implements CallStack {
 
-    private final String messageFormat;
-    //@GuardedBy("dateFormat")
-    private final DateFormat dateFormat;
-    private final PrivateSecurityManager securityManager;
-    private volatile Snapshot snapshot;
+	private final String messageFormat;
 
-    /**
-     * Creates a new instance.
-     *
-     * @param messageFormat message format
-     * @param useTimestamp  whether to format the dates in the output message or not
-     */
-    public SecurityManagerCallStack(final String messageFormat, final boolean useTimestamp) {
-        this.messageFormat = messageFormat;
-        this.dateFormat = useTimestamp ? new SimpleDateFormat(messageFormat) : null;
-        this.securityManager = AccessController.doPrivileged((PrivilegedAction<PrivateSecurityManager>) PrivateSecurityManager::new);
-    }
+	// @GuardedBy("dateFormat")
+	private final DateFormat dateFormat;
 
-    @Override
-    public void clear() {
-        snapshot = null;
-    }
+	private final PrivateSecurityManager securityManager;
 
-    @Override
-    public void fillInStackTrace() {
-        snapshot = new Snapshot(securityManager.getCallStack());
-    }
+	private volatile Snapshot snapshot;
 
-    @Override
-    public boolean printStackTrace(final PrintWriter writer) {
-        final Snapshot snapshotRef = this.snapshot;
-        if (snapshotRef == null) {
-            return false;
-        }
-        final String message;
-        if (dateFormat == null) {
-            message = messageFormat;
-        } else {
-            synchronized (dateFormat) {
-                message = dateFormat.format(Long.valueOf(snapshotRef.timestampMillis));
-            }
-        }
-        writer.println(message);
-        snapshotRef.stack.forEach(reference -> writer.println(reference.get()));
-        return true;
-    }
+	/**
+	 * Creates a new instance.
+	 * @param messageFormat message format
+	 * @param useTimestamp whether to format the dates in the output message or not
+	 */
+	public SecurityManagerCallStack(final String messageFormat, final boolean useTimestamp) {
+		this.messageFormat = messageFormat;
+		this.dateFormat = useTimestamp ? new SimpleDateFormat(messageFormat) : null;
+		this.securityManager = AccessController
+			.doPrivileged((PrivilegedAction<PrivateSecurityManager>) PrivateSecurityManager::new);
+	}
 
-    /**
-     * A custom security manager.
-     */
-    private static class PrivateSecurityManager extends SecurityManager {
+	@Override
+	public void clear() {
+		snapshot = null;
+	}
 
-        /**
-         * Gets the class stack.
-         *
-         * @return class stack
-         */
-        private List<WeakReference<Class<?>>> getCallStack() {
-            final Stream<WeakReference<Class<?>>> map = Stream.of(getClassContext()).map(WeakReference::new);
-            return map.collect(Collectors.toList());
-        }
-    }
+	@Override
+	public void fillInStackTrace() {
+		snapshot = new Snapshot(securityManager.getCallStack());
+	}
 
-    /**
-     * A snapshot of a class stack.
-     */
-    private static class Snapshot {
-        private final long timestampMillis = System.currentTimeMillis();
-        private final List<WeakReference<Class<?>>> stack;
+	@Override
+	public boolean printStackTrace(final PrintWriter writer) {
+		final Snapshot snapshotRef = this.snapshot;
+		if (snapshotRef == null) {
+			return false;
+		}
+		final String message;
+		if (dateFormat == null) {
+			message = messageFormat;
+		}
+		else {
+			synchronized (dateFormat) {
+				message = dateFormat.format(Long.valueOf(snapshotRef.timestampMillis));
+			}
+		}
+		writer.println(message);
+		snapshotRef.stack.forEach(reference -> writer.println(reference.get()));
+		return true;
+	}
 
-        /**
-         * Constructs a new snapshot with a class stack.
-         *
-         * @param stack class stack
-         */
-        private Snapshot(final List<WeakReference<Class<?>>> stack) {
-            this.stack = stack;
-        }
-    }
+	/**
+	 * A custom security manager.
+	 */
+	private static class PrivateSecurityManager extends SecurityManager {
+
+		/**
+		 * Gets the class stack.
+		 * @return class stack
+		 */
+		private List<WeakReference<Class<?>>> getCallStack() {
+			final Stream<WeakReference<Class<?>>> map = Stream.of(getClassContext()).map(WeakReference::new);
+			return map.collect(Collectors.toList());
+		}
+
+	}
+
+	/**
+	 * A snapshot of a class stack.
+	 */
+	private static class Snapshot {
+
+		private final long timestampMillis = System.currentTimeMillis();
+
+		private final List<WeakReference<Class<?>>> stack;
+
+		/**
+		 * Constructs a new snapshot with a class stack.
+		 * @param stack class stack
+		 */
+		private Snapshot(final List<WeakReference<Class<?>>> stack) {
+			this.stack = stack;
+		}
+
+	}
+
 }

@@ -8,27 +8,28 @@ import org.noear.solon.core.Props;
 @Slf4j
 public class XmCorePluginImp implements Plugin {
 
-    @Override
-    public void start(AopContext context) {
-        final Props props = context.cfg();
-        props.loadAddIfAbsent(XmPackageNameConstants.XM_CORE + ".yml");
-//        final SolonApp app = Solon.app();
+	@Override
+	public void start(AopContext context) {
+		final Props props = context.cfg();
+		props.loadAddIfAbsent(XmPackageNameConstants.XM_CORE + ".yml");
+		// final SolonApp app = Solon.app();
 
-        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
-            log.info("{} 包加载完毕!", XmPackageNameConstants.XM_CORE);
-        } else {
-            System.out.println(XmPackageNameConstants.XM_CORE + " 包加载完毕!");
-        }
-    }
+		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_CORE);
+		}
+		else {
+			System.out.println(XmPackageNameConstants.XM_CORE + " 包加载完毕!");
+		}
+	}
 
-    @Override
-    public void stop() throws Throwable {
-        if (XmPackageNameConstants.IS_CONSOLE_LOG) {
-            log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE);
-        } else {
-            System.out.println(XmPackageNameConstants.XM_CORE + " 插件关闭!");
-        }
-    }
-
+	@Override
+	public void stop() throws Throwable {
+		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
+			log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE);
+		}
+		else {
+			System.out.println(XmPackageNameConstants.XM_CORE + " 插件关闭!");
+		}
+	}
 
 }

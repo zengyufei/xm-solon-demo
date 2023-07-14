@@ -13,53 +13,62 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public interface ProcessEntity {
 
-    /**
-     * 审批状态
-     */
-    @Nullable
-    @Column(name = Columns.approvalStatus)
-    String approvalStatus();
+	/**
+	 * 审批状态
+	 */
+	@Nullable
+	@Column(name = Columns.approvalStatus)
+	String approvalStatus();
 
-    /**
-     * 审批人id
-     */
-    @IdView
-    @Nullable
-    String approverId();
+	/**
+	 * 审批人id
+	 */
+	@IdView
+	@Nullable
+	String approverId();
 
-    @ManyToOne
-    @Nullable
-    @JoinColumn(name = Columns.approverId)
-    User approver();
+	@ManyToOne
+	@Nullable
+	@JoinColumn(name = Columns.approverId)
+	User approver();
 
-    /**
-     * 审批意见
-     */
-    @Nullable
-    @Column(name = Columns.approvalComment)
-    String approvalComment();
+	/**
+	 * 审批意见
+	 */
+	@Nullable
+	@Column(name = Columns.approvalComment)
+	String approvalComment();
 
-    /**
-     * 审批时间
-     */
-    @Nullable
-    @Column(name = Columns.approvalTime)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime approvalTime();
+	/**
+	 * 审批时间
+	 */
+	@Nullable
+	@Column(name = Columns.approvalTime)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	LocalDateTime approvalTime();
 
-    interface Columns {
-        String approvalStatus = "approval_status"; // 审批状态
-        String approverId = "approver_id"; // 审批人id
-        String approvalComment = "approval_comment"; // 审批意见
-        String approvalTime = "approval_time"; // 审批时间
-    }
+	interface Columns {
 
-    interface FieldNames {
-        String approvalStatus = "approvalStatus"; // 审批状态
-        String approverId = "approverId"; // 审批人id
-        String approvalComment = "approvalComment"; // 审批意见
-        String approvalTime = "approvalTime"; // 审批时间
-    }
+		String approvalStatus = "approval_status"; // 审批状态
 
+		String approverId = "approver_id"; // 审批人id
+
+		String approvalComment = "approval_comment"; // 审批意见
+
+		String approvalTime = "approval_time"; // 审批时间
+
+	}
+
+	interface FieldNames {
+
+		String approvalStatus = "approvalStatus"; // 审批状态
+
+		String approverId = "approverId"; // 审批人id
+
+		String approvalComment = "approvalComment"; // 审批意见
+
+		String approvalTime = "approvalTime"; // 审批时间
+
+	}
 
 }

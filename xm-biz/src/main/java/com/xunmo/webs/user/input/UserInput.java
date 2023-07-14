@@ -19,124 +19,132 @@ import java.time.LocalDateTime;
 @Data
 public class UserInput implements Input<User> {
 
-    private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
+	private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
-    /**
-     * 用户ID
-     */
-    private String userId;
+	/**
+	 * 用户ID
+	 */
+	private String userId;
 
-    /**
-     * 用户名
-     */
-    private String userName;
+	/**
+	 * 用户名
+	 */
+	private String userName;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-    private LocalDateTime beginCreateTime;
-    private LocalDateTime endCreateTime;
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime createTime;
 
-    /**
-     * 修改时间
-     */
-    private LocalDateTime updateTime;
-    private LocalDateTime beginUpdateTime;
-    private LocalDateTime endUpdateTime;
+	private LocalDateTime beginCreateTime;
 
-    /**
-     * 创建人ID
-     */
-    private String createId;
+	private LocalDateTime endCreateTime;
 
-    /**
-     * 修改人ID
-     */
-    private String updateId;
+	/**
+	 * 修改时间
+	 */
+	private LocalDateTime updateTime;
 
-    /**
-     * 创建人用户名
-     */
-    private String createName;
+	private LocalDateTime beginUpdateTime;
 
-    /**
-     * 修改人用户名
-     */
-    private String updateName;
+	private LocalDateTime endUpdateTime;
 
-    /**
-     * 审批状态
-     */
-    private String approvalStatus;
+	/**
+	 * 创建人ID
+	 */
+	private String createId;
 
-    /**
-     * 审批人id
-     */
-    private String approverId;
+	/**
+	 * 修改人ID
+	 */
+	private String updateId;
 
-    /**
-     * 审批人姓名
-     */
-    private String approverName;
+	/**
+	 * 创建人用户名
+	 */
+	private String createName;
 
-    /**
-     * 审批意见
-     */
-    private String approvalComment;
+	/**
+	 * 修改人用户名
+	 */
+	private String updateName;
 
-    /**
-     * 审批时间
-     */
-    private LocalDateTime approvalTime;
-    private LocalDateTime beginApprovalTime;
-    private LocalDateTime endApprovalTime;
+	/**
+	 * 审批状态
+	 */
+	private String approvalStatus;
 
-    /**
-     * 是否导入
-     */
-    private Integer isImported;
+	/**
+	 * 审批人id
+	 */
+	private String approverId;
 
-    /**
-     * 导入时间
-     */
-    private LocalDateTime importTime;
-    private LocalDateTime beginImportTime;
-    private LocalDateTime endImportTime;
+	/**
+	 * 审批人姓名
+	 */
+	private String approverName;
 
-    /**
-     * 是否系统默认
-     */
-    private Integer isSystemDefault;
+	/**
+	 * 审批意见
+	 */
+	private String approvalComment;
 
-    /**
-     * 租户id
-     */
-    private String tenantId;
+	/**
+	 * 审批时间
+	 */
+	private LocalDateTime approvalTime;
 
-    /**
-     * 乐观锁版本号
-     */
-    private Integer version;
+	private LocalDateTime beginApprovalTime;
 
-    /**
-     * 状态
-     */
-    private String status;
+	private LocalDateTime endApprovalTime;
 
+	/**
+	 * 是否导入
+	 */
+	private Integer isImported;
 
-    // ---------- 转换方法 ----------
+	/**
+	 * 导入时间
+	 */
+	private LocalDateTime importTime;
 
+	private LocalDateTime beginImportTime;
 
-    @Override
-    public User toEntity() {
-        return CONVERTER.toUser(this);
-    }
+	private LocalDateTime endImportTime;
 
-    @Mapper
-    interface Converter {
+	/**
+	 * 是否系统默认
+	 */
+	private Integer isSystemDefault;
 
-        @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-        User toUser(UserInput input);
-    }
+	/**
+	 * 租户id
+	 */
+	private String tenantId;
+
+	/**
+	 * 乐观锁版本号
+	 */
+	private Integer version;
+
+	/**
+	 * 状态
+	 */
+	private String status;
+
+	// ---------- 转换方法 ----------
+
+	@Override
+	public User toEntity() {
+		return CONVERTER.toUser(this);
+	}
+
+	@Mapper
+	interface Converter {
+
+		@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+		User toUser(UserInput input);
+
+	}
+
 }

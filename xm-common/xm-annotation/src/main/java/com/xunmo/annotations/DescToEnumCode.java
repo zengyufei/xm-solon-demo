@@ -1,14 +1,14 @@
 package com.xunmo.annotations;
 
-
-import com.xunmo.ext.ICodeEnum;
+import com.xunmo.common.BaseEnum;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD})
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DescToEnumCode {
 
-    Class<? extends ICodeEnum<?>> value();
+	Class<? extends BaseEnum<?>> value();
+
 }

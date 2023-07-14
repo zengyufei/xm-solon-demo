@@ -10,9 +10,9 @@ import javax.sql.DataSource;
 @Configuration
 public class DbConfig {
 
-    @Bean(value = "db", typed = true) //typed 表示可类型注入 //即默认
-    public DataSource db(@Inject("${xm.datasource.db}") HikariDataSource ds) {
-        return ds;
-    }
+	@Bean(value = "db", typed = true) // typed 表示可类型注入 //即默认
+	public DataSource db(@Inject("${xm.datasource.db}") HikariDataSource ds) {
+		return ds;
+	}
 
 }

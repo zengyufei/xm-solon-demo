@@ -15,27 +15,25 @@ import org.noear.solon.test.SolonTest;
 @SolonTest(BizApp.class)
 public class TestGlobalExceptionController extends HttpTestBase {
 
-    @Test
-    @Order(1)
-    public void testNullPointException() throws Exception {
-        HttpUtils httpUtils = path("/exception/null")
-                .bodyJson("{}");
-        httpUtils.post();
-    }
-    @Test
-    @Order(2)
-    public void testArithmeticException() throws Exception {
-        HttpUtils httpUtils = path("/exception/arithmetic")
-                .bodyJson("{}");
-        httpUtils.post();
-    }
-    @Test
-    @Order(3)
-    public void testDefaultException() throws Exception {
-        HttpUtils httpUtils = path("/exception/exception")
-                .bodyJson("{}");
-        httpUtils.post();
-    }
+	@Test
+	@Order(1)
+	public void testNullPointException() throws Exception {
+		HttpUtils httpUtils = path("/exception/null").bodyJson("{}");
+		httpUtils.post();
+	}
 
+	@Test
+	@Order(2)
+	public void testArithmeticException() throws Exception {
+		HttpUtils httpUtils = path("/exception/arithmetic").bodyJson("{}");
+		httpUtils.post();
+	}
+
+	@Test
+	@Order(3)
+	public void testDefaultException() throws Exception {
+		HttpUtils httpUtils = path("/exception/exception").bodyJson("{}");
+		httpUtils.post();
+	}
 
 }
