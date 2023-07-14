@@ -2,6 +2,7 @@ package com.xunmo;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
+import com.xunmo.utils.LuaTool;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
@@ -67,16 +68,22 @@ public class XmCoreWebPluginImp implements Plugin {
 				if (redisCacheService != null) {
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);
+					final RedissonClient redissonClient = redisCacheService.client();
+					LuaTool.lock(() -> redissonClient);
+//					LuaTool.setRedissonClient(redissonClient);
+
 					// 添加缓存控制支持
 					CacheLib.cacheServiceAdd("", redisCacheService);
 					// 包装Bean（指定类型的）
 					// 以类型注册
-					context.putWrap(RedissonClient.class,
-							new BeanWrap(context, RedissonClient.class, redisCacheService.client(), null, true));
-					context.putWrap(RedissonCacheService.class,
-							new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
 					context.putWrap(CacheService.class,
 							new BeanWrap(context, CacheService.class, redisCacheService, null, true));
+//					context.putWrap(RedissonCacheService.class,
+//							new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
+
+					context.putWrap(RedissonClient.class,
+							new BeanWrap(context, RedissonClient.class, redissonClient, null, true));
+
 				}
 			});
 			context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);

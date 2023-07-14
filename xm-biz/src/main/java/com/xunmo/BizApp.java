@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
+import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
@@ -54,10 +55,10 @@ public class BizApp {
 			});
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
-			// Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
-			// //bean 获取后，可以做些后续处理。。。
-			// System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
-			// });
+			Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
+				//bean 获取后，可以做些后续处理。。。
+				System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
+			});
 
 			// 2.添加资源路径
 			// StaticMappings.add("/railway-bureau-test", false, new
@@ -189,7 +190,7 @@ public class BizApp {
 		immutableModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
-			private final String[] DATE_FORMAT_STRS = new String[] { "yyyy",
+			private final String[] DATE_FORMAT_STRS = new String[]{"yyyy",
 
 					"yyyy-M", "yyyy/M", "yyyy.M",
 
@@ -209,7 +210,7 @@ public class BizApp {
 
 					"yyyy年M月dd日", "yyyy年M月d日", "yyyy年MM月d日",
 
-					"yyyyMdd", "yyyyMd", "yyyyMMd", };
+					"yyyyMdd", "yyyyMd", "yyyyMMd",};
 
 			@Override
 			public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
@@ -223,13 +224,11 @@ public class BizApp {
 			public Date formatToDate(String parameter) {
 				try {
 					return DateUtil.parse(parameter);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					for (String dateFormatStr : DATE_FORMAT_STRS) {
 						try {
 							return DateUtil.parse(parameter, dateFormatStr);
-						}
-						catch (Exception ignored2) {
+						} catch (Exception ignored2) {
 						}
 					}
 					throw e;

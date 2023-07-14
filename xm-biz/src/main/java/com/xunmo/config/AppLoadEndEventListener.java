@@ -1,5 +1,6 @@
 package com.xunmo.config;
 
+import com.xunmo.utils.LuaTool;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.annotation.Component;
 import org.noear.solon.core.event.AppLoadEndEvent;
@@ -15,6 +16,9 @@ public class AppLoadEndEventListener implements EventListener<AppLoadEndEvent> {
 	@Override
 	public void onEvent(AppLoadEndEvent event) throws Throwable {
 		// Solon.app(); //获取应用对象
+
+		final String aitamei = LuaTool.generateOrder("aitamei");
+		System.out.println(aitamei);
 
 		log.info("启动完毕...");
 		// if (StrUtil.isNotBlank(env)) {
