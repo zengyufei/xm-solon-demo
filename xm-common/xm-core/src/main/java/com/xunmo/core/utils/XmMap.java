@@ -1,6 +1,6 @@
 package com.xunmo.core.utils;
 
-import com.xunmo.common.SFunction;
+import com.xunmo.common.XmFunction;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -15,23 +15,23 @@ public class XmMap<K, V> extends HashMap<K, V> {
 
 	private static Map<Class, SerializedLambda> CLASS_LAMDBA_CACHE = new ConcurrentHashMap<>();
 
-	public <T> boolean containsKey(SFunction<T, ?> key) {
+	public <T> boolean containsKey(XmFunction<T, ?> key) {
 		return super.containsKey((K) XmMap.getField(key));
 	}
 
-	public <T> V remove(SFunction<T, ?> key) {
+	public <T> V remove(XmFunction<T, ?> key) {
 		return super.remove(key);
 	}
 
-	public <T> V putIfAbsent(SFunction<T, ?> key, V v) {
+	public <T> V putIfAbsent(XmFunction<T, ?> key, V v) {
 		return super.putIfAbsent((K) XmMap.getField(key), v);
 	}
 
-	public <T> V get(SFunction<T, ?> key) {
+	public <T> V get(XmFunction<T, ?> key) {
 		return super.get(XmMap.getField(key));
 	}
 
-	public <T> V put(SFunction<T, ?> key, V v) {
+	public <T> V put(XmFunction<T, ?> key, V v) {
 		return super.put((K) XmMap.getField(key), v);
 	}
 
@@ -41,7 +41,7 @@ public class XmMap<K, V> extends HashMap<K, V> {
 	 * @param <T> 泛型
 	 * @return 属性对象
 	 */
-	public static <T> String getField(SFunction<T, ?> fn) {
+	public static <T> String getField(XmFunction<T, ?> fn) {
 		// 从序列化方法取出序列化的lambda信息
 		SerializedLambda serializedLambda = getSerializedLambda(fn);
 		// 获取方法名

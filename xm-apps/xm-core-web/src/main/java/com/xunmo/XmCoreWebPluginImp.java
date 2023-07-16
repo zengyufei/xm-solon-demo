@@ -2,7 +2,10 @@ package com.xunmo;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xunmo.config.RedissonCodec;
 import com.xunmo.utils.LuaTool;
+import com.xunmo.utils.RedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
@@ -63,14 +66,19 @@ public class XmCoreWebPluginImp implements Plugin {
 		final boolean isEnabled = props.getBool("xm.web.cache.enable", true);
 		if (isEnabled) {
 			app.enableCaching(false);
-			ThreadUtil.execute(() -> {
-				RedissonCacheService redisCacheService = props.getBean("xm.web.cache", RedissonCacheService.class);
-				if (redisCacheService != null) {
+
+			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
+			Solon.context().getBeanAsync(ObjectMapper.class, bean -> {
+				// bean 获取后，可以做些后续处理。。。
+				System.out.println("异步订阅 ObjectMapper, 执行初始化动作");
+
+				ThreadUtil.execute(() -> {
+					final RedissonClient redissonClient = RedissonBuilder.build(props.getProp("xm.web.cache"), new RedissonCodec(bean, false));
+					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);
-					final RedissonClient redissonClient = redisCacheService.client();
-					LuaTool.lock(() -> redissonClient);
-//					LuaTool.setRedissonClient(redissonClient);
+
+					LuaTool.setRedissonClient(redissonClient);
 
 					// 添加缓存控制支持
 					CacheLib.cacheServiceAdd("", redisCacheService);
@@ -78,13 +86,14 @@ public class XmCoreWebPluginImp implements Plugin {
 					// 以类型注册
 					context.putWrap(CacheService.class,
 							new BeanWrap(context, CacheService.class, redisCacheService, null, true));
-//					context.putWrap(RedissonCacheService.class,
-//							new BeanWrap(context, RedissonCacheService.class, redisCacheService, null, true));
-
+					// context.putWrap(RedissonCacheService.class,
+					// new BeanWrap(context, RedissonCacheService.class,
+					// redisCacheService, null, true));
 					context.putWrap(RedissonClient.class,
 							new BeanWrap(context, RedissonClient.class, redissonClient, null, true));
 
-				}
+				});
+
 			});
 			context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
 			context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);

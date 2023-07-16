@@ -6,29 +6,29 @@ import org.noear.solon.core.Plugin;
 import org.noear.solon.core.Props;
 
 @Slf4j
-public class XmPoolPluginImp implements Plugin {
+public class XmStopPluginImp implements Plugin {
 
 	@Override
 	public void start(AopContext context) {
 		final Props props = context.cfg();
-		props.loadAddIfAbsent(XmPackageNameConstants.XM_POOL + ".yml");
+		props.loadAddIfAbsent(XmPackageNameConstants.XM_STOP + ".yml");
 		// final SolonApp app = Solon.app();
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
-			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_POOL);
+			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_STOP);
 		}
 		else {
-			System.out.println(XmPackageNameConstants.XM_POOL + " 包加载完毕!");
+			System.out.println(XmPackageNameConstants.XM_STOP + " 包加载完毕!");
 		}
 	}
 
 	@Override
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
-			log.info("{} 插件关闭!", XmPackageNameConstants.XM_POOL);
+			log.info("{} 插件关闭!", XmPackageNameConstants.XM_STOP);
 		}
 		else {
-			System.out.println(XmPackageNameConstants.XM_POOL + " 插件关闭!");
+			System.out.println(XmPackageNameConstants.XM_STOP + " 插件关闭!");
 		}
 	}
 

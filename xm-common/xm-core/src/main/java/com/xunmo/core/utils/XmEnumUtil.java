@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * 枚举工具类。
  */
-public class BaseEnumUtil {
+public class XmEnumUtil {
 
 	/**
 	 * 作用于实现了ICodeEnum接口的枚举类。 用于通过code获取Description

@@ -1,5 +1,6 @@
 package com.xunmo;
 
+import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.core.AopContext;
 import org.noear.solon.core.Plugin;
@@ -19,7 +20,9 @@ public class XmHealthPluginImp implements Plugin {
 		final boolean isEnabled = props.getBool("xm.health.enable", true);
 
 		if (isEnabled) {
-			HealthChecker.addIndicator("preflight", Result::succeed);
+			ThreadUtil.execute(() -> {
+				HealthChecker.addIndicator("preflight", Result::succeed);
+			});
 		}
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {

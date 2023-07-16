@@ -26,7 +26,11 @@ public interface XmPackageNameConstants {
 
 	String XM_HEALTH = "xm-health";
 
+	String XM_STOP = "xm-stop";
+
 	String XM_EXCEPTION_RECORD = "xm-exception-record";
+
+	String XM_EXCEPTION_HANDLER = "xm-exception-handler";
 
 	String XM_EXCEPTION = "xm-exception";
 

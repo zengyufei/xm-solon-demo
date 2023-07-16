@@ -1,7 +1,7 @@
 package com.xunmo.core.utils;
 
 import cn.hutool.core.lang.SimpleCache;
-import com.xunmo.common.SFunction;
+import com.xunmo.common.XmFunction;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -9,9 +9,9 @@ import java.lang.invoke.*;
 import java.lang.reflect.Method;
 
 @Slf4j
-public class SFunctionUtil {
+public class XmFunctionUtil {
 
-	private static final SimpleCache<Method, SFunction<?, ?>> mfCache = new SimpleCache<>();
+	private static final SimpleCache<Method, XmFunction<?, ?>> mfCache = new SimpleCache<>();
 
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
@@ -20,28 +20,28 @@ public class SFunctionUtil {
 	 * @param clazz 类
 	 * @param method 方法名对象
 	 * @param <T> 泛型
-	 * @return SFunction
+	 * @return XmFunction
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> SFunction<T, ?> create(Class<T> clazz, Method method) {
-		SFunction<?, ?> sFunction = mfCache.get(method);
-		if (sFunction == null) {
+	public static <T> XmFunction<T, ?> create(Class<T> clazz, Method method) {
+		XmFunction<?, ?> xmFunction = mfCache.get(method);
+		if (xmFunction == null) {
 			try {
 				final MethodHandle getMethodHandle = lookup.unreflect(method);
 				// 动态调用点
 				final CallSite getCallSite = LambdaMetafactory.altMetafactory(lookup, "apply",
-						MethodType.methodType(SFunction.class), MethodType.methodType(Object.class, Object.class),
+						MethodType.methodType(XmFunction.class), MethodType.methodType(Object.class, Object.class),
 						getMethodHandle, MethodType.methodType(Object.class, clazz),
 						LambdaMetafactory.FLAG_SERIALIZABLE, Serializable.class);
-				sFunction = (SFunction<T, ?>) getCallSite.getTarget().invokeExact();
-				mfCache.put(method, sFunction);
+				xmFunction = (XmFunction<T, ?>) getCallSite.getTarget().invokeExact();
+				mfCache.put(method, xmFunction);
 			}
 			catch (Throwable throwable) {
 				throw new RuntimeException(throwable);
 			}
-			log.error("SFunction 创建失败! {},{}", clazz, method);
+			log.error("XmFunction 创建失败! {},{}", clazz, method);
 		}
-		return (SFunction<T, ?>) sFunction;
+		return (XmFunction<T, ?>) xmFunction;
 	}
 
 }

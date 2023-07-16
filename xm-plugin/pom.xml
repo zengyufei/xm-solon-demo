@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>./xm-exception-handler</module>
+		<module>./xm-stop</module>
 		<module>./xm-auto-tran</module>
 		<module>./xm-request-trace-id</module>
 		<module>./xm-request-times-console</module>

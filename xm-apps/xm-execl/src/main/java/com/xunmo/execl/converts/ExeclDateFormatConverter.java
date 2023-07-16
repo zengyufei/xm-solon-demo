@@ -47,7 +47,7 @@ public class ExeclDateFormatConverter implements Converter<String> {
 			if (StrUtil.isBlank(stringValue)) {
 				return null;
 			}
-			final DateTime dateTime = XmDateUtil.checkDate(stringValue, str -> {
+			final DateTime dateTime = XmDateUtil.checkDateStr(stringValue, str -> {
 				AjaxError.getAndThrow("日期 {} 输入非法", stringValue);
 			});
 			if (dateTime != null) {

@@ -2,6 +2,7 @@ package com.xunmo;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -15,13 +16,14 @@ import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.cache.redisson.RedissonCacheService;
+import org.noear.solon.core.AopContext;
+import org.noear.solon.core.BeanWrap;
 import org.noear.solon.core.ChainManager;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.RenderManager;
 import org.noear.solon.core.util.LogUtil;
 import org.noear.solon.data.cache.CacheService;
-import org.noear.solon.extend.quartz.EnableQuartz;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
 import org.noear.solon.serialization.StringSerializerRender;
 import org.noear.solon.serialization.jackson.JacksonActionExecutor;
@@ -33,19 +35,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Slf4j
-@EnableQuartz
+// @EnableQuartz
 public class BizApp {
+
+	static StopWatch start = new StopWatch("启动");
 
 	public static void main(String[] args) throws NoSuchFieldException {
 		Solon.start(BizApp.class, args, app -> {
+			// 启用 WebSocket 服务
+			app.enableWebSocket(true);
 
 			// 转发日志到 Slf4j 接口
 			LogUtil.globalSet(new LogUtilToSlf4j()); // v1.10.11 后支持
 
 			app.get("/", ctx -> {
 				// ctx.forward("/railway-bureau-test/index.html");
-				ctx.redirect("/dict/view/tree");
+				// ctx.redirect("/dict/view/tree");
 				// ctx.redirect("/employee_info/view/index");
+				ctx.render("主页");
 			});
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
@@ -56,7 +63,7 @@ public class BizApp {
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
-				//bean 获取后，可以做些后续处理。。。
+				// bean 获取后，可以做些后续处理。。。
 				System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
 			});
 
@@ -97,7 +104,8 @@ public class BizApp {
 
 	private static void initJackson(SolonApp app) {
 		// 给 body 塞入 arg 参数
-		app.context().beanOnloaded(aopContext -> {
+		final AopContext context = app.context();
+		context.beanOnloaded(aopContext -> {
 			final ChainManager chainManager = app.chainManager();
 			chainManager.removeExecuteHandler(JacksonActionExecutor.class);
 			final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
@@ -135,6 +143,7 @@ public class BizApp {
 			EventBus.push(jacksonActionExecutor);
 
 			chainManager.addExecuteHandler(jacksonActionExecutor);
+			context.putWrap(ObjectMapper.class, new BeanWrap(context, ObjectMapper.class, objectMapper, null, true));
 		});
 	}
 
@@ -190,7 +199,7 @@ public class BizApp {
 		immutableModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
-			private final String[] DATE_FORMAT_STRS = new String[]{"yyyy",
+			private final String[] DATE_FORMAT_STRS = new String[] { "yyyy",
 
 					"yyyy-M", "yyyy/M", "yyyy.M",
 
@@ -210,7 +219,7 @@ public class BizApp {
 
 					"yyyy年M月dd日", "yyyy年M月d日", "yyyy年MM月d日",
 
-					"yyyyMdd", "yyyyMd", "yyyyMMd",};
+					"yyyyMdd", "yyyyMd", "yyyyMMd", };
 
 			@Override
 			public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
@@ -224,11 +233,13 @@ public class BizApp {
 			public Date formatToDate(String parameter) {
 				try {
 					return DateUtil.parse(parameter);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					for (String dateFormatStr : DATE_FORMAT_STRS) {
 						try {
 							return DateUtil.parse(parameter, dateFormatStr);
-						} catch (Exception ignored2) {
+						}
+						catch (Exception ignored2) {
 						}
 					}
 					throw e;

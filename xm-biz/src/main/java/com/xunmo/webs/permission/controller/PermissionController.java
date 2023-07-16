@@ -42,8 +42,7 @@ public class PermissionController extends BaseController {
 
 	/**
 	 * 分页查询
-	 *
-	 * @param input       筛选条件
+	 * @param input 筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */
@@ -55,14 +54,13 @@ public class PermissionController extends BaseController {
 		final LocalDateTime endCreateTime = input.getEndCreateTime();
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS,
 				pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-						.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-						.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-						.select(TABLE.fetch(FETCHER.allScalarFields()))));
+					.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+					.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+					.select(TABLE.fetch(FETCHER.allScalarFields()))));
 	}
 
 	/**
 	 * 通过主键查询单条数据
-	 *
 	 * @param id 主键
 	 * @return 单条数据
 	 */
@@ -74,7 +72,6 @@ public class PermissionController extends BaseController {
 
 	/**
 	 * 新增数据
-	 *
 	 * @param input 实体
 	 * @return 新增结果
 	 */
@@ -86,7 +83,6 @@ public class PermissionController extends BaseController {
 
 	/**
 	 * 编辑数据
-	 *
 	 * @param input 实体
 	 * @return 编辑结果
 	 */
@@ -98,7 +94,6 @@ public class PermissionController extends BaseController {
 
 	/**
 	 * 删除数据
-	 *
 	 * @param ids 主键集合
 	 * @return 删除是否成功
 	 */

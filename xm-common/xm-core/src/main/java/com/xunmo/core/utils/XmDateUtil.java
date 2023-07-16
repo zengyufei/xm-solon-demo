@@ -27,7 +27,7 @@ public class XmDateUtil {
 
 			"yyyyM", "yyyyM", "yyyyMM", };
 
-	public static String formatToDate(String parameter) {
+	public static String formatToDateStr(String parameter) {
 		try {
 			final DateTime parse = DateUtil.parse(parameter);
 			parameter = parse.toDateStr();
@@ -46,7 +46,7 @@ public class XmDateUtil {
 		return parameter;
 	}
 
-	public static DateTime checkDate(String parameter, Consumer<String> errorMsg) {
+	public static DateTime checkDateStr(String parameter, Consumer<String> errorMsg) {
 		DateTime parse = null;
 		try {
 			parse = DateUtil.parse(parameter);

@@ -40,7 +40,7 @@ public class ExeclDateConverter implements Converter<Date> {
 			return null;
 		}
 
-		return XmDateUtil.checkDate(stringValue, str -> {
+		return XmDateUtil.checkDateStr(stringValue, str -> {
 			AjaxError.getAndThrow("日期 {} 输入非法", stringValue);
 		});
 	}

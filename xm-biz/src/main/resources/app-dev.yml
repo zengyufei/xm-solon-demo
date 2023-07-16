@@ -2,6 +2,7 @@ solon.app:
   name: xm-biz
   group: com.xunmo
 server.port: 8667
+server.websocket.port: 18080
 server.contextPath: "/xunmo-TEST"
 
 sa-token-dao: #名字可以随意取

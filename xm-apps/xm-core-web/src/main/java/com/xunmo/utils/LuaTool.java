@@ -12,8 +12,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 /**
  * @Classname LuaTool
@@ -23,30 +21,16 @@ import java.util.function.Supplier;
  */
 public class LuaTool {
 
-	private final static ReentrantLock lock = new ReentrantLock();
-
 	private static RedissonClient redissonClient;
+
 	private static int tryMax = 10;
 
-	public static void lock(Supplier<RedissonClient> supplier) {
-		if (redissonClient == null) {
-			try {
-				if (lock.tryLock(10, TimeUnit.SECONDS)) {
-					try {
-						LuaTool.redissonClient = supplier.get();
-					} finally {
-						lock.unlock();
-					}
-				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-		}
+	public static void setRedissonClient(RedissonClient redissonClient) {
+		LuaTool.redissonClient = redissonClient;
 	}
 
 	/**
 	 * 单号按照keyPrefix+yyyyMMdd+4位流水号的格式生成
-	 *
 	 * @param keyPrefix 流水号前缀标识--用作redis key名
 	 * @return 单号
 	 */
@@ -71,8 +55,7 @@ public class LuaTool {
 
 	/**
 	 * 限流器-漏桶算法思想
-	 *
-	 * @param key   被限流的key
+	 * @param key 被限流的key
 	 * @param limit 限制次数
 	 * @return 当前时间范围内正在执行的线程数
 	 */
@@ -88,7 +71,6 @@ public class LuaTool {
 
 	/**
 	 * 归还次数-漏桶算法思想
-	 *
 	 * @param key 被限流的key
 	 * @return 正在执行的线程数
 	 */
@@ -103,7 +85,7 @@ public class LuaTool {
 	}
 
 	/**
-	 * @param key        幂等性校验的key
+	 * @param key 幂等性校验的key
 	 * @param expireTime 设定一个窗口时间
 	 * @return 如果不为-1说明已有请求在当前时间窗口内运行
 	 */
@@ -121,12 +103,13 @@ public class LuaTool {
 		while (redissonClient == null && tryMax > 0) {
 			try {
 				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
+			}
+			catch (InterruptedException ignored) {
 			}
 		}
 		if (redissonClient == null) {
 			throw new CustomException("加载 RedissonClient 错误!");
 		}
 	}
+
 }

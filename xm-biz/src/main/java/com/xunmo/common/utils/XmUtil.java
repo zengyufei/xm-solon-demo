@@ -10,7 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import com.xunmo.annotations.AuditFunc;
 import com.xunmo.annotations.AuditMapFunc;
 import com.xunmo.common.CustomException;
-import com.xunmo.common.SFunction;
+import com.xunmo.common.XmFunction;
 import com.xunmo.core.AjaxError;
 import com.xunmo.core.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,12 +41,12 @@ public class XmUtil extends CheckUtil {
 		.withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
 		.build();
 
-	public static String formatToDate(String parameter) {
-		return XmDateUtil.formatToDate(parameter);
+	public static String formatToDateStr(String parameter) {
+		return XmDateUtil.formatToDateStr(parameter);
 	}
 
-	public static DateTime checkDate(String parameter, Consumer<String> errorMsg) {
-		return XmDateUtil.checkDate(parameter, errorMsg);
+	public static DateTime checkDateStr(String parameter, Consumer<String> errorMsg) {
+		return XmDateUtil.checkDateStr(parameter, errorMsg);
 	}
 
 	// =================================================================================================================
@@ -446,7 +446,7 @@ public class XmUtil extends CheckUtil {
 	 * @return boolean
 	 */
 	@SafeVarargs
-	public static <T> boolean strNotInList(String str, SFunction<T, ?>... fns) {
+	public static <T> boolean strNotInList(String str, XmFunction<T, ?>... fns) {
 		return !strInList(str, fns);
 	}
 
@@ -458,7 +458,7 @@ public class XmUtil extends CheckUtil {
 	 * @return boolean
 	 */
 	@SafeVarargs
-	public static <T> boolean strInList(String str, SFunction<T, ?>... fns) {
+	public static <T> boolean strInList(String str, XmFunction<T, ?>... fns) {
 		return XmUtil.getFieldNames(fns).contains(str);
 	}
 
@@ -871,29 +871,29 @@ public class XmUtil extends CheckUtil {
 		return new XmMap<>();
 	}
 
-	public static <T> String getFieldName(SFunction<T, ?> fn) {
+	public static <T> String getFieldName(XmFunction<T, ?> fn) {
 		return XmMap.getField(fn);
 	}
 
 	@SafeVarargs
-	public static <T> List<String> getFieldNames(SFunction<T, ?>... fns) {
+	public static <T> List<String> getFieldNames(XmFunction<T, ?>... fns) {
 		return Arrays.stream(fns).map(XmMap::getField).collect(Collectors.toList());
 	}
 
 	@SafeVarargs
-	public static <T> String[] getFieldNameAttr(SFunction<T, ?>... fns) {
+	public static <T> String[] getFieldNameAttr(XmFunction<T, ?>... fns) {
 		return Arrays.stream(fns).map(XmMap::getField).toArray(String[]::new);
 	}
 
-	public static <T> Method getGetter(Class<T> clazz, SFunction<T, ?> sFunction) {
+	public static <T> Method getGetter(Class<T> clazz, XmFunction<T, ?> xmFunction) {
 		final BeanDesc beanDesc = BeanUtil.getBeanDesc(clazz);
-		return beanDesc.getGetter(XmUtil.getFieldName(sFunction));
+		return beanDesc.getGetter(XmUtil.getFieldName(xmFunction));
 	}
 
-	public static <T> SFunction<T, ?> getSFunction(Class<T> clazz, SFunction<T, ?> sFunction) {
+	public static <T> XmFunction<T, ?> getSFunction(Class<T> clazz, XmFunction<T, ?> xmFunction) {
 		final BeanDesc beanDesc = BeanUtil.getBeanDesc(clazz);
-		final Method disabledMethod = beanDesc.getGetter(XmUtil.getFieldName(sFunction));
-		return SFunctionUtil.create(clazz, disabledMethod);
+		final Method disabledMethod = beanDesc.getGetter(XmUtil.getFieldName(xmFunction));
+		return XmFunctionUtil.create(clazz, disabledMethod);
 	}
 
 	public static boolean lazyBoolean(Supplier<Boolean> lazyFunc) {

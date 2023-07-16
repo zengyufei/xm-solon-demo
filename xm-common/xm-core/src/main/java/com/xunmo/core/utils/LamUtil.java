@@ -3,7 +3,7 @@ package com.xunmo.core.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xunmo.common.SFunction;
+import com.xunmo.common.XmFunction;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -1177,12 +1177,12 @@ public class LamUtil {
 	// =================================================================================================================
 	// =================================================================================================================
 
-	public static <T> String getFieldName(SFunction<T, ?> sFunction) {
-		return XmMap.getField(sFunction);
+	public static <T> String getFieldName(XmFunction<T, ?> xmFunction) {
+		return XmMap.getField(xmFunction);
 	}
 
-	public static <T> Method getGetter(Class<T> clazz, SFunction<T, ?> sFunction) {
-		return BeanUtil.getBeanDesc(clazz).getGetter(getFieldName(sFunction));
+	public static <T> Method getGetter(Class<T> clazz, XmFunction<T, ?> xmFunction) {
+		return BeanUtil.getBeanDesc(clazz).getGetter(getFieldName(xmFunction));
 	}
 
 	public static <T> Method getGetter(Class<T> clazz, final String fieldName) {
