@@ -15,8 +15,8 @@ import org.redisson.config.SingleServerConfig;
 
 import java.util.Properties;
 
-public class RedissonBuilder {
-	public RedissonBuilder() {
+public class XmRedissonBuilder {
+	public XmRedissonBuilder() {
 	}
 
 	public static RedissonClient build(Properties prop, RedissonCodec redissonCodec) {

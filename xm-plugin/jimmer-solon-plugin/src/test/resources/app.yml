@@ -1,0 +1,10 @@
+server:
+  port: 6040
+
+# 配置数据源
+xm:
+  db:
+    jdbcUrl: jdbc:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified&allowMultiQueries=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root

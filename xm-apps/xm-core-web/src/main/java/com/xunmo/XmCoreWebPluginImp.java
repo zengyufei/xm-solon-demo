@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.config.RedissonCodec;
 import com.xunmo.utils.LuaTool;
-import com.xunmo.utils.RedissonBuilder;
+import com.xunmo.utils.XmRedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
@@ -53,8 +53,7 @@ public class XmCoreWebPluginImp implements Plugin {
 						final String value = entry.getValue();
 						if (StrUtil.isBlankOrUndefined(value)) {
 							entryIterator.remove();
-						}
-						else {
+						} else {
 							paramMap.put(key, StrUtil.trim(value));
 						}
 					}
@@ -73,7 +72,7 @@ public class XmCoreWebPluginImp implements Plugin {
 				System.out.println("异步订阅 ObjectMapper, 执行初始化动作");
 
 				ThreadUtil.execute(() -> {
-					final RedissonClient redissonClient = RedissonBuilder.build(props.getProp("xm.web.cache"), new RedissonCodec(bean, false));
+					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"), new RedissonCodec(bean, false));
 					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);
@@ -102,8 +101,7 @@ public class XmCoreWebPluginImp implements Plugin {
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
-		}
-		else {
+		} else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
 		}
 	}
@@ -112,8 +110,7 @@ public class XmCoreWebPluginImp implements Plugin {
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE_WEB);
-		}
-		else {
+		} else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 插件关闭!");
 		}
 	}

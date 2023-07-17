@@ -3,6 +3,7 @@ package com.xunmo;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -103,47 +104,53 @@ public class BizApp {
 	}
 
 	private static void initJackson(SolonApp app) {
-		// 给 body 塞入 arg 参数
 		final AopContext context = app.context();
 		context.beanOnloaded(aopContext -> {
-			final ChainManager chainManager = app.chainManager();
-			chainManager.removeExecuteHandler(JacksonActionExecutor.class);
-			final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
-				@Override
-				protected Object changeBody(Context ctx) throws Exception {
-					final Object o = super.changeBody(ctx);
-					if (o instanceof ObjectNode) {
-						final ObjectNode changeBody = (ObjectNode) o;
-						ctx.paramMap().forEach((key, value) -> {
-							if (!changeBody.has(key)) {
-								changeBody.put(key, value);
-							}
-						});
+
+			ThreadUtil.execute(() -> {
+				// 给 body 塞入 arg 参数
+				final ChainManager chainManager = app.chainManager();
+				chainManager.removeExecuteHandler(JacksonActionExecutor.class);
+				final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
+					@Override
+					protected Object changeBody(Context ctx) throws Exception {
+						final Object o = super.changeBody(ctx);
+						if (o instanceof ObjectNode) {
+							final ObjectNode changeBody = (ObjectNode) o;
+							ctx.paramMap().forEach((key, value) -> {
+								if (!changeBody.has(key)) {
+									changeBody.put(key, value);
+								}
+							});
+						}
+						return o;
 					}
-					return o;
-				}
-			};
-			final ObjectMapper objectMapper = jacksonActionExecutor.config();
-			// 不设置为null会自动加入 @type 打印 json
-			objectMapper.setDefaultTyping(null);
-			final ImmutableModule immutableModule = new ImmutableModule();
-			initModule(immutableModule);
-			objectMapper.registerModule(immutableModule);
+				};
 
-			// 框架默认 -99
-			aopContext.lifecycle(-199, () -> {
-				final StringSerializerRender render = new StringSerializerRender(false,
-						new JacksonSerializer(objectMapper));
-				RenderManager.mapping("@json", render);
-				RenderManager.mapping("@type_json", render);
+
+				final ObjectMapper objectMapper = jacksonActionExecutor.config();
+				// 不设置为null会自动加入 @type 打印 json
+				objectMapper.setDefaultTyping(null);
+				final ImmutableModule immutableModule = new ImmutableModule();
+				initModule(immutableModule);
+				objectMapper.registerModule(immutableModule);
+
+				// 框架默认 -99
+				aopContext.lifecycle(-199, () -> {
+					final StringSerializerRender render = new StringSerializerRender(false,
+							new JacksonSerializer(objectMapper));
+					RenderManager.mapping("@json", render);
+					RenderManager.mapping("@type_json", render);
+				});
+
+				// 支持 json 内容类型执行
+				aopContext.wrapAndPut(JacksonActionExecutor.class, jacksonActionExecutor);
+				EventBus.push(jacksonActionExecutor);
+
+				chainManager.addExecuteHandler(jacksonActionExecutor);
+				context.putWrap(ObjectMapper.class, new BeanWrap(context, ObjectMapper.class, objectMapper, null, true));
+
 			});
-
-			// 支持 json 内容类型执行
-			aopContext.wrapAndPut(JacksonActionExecutor.class, jacksonActionExecutor);
-			EventBus.push(jacksonActionExecutor);
-
-			chainManager.addExecuteHandler(jacksonActionExecutor);
-			context.putWrap(ObjectMapper.class, new BeanWrap(context, ObjectMapper.class, objectMapper, null, true));
 		});
 	}
 
@@ -199,7 +206,7 @@ public class BizApp {
 		immutableModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
-			private final String[] DATE_FORMAT_STRS = new String[] { "yyyy",
+			private final String[] DATE_FORMAT_STRS = new String[]{"yyyy",
 
 					"yyyy-M", "yyyy/M", "yyyy.M",
 
@@ -219,7 +226,7 @@ public class BizApp {
 
 					"yyyy年M月dd日", "yyyy年M月d日", "yyyy年MM月d日",
 
-					"yyyyMdd", "yyyyMd", "yyyyMMd", };
+					"yyyyMdd", "yyyyMd", "yyyyMMd",};
 
 			@Override
 			public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
@@ -233,13 +240,11 @@ public class BizApp {
 			public Date formatToDate(String parameter) {
 				try {
 					return DateUtil.parse(parameter);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					for (String dateFormatStr : DATE_FORMAT_STRS) {
 						try {
 							return DateUtil.parse(parameter, dateFormatStr);
-						}
-						catch (Exception ignored2) {
+						} catch (Exception ignored2) {
 						}
 					}
 					throw e;

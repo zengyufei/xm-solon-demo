@@ -1,205 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.xunmo</groupId>
-        <artifactId>xm-apps</artifactId>
-        <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+	<parent>
+		<groupId>com.xunmo</groupId>
+		<artifactId>xm-apps</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 
-    <artifactId>xm-core-web</artifactId>
-    <packaging>jar</packaging>
+	<artifactId>xm-core-web</artifactId>
+	<packaging>jar</packaging>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-    <dependencies>
+	<dependencies>
 
-        <dependency>
-            <groupId>io.github.linpeilie</groupId>
-            <artifactId>mapstruct-plus</artifactId>
-            <version>1.3.2</version>
-        </dependency>
+		<dependency>
+			<groupId>io.github.linpeilie</groupId>
+			<artifactId>mapstruct-plus</artifactId>
+			<version>1.3.2</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.babyfish.jimmer</groupId>
-            <artifactId>jimmer-sql</artifactId>
-            <version>${jimmer.version}</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-datatype-jsr310</artifactId>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.babyfish.jimmer</groupId>
-            <artifactId>jimmer-sql-kotlin</artifactId>
-            <version>${jimmer.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.babyfish.jimmer</groupId>
-            <artifactId>jimmer-client</artifactId>
-            <version>${jimmer.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.serialization.jackson</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-zip</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-times-console</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-args-console</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-xss-filter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-health</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.babyfish.jimmer</groupId>
+			<artifactId>jimmer-sql</artifactId>
+			<version>${jimmer.version}</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-datatype-jsr310</artifactId>
+					<groupId>com.fasterxml.jackson.datatype</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.babyfish.jimmer</groupId>
+			<artifactId>jimmer-sql-kotlin</artifactId>
+			<version>${jimmer.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.babyfish.jimmer</groupId>
+			<artifactId>jimmer-client</artifactId>
+			<version>${jimmer.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
 
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon-lib</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.serialization.jackson</artifactId>
+		</dependency>
 
-        <!-- 静态文件支持组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.web.staticfiles</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-core</artifactId>
+		</dependency>
 
-        <!-- 跨域处理组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.web.cors</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-zip</artifactId>
+		</dependency>
 
-        <!-- 本地SessionSate支持组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.sessionstate.local</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-times-console</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-args-console</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.javers</groupId>
-            <artifactId>javers-core</artifactId>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.noear</groupId>-->
-        <!--            <artifactId>solon.cache.jedis</artifactId>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.cache.redisson</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-xss-filter</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-core</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-health</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-times-console</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-args-console</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon-lib</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-request-xss-filter</artifactId>
-        </dependency>
+		<!-- 静态文件支持组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.web.staticfiles</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon-lib</artifactId>
-        </dependency>
+		<!-- 跨域处理组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.web.cors</artifactId>
+		</dependency>
 
-        <!-- Json序列化支持组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.serialization.jackson</artifactId>
-        </dependency>
+		<!-- 本地SessionSate支持组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.sessionstate.local</artifactId>
+		</dependency>
 
-        <!-- 静态文件支持组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.web.staticfiles</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
-        <!-- 跨域处理组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.web.cors</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.javers</groupId>
+			<artifactId>javers-core</artifactId>
+		</dependency>
+		<!--        <dependency>-->
+		<!--            <groupId>org.noear</groupId>-->
+		<!--            <artifactId>solon.cache.jedis</artifactId>-->
+		<!--        </dependency>-->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.cache.redisson</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-annotations</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <!-- 本地SessionSate支持组件 -->
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon.sessionstate.local</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-core</artifactId>
+		</dependency>
 
-    </dependencies>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-times-console</artifactId>
+		</dependency>
 
-    <build>
-        <plugins>
-            <!-- 配置编译插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-args-console</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-request-xss-filter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon-lib</artifactId>
+		</dependency>
+
+		<!-- Json序列化支持组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.serialization.jackson</artifactId>
+		</dependency>
+
+		<!-- 静态文件支持组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.web.staticfiles</artifactId>
+		</dependency>
+
+		<!-- 跨域处理组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.web.cors</artifactId>
+		</dependency>
+
+		<!-- 本地SessionSate支持组件 -->
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.sessionstate.local</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- 配置编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgument>-parameters</compilerArgument>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

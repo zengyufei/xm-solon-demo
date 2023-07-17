@@ -52,33 +52,33 @@
 		<dependency>
 			<groupId>com.xunmo</groupId>
 			<artifactId>xm-exception-record</artifactId>
-        </dependency>
+		</dependency>
 
-        <!-- mq 封装工具类，纯工具类依赖 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-rabbitmq-util</artifactId>
-        </dependency>
+		<!-- mq 封装工具类，纯工具类依赖 -->
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-rabbitmq-util</artifactId>
+		</dependency>
 
-        <!-- 业务项目基础web包，与具体项目绑定 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-core-web</artifactId>
-        </dependency>
+		<!-- 业务项目基础web包，与具体项目绑定 -->
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-core-web</artifactId>
+		</dependency>
 
-        <!-- p6spy，可关闭依赖，修改配置，停止该功能 -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.xunmo</groupId>-->
-        <!--            <artifactId>xm-p6spy</artifactId>-->
-        <!--        </dependency>-->
+		<!-- p6spy，可关闭依赖，修改配置，停止该功能 -->
+		<!--        <dependency>-->
+		<!--            <groupId>com.xunmo</groupId>-->
+		<!--            <artifactId>xm-p6spy</artifactId>-->
+		<!--        </dependency>-->
 
-        <!-- 自动添加事务，可关闭依赖，停止该功能 -->
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-auto-tran</artifactId>
-        </dependency>
+		<!-- 自动添加事务，可关闭依赖，停止该功能 -->
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-auto-tran</artifactId>
+		</dependency>
 
-        <!-- 回归 springboot 统一异常处理器写法，可关闭依赖，停止该功能 -->
+		<!-- 回归 springboot 统一异常处理器写法，可关闭依赖，停止该功能 -->
 		<dependency>
 			<groupId>com.xunmo</groupId>
 			<artifactId>xm-exception-handler</artifactId>
@@ -103,36 +103,36 @@
 		<!-- easyexcel begin -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>3.0.5</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jaxb-runtime</artifactId>
-                    <groupId>org.glassfish.jaxb</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- easyexcel end -->
+			<artifactId>easyexcel</artifactId>
+			<version>3.0.5</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-runtime</artifactId>
+					<groupId>org.glassfish.jaxb</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- easyexcel end -->
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon-test</artifactId>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon-test</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
+	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 
 
@@ -174,6 +174,6 @@
 
 
 		</plugins>
-    </build>
+	</build>
 
 </project>
