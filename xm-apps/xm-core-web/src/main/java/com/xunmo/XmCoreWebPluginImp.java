@@ -54,7 +54,8 @@ public class XmCoreWebPluginImp implements Plugin {
 						if (StrUtil.isBlankOrUndefined(value)) {
 							entryIterator.remove();
 						} else {
-							paramMap.put(key, StrUtil.trim(value));
+							final String val = StrUtil.trim(value);
+							paramMap.put(key, val);
 						}
 					}
 				}

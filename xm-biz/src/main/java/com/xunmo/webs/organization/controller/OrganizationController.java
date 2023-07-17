@@ -6,6 +6,7 @@ import com.xunmo.common.entity.page.Page;
 import com.xunmo.common.entity.page.PageRequest;
 import com.xunmo.common.utils.ResponseUtil;
 import com.xunmo.enums.SystemStatus;
+import com.xunmo.jimmer.annotation.Db;
 import com.xunmo.webs.organization.entity.Organization;
 import com.xunmo.webs.organization.entity.OrganizationFetcher;
 import com.xunmo.webs.organization.entity.OrganizationTable;
@@ -37,30 +38,32 @@ public class OrganizationController extends BaseController {
 
 	private final static OrganizationFetcher FETCHER = OrganizationFetcher.$;
 
-	@Inject
+	@Db
 	private JSqlClient sqlClient;
 
 	/**
 	 * 分页查询
-	 * @param input 筛选条件
+	 *
+	 * @param input       筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */
 	@Post
 	@Mapping("/list")
 	public ResponseEntity<Page<Organization>> list(@Validated @Body OrganizationInput input,
-			@Param PageRequest pageRequest) throws Exception {
+												   @Param PageRequest pageRequest) throws Exception {
 		final LocalDateTime beginCreateTime = input.getBeginCreateTime();
 		final LocalDateTime endCreateTime = input.getEndCreateTime();
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS,
 				pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-					.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-					.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-					.select(TABLE.fetch(FETCHER.allScalarFields()))));
+						.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+						.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+						.select(TABLE.fetch(FETCHER.allScalarFields()))));
 	}
 
 	/**
 	 * 通过主键查询单条数据
+	 *
 	 * @param id 主键
 	 * @return 单条数据
 	 */
@@ -72,6 +75,7 @@ public class OrganizationController extends BaseController {
 
 	/**
 	 * 新增数据
+	 *
 	 * @param input 实体
 	 * @return 新增结果
 	 */
@@ -83,6 +87,7 @@ public class OrganizationController extends BaseController {
 
 	/**
 	 * 编辑数据
+	 *
 	 * @param input 实体
 	 * @return 编辑结果
 	 */
@@ -94,6 +99,7 @@ public class OrganizationController extends BaseController {
 
 	/**
 	 * 删除数据
+	 *
 	 * @param ids 主键集合
 	 * @return 删除是否成功
 	 */

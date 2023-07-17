@@ -1,77 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.xunmo</groupId>
-        <artifactId>xm-apps</artifactId>
-        <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+	<parent>
+		<groupId>com.xunmo</groupId>
+		<artifactId>xm-apps</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 
-    <artifactId>xm-exception-record</artifactId>
-    <packaging>jar</packaging>
-
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-biz-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-rabbitmq-util</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xunmo</groupId>
-            <artifactId>xm-core-web</artifactId>
-        </dependency>
+	<artifactId>xm-exception-record</artifactId>
+	<packaging>jar</packaging>
 
 
-    </dependencies>
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>jimmer-solon-plugin</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-biz-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-rabbitmq-util</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.xunmo</groupId>
+			<artifactId>xm-core-web</artifactId>
+		</dependency>
 
 
-    <build>
-        <plugins>
-            <!-- 配置编译插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <encoding>UTF-8</encoding>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.babyfish.jimmer</groupId>
-                            <artifactId>jimmer-apt</artifactId>
-                            <version>${jimmer.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.26</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>1.5.3.Final</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<!-- 配置编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
+					<compilerArgument>-parameters</compilerArgument>
+					<encoding>UTF-8</encoding>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.babyfish.jimmer</groupId>
+							<artifactId>jimmer-apt</artifactId>
+							<version>${jimmer.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.26</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.5.3.Final</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

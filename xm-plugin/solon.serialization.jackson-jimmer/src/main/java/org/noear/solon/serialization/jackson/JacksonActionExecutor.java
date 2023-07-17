@@ -25,9 +25,10 @@ import java.util.List;
 public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 	private static final String label = "/json";
 
-	private final ObjectMapper mapper_type = new ObjectMapper();
+	private ObjectMapper mapper_type;
 
 	public JacksonActionExecutor() {
+		mapper_type = new ObjectMapper();
 		mapper_type.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		mapper_type.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper_type.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -40,6 +41,10 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 		mapper_type.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		// 允许使用单引号
 		mapper_type.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	}
+
+	public JacksonActionExecutor(ObjectMapper mapper_type) {
+		this.mapper_type = mapper_type;
 	}
 
 	public ObjectMapper config() {

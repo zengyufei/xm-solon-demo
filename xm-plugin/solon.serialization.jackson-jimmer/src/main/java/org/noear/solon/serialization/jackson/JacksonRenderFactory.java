@@ -15,15 +15,21 @@ import org.noear.solon.serialization.StringSerializerRender;
  */
 public class JacksonRenderFactory extends JacksonRenderFactoryBase {
 
-	ObjectMapper config = new ObjectMapper();
+	ObjectMapper config;
 
 	public JacksonRenderFactory() {
+		config = new ObjectMapper();
 		config.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		config.registerModule(new JavaTimeModule());
 		// 允许使用未带引号的字段名
 		config.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		// 允许使用单引号
 		config.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	}
+
+
+	public JacksonRenderFactory(ObjectMapper config) {
+		this.config = config;
 	}
 
 

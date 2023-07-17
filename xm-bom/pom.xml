@@ -162,6 +162,16 @@
 				<artifactId>xm-zip</artifactId>
 				<version>${revision}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>solon.serialization.jackson-jimmer</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>jimmer-solon-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
 			<!-- common end -->
 
 

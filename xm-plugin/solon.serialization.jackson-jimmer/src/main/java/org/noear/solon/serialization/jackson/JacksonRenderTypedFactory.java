@@ -17,20 +17,26 @@ import org.noear.solon.serialization.StringSerializerRender;
  * @since 1.5
  */
 public class JacksonRenderTypedFactory extends JacksonRenderFactoryBase {
-	ObjectMapper config = new ObjectMapper();
+	ObjectMapper config;
 
 	public JacksonRenderTypedFactory() {
+		config = new ObjectMapper();
 		config.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		config.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		config.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-//        config.activateDefaultTypingAsProperty(
-//                config.getPolymorphicTypeValidator(),
-//                ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
+		config.activateDefaultTypingAsProperty(
+				config.getPolymorphicTypeValidator(),
+				ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
 		config.registerModule(new JavaTimeModule());
 		// 允许使用未带引号的字段名
 		config.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		// 允许使用单引号
 		config.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		config.setDefaultTyping(null);
+	}
+
+	public JacksonRenderTypedFactory(ObjectMapper config) {
+		this.config = config;
 	}
 
 	@Override

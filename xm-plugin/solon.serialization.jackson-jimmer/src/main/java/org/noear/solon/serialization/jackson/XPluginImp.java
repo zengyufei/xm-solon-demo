@@ -3,11 +3,13 @@ package org.noear.solon.serialization.jackson;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.noear.solon.Solon;
 import org.noear.solon.core.AopContext;
 import org.noear.solon.core.Plugin;
 import org.noear.solon.core.event.EventBus;
+import org.noear.solon.core.handle.Render;
 import org.noear.solon.core.handle.RenderManager;
 import org.noear.solon.serialization.prop.JsonProps;
 import org.noear.solon.serialization.prop.JsonPropsUtil;
@@ -21,34 +23,39 @@ public class XPluginImp implements Plugin {
 	public void start(AopContext context) {
 		JsonProps jsonProps = JsonProps.create(context);
 
+
+		//::renderTypedFactory
+		JacksonRenderTypedFactory renderTypedFactory = new JacksonRenderTypedFactory();
+		applyProps(renderTypedFactory, jsonProps);
+		context.wrapAndPut(JacksonRenderTypedFactory.class, renderTypedFactory);
+		final ObjectMapper objectMapper = renderTypedFactory.config();
+		objectMapper.setDefaultTyping(null);
+		EventBus.push(objectMapper);
+
 		//::renderFactory
 		//绑定属性
-		JacksonRenderFactory renderFactory = new JacksonRenderFactory();
-		applyProps(renderFactory, jsonProps);
+		JacksonRenderFactory renderFactory = new JacksonRenderFactory(objectMapper);
 
 		//事件扩展
 		context.wrapAndPut(JacksonRenderFactory.class, renderFactory);
 		EventBus.push(renderFactory);
 
-		//::renderTypedFactory
-		JacksonRenderTypedFactory renderTypedFactory = new JacksonRenderTypedFactory();
-		context.wrapAndPut(JacksonRenderTypedFactory.class, renderTypedFactory);
-
-
 		context.lifecycle(-99, () -> {
-			RenderManager.mapping("@json", renderFactory.create());
-			RenderManager.mapping("@type_json", renderTypedFactory.create());
+			final Render render = renderFactory.create();
+			RenderManager.mapping("@json", render);
+			RenderManager.mapping("@type_json", render);
 		});
 
 		//支持 json 内容类型执行
-		JacksonActionExecutor actionExecutor = new JacksonActionExecutor();
+		JacksonActionExecutor actionExecutor = new JacksonActionExecutor(objectMapper);
 		context.wrapAndPut(JacksonActionExecutor.class, actionExecutor);
 		EventBus.push(actionExecutor);
+		context.wrapAndPut(ObjectMapper.class, objectMapper);
 
 		Solon.app().chainManager().addExecuteHandler(actionExecutor);
 	}
 
-	private void applyProps(JacksonRenderFactory factory, JsonProps jsonProps) {
+	private void applyProps(JacksonRenderTypedFactory factory, JsonProps jsonProps) {
 		boolean writeNulls = false;
 
 		if (JsonPropsUtil.apply(factory, jsonProps)) {
