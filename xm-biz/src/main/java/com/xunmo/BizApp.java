@@ -1,12 +1,13 @@
 package com.xunmo;
 
 import cn.hutool.core.date.StopWatch;
+import com.xunmo.utils.LuaTool;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
-import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.util.LogUtil;
 import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.logging.utils.LogUtilToSlf4j;
+import org.redisson.api.RedissonClient;
 
 @Slf4j
 // @EnableQuartz
@@ -32,13 +33,14 @@ public class BizApp {
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(CacheService.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				System.out.println("异步订阅 CacheService, 执行初始化缓存动作");
+				log.info("异步订阅 CacheService, 执行初始化缓存动作");
 			});
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
-			Solon.context().getBeanAsync(RedissonCacheService.class, bean -> {
+			Solon.context().getBeanAsync(RedissonClient.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				System.out.println("异步订阅 RedissonCacheService, 执行初始化缓存动作");
+				log.info("异步订阅 RedissonClient, 执行初始化缓存动作");
+				LuaTool.setRedissonClient(bean);
 			});
 
 //			// 2.添加资源路径
@@ -56,19 +58,11 @@ public class BizApp {
 //				File file = new File(location, relativePath);
 //				return file.exists() ? file.toURI().toURL() : null;
 //			});
-//			// 自动添加 multipart
-//			app.filter(-1, (ctx, chain) -> {
-//				if (ctx.path().startsWith("/upload")) {
-//					ctx.autoMultipart(true); //给需要的路径加 autoMultipart
-//				}
-//				chain.doFilter(ctx);
-//			});
 
 			// 向外提供钩子
 //			app.before(9999999, ctx -> {
 //				final PageRequest pageRequest = ctx.paramAsBean(PageRequest.class);
 //				ctx.paramSet("pageRequest", JSONUtil.toJsonStr(pageRequest));
-//				System.out.println(JSONUtil.toJsonPrettyStr(pageRequest));
 //			});
 
 		});

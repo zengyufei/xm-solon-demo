@@ -4,7 +4,6 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.config.RedissonCodec;
-import com.xunmo.utils.LuaTool;
 import com.xunmo.utils.XmRedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
@@ -38,11 +37,11 @@ public class XmCoreWebPluginImp implements Plugin {
 		final boolean isEnableArgsTrim = props.getBool(XmPluginPropertiesConstants.xmWebArgsTrimEnable, true);
 
 		if (isEnableCors) {
-			// 解决 cros 跨域 问题;
+			// 解决 cros 跨域 问题
 			app.before(new CrossHandler().allowedOrigins("*"));
 		}
 		if (isEnableArgsTrim) {
-			// 处理参数左右空白, 空字符串入参设置为null;
+			// 处理参数左右空白, 空字符串入参设置为null
 			app.before(ctx -> {
 				final NvMap paramMap = ctx.paramMap();
 				if (!paramMap.isEmpty()) {
@@ -70,7 +69,7 @@ public class XmCoreWebPluginImp implements Plugin {
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(ObjectMapper.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				System.out.println("异步订阅 ObjectMapper, 执行初始化动作");
+				log.info("异步订阅 ObjectMapper, 执行初始化动作");
 
 				ThreadUtil.execute(() -> {
 					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"), new RedissonCodec(bean, false));
@@ -78,17 +77,12 @@ public class XmCoreWebPluginImp implements Plugin {
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);
 
-					LuaTool.setRedissonClient(redissonClient);
-
 					// 添加缓存控制支持
 					CacheLib.cacheServiceAdd("", redisCacheService);
 					// 包装Bean（指定类型的）
 					// 以类型注册
 					context.putWrap(CacheService.class,
 							new BeanWrap(context, CacheService.class, redisCacheService, null, true));
-					// context.putWrap(RedissonCacheService.class,
-					// new BeanWrap(context, RedissonCacheService.class,
-					// redisCacheService, null, true));
 					context.putWrap(RedissonClient.class,
 							new BeanWrap(context, RedissonClient.class, redissonClient, null, true));
 

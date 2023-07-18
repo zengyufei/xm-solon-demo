@@ -2,6 +2,7 @@ package com.xunmo.jimmer.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.jimmer.annotation.Db;
+import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.Utils;
@@ -12,14 +13,14 @@ import org.noear.solon.core.VarHolder;
 
 import javax.sql.DataSource;
 
+@Slf4j
 public class XPluginImpl implements Plugin {
 	@Override
 	public void start(AopContext context) {
 
-
 		context.getBeanAsync(ObjectMapper.class, bean -> {
 			// bean 获取后，可以做些后续处理。。。
-			System.out.println("异步订阅 ObjectMapper, 执行初始化动作");
+			log.info("异步订阅 ObjectMapper, 执行 jimmer 初始化动作");
 			bean.registerModule(new ImmutableModule());
 		});
 

@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Inject;
-import org.noear.solon.serialization.jackson.JacksonActionExecutor;
-import org.noear.solon.serialization.jackson.JacksonRenderFactory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -19,18 +17,10 @@ import java.util.Date;
 @Configuration
 public class JacksonConfig {
 	@Bean
-	public void initJackson(@Inject JacksonRenderFactory factory, @Inject JacksonActionExecutor executor) {
-
+	public void initJackson(@Inject ObjectMapper objectMapper) {
 		SimpleModule simpleModule = new SimpleModule();
 		initModule(simpleModule);
-		{
-			final ObjectMapper objectMapper = factory.config();
-			objectMapper.registerModule(simpleModule);
-		}
-		{
-			final ObjectMapper objectMapper = executor.config();
-			objectMapper.registerModule(simpleModule);
-		}
+		objectMapper.registerModule(simpleModule);
 	}
 
 	private void initModule(SimpleModule immutableModule) {

@@ -97,13 +97,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 						long millis = System.currentTimeMillis();
 						if (!args.sql.contains("t_exception_record")) {
 							// Log SQL and variables.
-							if (millis > 5000) { // Slow SQL
-								log.warn("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables,
-										args.purpose);
-							} else {
-								log.info("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables,
-										args.purpose);
-							}
+							log.info("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables,
+									args.purpose);
 						}
 						// Call DefaultExecutor
 						R result = DefaultExecutor.INSTANCE.execute(args);
