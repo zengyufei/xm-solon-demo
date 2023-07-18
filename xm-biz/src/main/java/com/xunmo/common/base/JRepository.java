@@ -10,8 +10,8 @@ import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.*;
 import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.babyfish.jimmer.sql.fetcher.Fetcher;
+import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +52,12 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 	}
 
 	List<E> findByIds(Iterable<ID> ids);
+
+	@NotNull
+	@Override
+	default List<E> findAllById(@NotNull Iterable<ID> ids) {
+		return findByIds(ids);
+	}
 
 	List<E> findByIds(Iterable<ID> ids, Fetcher<E> fetcher);
 
@@ -135,33 +141,33 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 	}
 
 	@NotNull
-	default SimpleSaveResult<E> save(@NotNull Input<E> input, SaveMode mode) {
+	default SimpleSaveResult<E> save(
+			@NotNull Input<E> input,
+			SaveMode mode
+	) {
 		return save(input.toEntity(), mode);
 	}
 
-	@NotNull
-	<S extends E> SimpleSaveResult<S> save(@NotNull S entity, SaveMode mode);
+	@NotNull <S extends E> SimpleSaveResult<S> save(@NotNull S entity, SaveMode mode);
 
 	@NotNull
 	SimpleEntitySaveCommand<E> saveCommand(@NotNull Input<E> input);
 
-	@NotNull
-	<S extends E> SimpleEntitySaveCommand<S> saveCommand(@NotNull S entity);
+	@NotNull <S extends E> SimpleEntitySaveCommand<S> saveCommand(@NotNull S entity);
 
 	@NotNull
 	@Override
 	default <S extends E> Iterable<S> saveAll(@NotNull Iterable<S> entities) {
-		return saveAll(entities, SaveMode.UPSERT).getSimpleResults()
-			.stream()
-			.map(SimpleSaveResult::getModifiedEntity)
-			.collect(Collectors.toList());
+		return saveAll(entities, SaveMode.UPSERT)
+				.getSimpleResults()
+				.stream()
+				.map(SimpleSaveResult::getModifiedEntity)
+				.collect(Collectors.toList());
 	}
 
-	@NotNull
-	<S extends E> BatchSaveResult<S> saveAll(@NotNull Iterable<S> entities, SaveMode mode);
+	@NotNull <S extends E> BatchSaveResult<S> saveAll(@NotNull Iterable<S> entities, SaveMode mode);
 
-	@NotNull
-	<S extends E> BatchEntitySaveCommand<S> saveAllCommand(@NotNull Iterable<S> entities);
+	@NotNull <S extends E> BatchEntitySaveCommand<S> saveAllCommand(@NotNull Iterable<S> entities);
 
 	@Override
 	default void delete(@NotNull E entity) {
@@ -188,6 +194,11 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 		deleteByIds(ids, DeleteMode.AUTO);
 	}
 
+	@Override
+	default void deleteAllById(@NotNull Iterable<? extends ID> ids) {
+		deleteByIds(ids, DeleteMode.AUTO);
+	}
+
 	int deleteByIds(Iterable<? extends ID> ids, DeleteMode mode);
 
 	@Override
@@ -196,7 +207,5 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 	interface Pager {
 
 		<T> Page<T> execute(ConfigurableRootQuery<?, T> query);
-
 	}
-
 }
