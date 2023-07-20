@@ -15,4 +15,9 @@ public interface JimmerAdapter {
 
 	JSqlClient sqlClient();
 
+
+	/**
+	 * 获取印映代理
+	 */
+	<T> T getRepository(Class<T> repositoryClz);
 }

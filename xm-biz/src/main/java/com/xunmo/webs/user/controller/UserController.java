@@ -4,14 +4,15 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
-import com.xunmo.common.entity.page.Page;
-import com.xunmo.common.entity.page.PageRequest;
 import com.xunmo.common.utils.ResponseUtil;
 import com.xunmo.enums.SystemStatus;
 import com.xunmo.jimmer.annotation.Db;
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.PageRequest;
 import com.xunmo.webs.organization.entity.OrganizationFetcher;
 import com.xunmo.webs.permission.entity.PermissionFetcher;
 import com.xunmo.webs.role.entity.RoleFetcher;
+import com.xunmo.webs.user.UserRepository;
 import com.xunmo.webs.user.entity.User;
 import com.xunmo.webs.user.entity.UserFetcher;
 import com.xunmo.webs.user.entity.UserTable;
@@ -54,6 +55,8 @@ public class UserController extends BaseController {
 
 	@Db
 	private JSqlClient sqlClient;
+	@Db
+	private UserRepository userRepository;
 
 	/**
 	 * 分页查询
@@ -177,6 +180,21 @@ public class UserController extends BaseController {
 	@CacheRemove(tags = "user")
 	public ResponseEntity<Boolean> exception() throws Exception {
 		throw new NullPointerException("主动抛出异常 - 用于测试 " + DateUtil.now());
+	}
+
+	/**
+	 * 分页查询
+	 *
+	 * @param input       筛选条件
+	 * @param pageRequest 分页对象
+	 * @return 查询结果
+	 */
+	@Post
+	@Mapping("/testRepository")
+	public ResponseEntity<Page<User>> testRepository(@Validated UserQuery query, PageRequest pageRequest)
+			throws Exception {
+		final long count = userRepository.count();
+		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, count);
 	}
 
 }

@@ -4,7 +4,7 @@ import com.xunmo.XmConstants;
 import com.xunmo.common.ISystemStatus;
 import com.xunmo.common.entity.ResponseEntity;
 import com.xunmo.common.entity.Status;
-import com.xunmo.common.entity.page.Page;
+import com.xunmo.jimmer.page.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.core.handle.Context;
 

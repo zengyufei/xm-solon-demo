@@ -1,8 +1,8 @@
 package com.xunmo.webs.user;
 
 import cn.hutool.core.collection.CollUtil;
-import com.xunmo.common.base.JRepository;
-import com.xunmo.common.entity.page.*;
+import com.xunmo.jimmer.JRepository;
+import com.xunmo.jimmer.page.*;
 import org.babyfish.jimmer.ImmutableObjects;
 import org.babyfish.jimmer.Input;
 import org.babyfish.jimmer.meta.ImmutableProp;

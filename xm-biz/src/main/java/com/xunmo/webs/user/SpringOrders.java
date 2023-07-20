@@ -1,6 +1,6 @@
 package com.xunmo.webs.user;
 
-import com.xunmo.common.entity.page.Sort;
+import com.xunmo.jimmer.page.Sort;
 import org.babyfish.jimmer.meta.TypedProp;
 import org.babyfish.jimmer.sql.ast.Expression;
 import org.babyfish.jimmer.sql.ast.query.Order;

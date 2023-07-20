@@ -1,7 +1,7 @@
 package com.xunmo.jimmer.integration;
 
+import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.JimmerAdapterFactory;
-import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.core.BeanWrap;
 
 import java.util.Map;
@@ -18,17 +18,17 @@ public class JimmerAdapterManager {
 	/**
 	 * 缓存适配器
 	 */
-	private static Map<String, JSqlClient> dbMap = new ConcurrentHashMap<>();
+	private static Map<String, JimmerAdapter> dbMap = new ConcurrentHashMap<>();
 
-	public static JSqlClient getOnly(String name) {
+	public static JimmerAdapter getOnly(String name) {
 		return dbMap.get(name);
 	}
 
 	/**
 	 * 获取适配器
 	 */
-	public static JSqlClient get(BeanWrap bw) {
-		JSqlClient db = dbMap.get(bw.name());
+	public static JimmerAdapter get(BeanWrap bw) {
+		JimmerAdapter db = dbMap.get(bw.name());
 
 		if (db == null) {
 			synchronized (bw.name().intern()) {
@@ -61,7 +61,7 @@ public class JimmerAdapterManager {
 	/**
 	 * 构建适配器
 	 */
-	private static JSqlClient buildJSqlClient(BeanWrap bw) {
+	private static JimmerAdapter buildJSqlClient(BeanWrap bw) {
 		return adapterFactory.create(bw);
 	}
 

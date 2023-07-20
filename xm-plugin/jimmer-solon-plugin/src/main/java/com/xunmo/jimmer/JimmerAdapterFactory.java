@@ -1,6 +1,5 @@
 package com.xunmo.jimmer;
 
-import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.core.BeanWrap;
 
 /**
@@ -10,6 +9,6 @@ import org.noear.solon.core.BeanWrap;
  * @since 1.5
  */
 public interface JimmerAdapterFactory {
-	JSqlClient create(BeanWrap dsWrap);
+	JimmerAdapter create(BeanWrap dsWrap);
 
 }

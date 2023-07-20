@@ -2,11 +2,11 @@ package com.xunmo.webs.organization.controller;
 
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
-import com.xunmo.common.entity.page.Page;
-import com.xunmo.common.entity.page.PageRequest;
 import com.xunmo.common.utils.ResponseUtil;
 import com.xunmo.enums.SystemStatus;
 import com.xunmo.jimmer.annotation.Db;
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.PageRequest;
 import com.xunmo.webs.organization.entity.Organization;
 import com.xunmo.webs.organization.entity.OrganizationFetcher;
 import com.xunmo.webs.organization.entity.OrganizationTable;

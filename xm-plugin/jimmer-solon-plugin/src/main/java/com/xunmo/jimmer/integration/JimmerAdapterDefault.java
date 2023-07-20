@@ -13,8 +13,11 @@ import org.noear.solon.core.Props;
 import org.noear.solon.data.tran.TranUtils;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -27,6 +30,7 @@ import java.util.function.Function;
 public class JimmerAdapterDefault implements JimmerAdapter {
 	protected final BeanWrap dsWrap;
 	protected final Props dsProps;
+	protected final JSqlClient jSqlClient;
 
 	/**
 	 * 构建Sql工厂适配器，使用默认的 typeAliases 和 mappers 配置
@@ -45,6 +49,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		} else {
 			this.dsProps = dsProps;
 		}
+		jSqlClient = initSqlClient();
 	}
 
 	protected DataSource getDataSource() {
@@ -54,6 +59,10 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 	@Override
 	public JSqlClient sqlClient() {
+		return jSqlClient;
+	}
+
+	private JSqlClient initSqlClient() {
 		return JSqlClient.newBuilder()
 				.setConnectionManager(new ConnectionManager() {
 					@Override
@@ -109,5 +118,28 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 				.setDefaultBatchSize(256)
 				.setDefaultListBatchSize(32)
 				.build();
+	}
+
+
+	Map<Class<?>, Object> mapperCached = new HashMap<>();
+
+	@Override
+	public <T> T getRepository(Class<T> repositoryClz) {
+		Object repository = mapperCached.get(repositoryClz);
+
+		if (repository == null) {
+			synchronized (repositoryClz) {
+				repository = mapperCached.get(repositoryClz);
+				if (repository == null) {
+					repository = Proxy.newProxyInstance(
+							repositoryClz.getClassLoader(),
+							new Class[]{repositoryClz},
+							(o, method, objects) -> method.invoke(o, objects));
+					mapperCached.put(repositoryClz, repository);
+				}
+			}
+		}
+
+		return (T) repository;
 	}
 }

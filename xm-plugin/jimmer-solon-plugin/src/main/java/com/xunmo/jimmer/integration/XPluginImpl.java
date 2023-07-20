@@ -1,6 +1,8 @@
 package com.xunmo.jimmer.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xunmo.jimmer.JimmerAdapter;
+import com.xunmo.jimmer.Repository;
 import com.xunmo.jimmer.annotation.Db;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
@@ -79,13 +81,16 @@ public class XPluginImpl implements Plugin {
 	}
 
 	private void inject0(VarHolder varH, BeanWrap dsBw) {
-		JSqlClient sqlClient = JimmerAdapterManager.get(dsBw);
+		JimmerAdapter jimmerAdapter = JimmerAdapterManager.get(dsBw);
 
-		if (sqlClient != null) {
-
-			if (JSqlClient.class.isAssignableFrom(varH.getType())) {
+		if (JSqlClient.class.isAssignableFrom(varH.getType())) {
+			final JSqlClient sqlClient = jimmerAdapter.sqlClient();
+			if (sqlClient != null) {
 				varH.setValue(sqlClient);
 			}
+		}
+		if (Repository.class.isAssignableFrom(varH.getType())) {
+
 		}
 	}
 }

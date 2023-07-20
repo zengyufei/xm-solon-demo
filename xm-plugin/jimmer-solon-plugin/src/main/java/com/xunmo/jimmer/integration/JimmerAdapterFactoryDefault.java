@@ -1,7 +1,7 @@
 package com.xunmo.jimmer.integration;
 
+import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.JimmerAdapterFactory;
-import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.core.BeanWrap;
 
 /**
@@ -12,7 +12,7 @@ import org.noear.solon.core.BeanWrap;
  */
 public class JimmerAdapterFactoryDefault implements JimmerAdapterFactory {
 	@Override
-	public JSqlClient create(BeanWrap dsWrap) {
-		return new JimmerAdapterDefault(dsWrap).sqlClient();
+	public JimmerAdapter create(BeanWrap dsWrap) {
+		return new JimmerAdapterDefault(dsWrap);
 	}
 }

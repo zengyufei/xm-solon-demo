@@ -1,9 +1,9 @@
 package com.xunmo.common.base;
 
-import com.xunmo.common.entity.page.Page;
-import com.xunmo.common.entity.page.PageImpl;
-import com.xunmo.common.entity.page.PageRequest;
-import com.xunmo.common.entity.page.Sort;
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.PageImpl;
+import com.xunmo.jimmer.page.PageRequest;
+import com.xunmo.jimmer.page.Sort;
 import org.babyfish.jimmer.meta.ImmutableProp;
 import org.babyfish.jimmer.sql.ast.PropExpression;
 import org.babyfish.jimmer.sql.ast.impl.query.ConfigurableRootQueryImplementor;
