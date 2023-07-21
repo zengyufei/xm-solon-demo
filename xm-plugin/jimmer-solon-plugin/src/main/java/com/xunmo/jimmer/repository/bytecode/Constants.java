@@ -1,16 +1,14 @@
 package com.xunmo.jimmer.repository.bytecode;
 
+import com.xunmo.jimmer.page.Pageable;
+import com.xunmo.jimmer.page.Sort;
+import com.xunmo.jimmer.repository.parser.Context;
+import com.xunmo.jimmer.repository.parser.QueryMethod;
+import com.xunmo.jimmer.repository.support.QueryExecutors;
 import org.babyfish.jimmer.impl.asm.Type;
 import org.babyfish.jimmer.meta.ImmutableType;
-import org.babyfish.jimmer.spring.repository.parser.Context;
-import org.babyfish.jimmer.spring.repository.parser.QueryMethod;
-import org.babyfish.jimmer.spring.repository.support.KRepositoryImpl;
-import org.babyfish.jimmer.spring.repository.support.QueryExecutors;
 import org.babyfish.jimmer.sql.fetcher.Fetcher;
-import org.babyfish.jimmer.sql.kt.KSqlClient;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.Method;
 
@@ -30,13 +28,8 @@ interface Constants {
 
     String METHOD_DESCRIPTOR = Type.getDescriptor(Method.class);
 
-    String K_SQL_CLIENT_INTERNAL_NAME = Type.getInternalName(KSqlClient.class);
-
-    String K_SQL_CLIENT_DESCRIPTOR = Type.getDescriptor(KSqlClient.class);
-
     String J_SQL_CLIENT_IMPLEMENTOR_DESCRIPTOR = Type.getDescriptor(JSqlClientImplementor.class);
 
-    String K_REPOSITORY_IMPL = Type.getInternalName(KRepositoryImpl.class);
 
     String QUERY_EXECUTORS_INTERNAL_NAME = Type.getInternalName(
             QueryExecutors.class);

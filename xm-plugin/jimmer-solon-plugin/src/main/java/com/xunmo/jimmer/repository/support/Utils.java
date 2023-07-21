@@ -1,8 +1,9 @@
 package com.xunmo.jimmer.repository.support;
 
+import com.xunmo.jimmer.page.Sort;
+import com.xunmo.jimmer.repository.SpringConnectionManager;
+import com.xunmo.jimmer.repository.SpringTransientResolverProvider;
 import org.babyfish.jimmer.meta.ImmutableProp;
-import org.babyfish.jimmer.spring.repository.SpringConnectionManager;
-import org.babyfish.jimmer.spring.repository.SpringTransientResolverProvider;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.PropExpression;
 import org.babyfish.jimmer.sql.ast.impl.table.TableImplementor;
@@ -15,7 +16,6 @@ import org.babyfish.jimmer.sql.meta.EmbeddedColumns;
 import org.babyfish.jimmer.sql.meta.MetadataStrategy;
 import org.babyfish.jimmer.sql.runtime.ConnectionManager;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Collection;

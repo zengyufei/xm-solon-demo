@@ -1,10 +1,10 @@
 package com.xunmo.jimmer.repository;
 
+import com.xunmo.jimmer.page.Sort;
 import org.babyfish.jimmer.meta.TypedProp;
 import org.babyfish.jimmer.sql.ast.Expression;
 import org.babyfish.jimmer.sql.ast.query.Order;
 import org.babyfish.jimmer.sql.ast.table.Props;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;

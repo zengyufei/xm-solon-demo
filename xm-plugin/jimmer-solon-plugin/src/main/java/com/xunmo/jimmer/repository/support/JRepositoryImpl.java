@@ -1,11 +1,12 @@
 package com.xunmo.jimmer.repository.support;
 
+import com.xunmo.jimmer.page.*;
+import com.xunmo.jimmer.repository.JRepository;
+import com.xunmo.jimmer.repository.SpringOrders;
 import org.babyfish.jimmer.ImmutableObjects;
 import org.babyfish.jimmer.Input;
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.meta.TypedProp;
-import org.babyfish.jimmer.spring.repository.JRepository;
-import org.babyfish.jimmer.spring.repository.SpringOrders;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.PropExpression;
@@ -20,15 +21,12 @@ import org.babyfish.jimmer.sql.fetcher.Fetcher;
 import org.babyfish.jimmer.sql.runtime.ExecutionPurpose;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.data.domain.*;
-import org.springframework.data.repository.NoRepositoryBean;
+import org.noear.solon.core.util.GenericUtil;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@NoRepositoryBean
 public class JRepositoryImpl<E, ID> implements JRepository<E, ID> {
 
     private static final TypedProp.Scalar<?, ?>[] EMPTY_SORTED_PROPS = new TypedProp.Scalar[0];
@@ -49,8 +47,7 @@ public class JRepositoryImpl<E, ID> implements JRepository<E, ID> {
         if (entityType != null) {
             this.entityType = entityType;
         } else {
-            Class<?>[] typeArguments = GenericTypeResolver
-                    .resolveTypeArguments(this.getClass(), JRepository.class);
+			Class<?>[] typeArguments = GenericUtil.resolveTypeArguments(this.getClass(), JRepository.class);
             if (typeArguments == null) {
                 throw new IllegalArgumentException(
                         "The class \"" + this.getClass() + "\" " +

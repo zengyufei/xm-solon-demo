@@ -1,10 +1,11 @@
 package com.xunmo.jimmer.repository.bytecode;
 
+import com.xunmo.jimmer.repository.parser.PropPredicate;
+import com.xunmo.jimmer.repository.parser.QueryMethod;
 import org.babyfish.jimmer.impl.asm.MethodVisitor;
 import org.babyfish.jimmer.impl.asm.Opcodes;
 import org.babyfish.jimmer.impl.asm.Type;
 import org.babyfish.jimmer.meta.ImmutableType;
-import org.babyfish.jimmer.spring.repository.parser.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

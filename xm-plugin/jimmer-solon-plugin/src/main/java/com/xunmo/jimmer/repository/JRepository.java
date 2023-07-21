@@ -1,6 +1,9 @@
 package com.xunmo.jimmer.repository;
 
 import com.xunmo.jimmer.PagingAndSortingRepository;
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.Pageable;
+import com.xunmo.jimmer.page.Sort;
 import org.babyfish.jimmer.Input;
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.meta.TypedProp;
@@ -9,18 +12,12 @@ import org.babyfish.jimmer.sql.ast.mutation.*;
 import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.babyfish.jimmer.sql.fetcher.Fetcher;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@NoRepositoryBean
 public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 
 	/*
@@ -55,10 +52,10 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 		return Optional.ofNullable(findNullable(id, fetcher));
 	}
 
-	@AliasFor("findAllById")
+	//	@AliasFor("findAllById")
 	List<E> findByIds(Iterable<ID> ids);
 
-	@AliasFor("findByIds")
+	//	@AliasFor("findByIds")
 	@NotNull
 	@Override
 	default List<E> findAllById(@NotNull Iterable<ID> ids) {
@@ -196,18 +193,18 @@ public interface JRepository<E, ID> extends PagingAndSortingRepository<E, ID> {
 
 	int deleteById(@NotNull ID id, DeleteMode mode);
 
-	@AliasFor("deleteAllById")
+	//	@AliasFor("deleteAllById")
 	default void deleteByIds(Iterable<? extends ID> ids) {
 		deleteByIds(ids, DeleteMode.AUTO);
 	}
 
-	@AliasFor("deleteByIds")
+	//	@AliasFor("deleteByIds")
 	@Override
 	default void deleteAllById(@NotNull Iterable<? extends ID> ids) {
 		deleteByIds(ids, DeleteMode.AUTO);
 	}
 
-	@AliasFor("deleteAllById")
+	//	@AliasFor("deleteAllById")
 	int deleteByIds(Iterable<? extends ID> ids, DeleteMode mode);
 
 	@Override

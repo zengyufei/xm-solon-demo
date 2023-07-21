@@ -1,8 +1,7 @@
 package com.xunmo.jimmer.repository.bytecode;
 
-import org.babyfish.jimmer.spring.repository.support.JRepositoryImpl;
+import com.xunmo.jimmer.repository.support.JRepositoryImpl;
 import org.babyfish.jimmer.sql.JSqlClient;
-import org.springframework.data.repository.core.RepositoryInformation;
 
 import java.lang.reflect.Method;
 

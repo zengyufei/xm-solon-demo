@@ -1,12 +1,11 @@
 package com.xunmo.jimmer.repository.bytecode;
 
+import com.xunmo.jimmer.repository.parser.Context;
 import org.babyfish.jimmer.impl.asm.ClassWriter;
 import org.babyfish.jimmer.impl.asm.MethodVisitor;
 import org.babyfish.jimmer.impl.asm.Opcodes;
 import org.babyfish.jimmer.impl.asm.Type;
 import org.babyfish.jimmer.impl.util.Classes;
-import org.babyfish.jimmer.spring.repository.parser.Context;
-import org.springframework.data.repository.core.RepositoryInformation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
