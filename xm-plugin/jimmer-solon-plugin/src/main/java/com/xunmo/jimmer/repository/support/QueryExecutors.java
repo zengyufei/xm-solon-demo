@@ -1,10 +1,15 @@
 package com.xunmo.jimmer.repository.support;
 
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.PageImpl;
+import com.xunmo.jimmer.page.Pageable;
+import com.xunmo.jimmer.page.Sort;
+import com.xunmo.jimmer.repository.SpringOrders;
+import com.xunmo.jimmer.repository.parser.Predicate;
+import com.xunmo.jimmer.repository.parser.*;
 import org.babyfish.jimmer.meta.ImmutableProp;
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.meta.TargetLevel;
-import org.babyfish.jimmer.spring.repository.SpringOrders;
-import org.babyfish.jimmer.spring.repository.parser.*;
 import org.babyfish.jimmer.sql.JoinType;
 import org.babyfish.jimmer.sql.ast.*;
 import org.babyfish.jimmer.sql.ast.impl.mutation.Mutations;
@@ -15,10 +20,6 @@ import org.babyfish.jimmer.sql.ast.table.Table;
 import org.babyfish.jimmer.sql.fetcher.Fetcher;
 import org.babyfish.jimmer.sql.runtime.ExecutionPurpose;
 import org.babyfish.jimmer.sql.runtime.JSqlClientImplementor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.Collection;
 import java.util.List;
@@ -89,58 +90,58 @@ public class QueryExecutors {
                             List<Object> entities = query.limit(pageable.getPageSize(), (int) pageable.getOffset()).execute();
                             return new PageImpl<>(entities, pageable, rowCount);
                         }
-                        return new PageImpl<>(query.execute());
-                    }
-                    if (Iterable.class.isAssignableFrom(returnType)) {
-                        return query.execute();
-                    }
-                    Object entity = query.fetchOneOrNull();
-                    return returnType == Optional.class ? Optional.ofNullable(entity) : entity;
-                case COUNT:
-                    long rowCount = (Long) query.fetchOne();
-                    if (returnType == int.class) {
-                        return (int) rowCount;
-                    }
-                    return rowCount;
-                case EXISTS:
-                    return query.limit(1, 0).fetchOneOrNull() != null;
-            }
-        }
-        return null;
-    }
+						return new PageImpl<>(query.execute());
+					}
+					if (Iterable.class.isAssignableFrom(returnType)) {
+						return query.execute();
+					}
+					Object entity = query.fetchOneOrNull();
+					return returnType == Optional.class ? Optional.ofNullable(entity) : entity;
+				case COUNT:
+					long rowCount = (Long) query.fetchOne();
+					if (returnType == int.class) {
+						return (int) rowCount;
+					}
+					return rowCount;
+				case EXISTS:
+					return query.limit(1, 0).fetchOneOrNull() != null;
+			}
+		}
+		return null;
+	}
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Predicate astPredicate(
-            Table<?> table,
-            Predicate predicate,
-            Object[] args
-    ) {
-        if (predicate == null) {
-            return null;
-        }
-        if (predicate instanceof PropPredicate) {
-            PropPredicate propPredicate = (PropPredicate) predicate;
-            Selection<?> astSelection;
-            switch (propPredicate.getOp()) {
-                case NOT_IN:
-                case NOT_NULL:
-                    astSelection = astSelection(table, propPredicate.getPath(), true);
-                    break;
-                default:
-                    astSelection = astSelection(table, propPredicate.getPath(), false);
-                    break;
-            }
-            switch (propPredicate.getOp()) {
-                case TRUE:
-                    return ((Expression<Boolean>) astSelection).eq(true);
-                case FALSE:
-                    return ((Expression<Boolean>) astSelection).eq(false);
-                case NULL:
-                    return astSelection instanceof Expression<?> ?
-                            ((Expression<?>) astSelection).isNull() :
-                            ((Table<?>) astSelection).isNull();
-                case NOT_NULL:
-                    return astSelection instanceof Expression<?> ?
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static org.babyfish.jimmer.sql.ast.Predicate astPredicate(
+			Table<?> table,
+			Predicate predicate,
+			Object[] args
+	) {
+		if (predicate == null) {
+			return null;
+		}
+		if (predicate instanceof PropPredicate) {
+			PropPredicate propPredicate = (PropPredicate) predicate;
+			Selection<?> astSelection;
+			switch (propPredicate.getOp()) {
+				case NOT_IN:
+				case NOT_NULL:
+					astSelection = astSelection(table, propPredicate.getPath(), true);
+					break;
+				default:
+					astSelection = astSelection(table, propPredicate.getPath(), false);
+					break;
+			}
+			switch (propPredicate.getOp()) {
+				case TRUE:
+					return ((Expression<Boolean>) astSelection).eq(true);
+				case FALSE:
+					return ((Expression<Boolean>) astSelection).eq(false);
+				case NULL:
+					return astSelection instanceof Expression<?> ?
+							((Expression<?>) astSelection).isNull() :
+							((Table<?>) astSelection).isNull();
+				case NOT_NULL:
+					return astSelection instanceof Expression<?> ?
                             ((Expression<?>) astSelection).isNotNull() :
                             ((Table<?>) astSelection).isNotNull();
                 case IN: {
@@ -254,25 +255,25 @@ public class QueryExecutors {
             }
         }
         if (predicate instanceof AndPredicate) {
-            List<Predicate> subPredicates = ((AndPredicate) predicate).getPredicates();
-            Predicate[] subAstPredicates =
-                    new Predicate[subPredicates.size()];
-            int index = 0;
-            for (Predicate subPredicate : subPredicates) {
-                subAstPredicates[index++] = astPredicate(table, subPredicate, args);
-            }
-            return Predicate.and(subAstPredicates);
-        }
+			List<Predicate> subPredicates = ((AndPredicate) predicate).getPredicates();
+			org.babyfish.jimmer.sql.ast.Predicate[] subAstPredicates =
+					new org.babyfish.jimmer.sql.ast.Predicate[subPredicates.size()];
+			int index = 0;
+			for (Predicate subPredicate : subPredicates) {
+				subAstPredicates[index++] = astPredicate(table, subPredicate, args);
+			}
+			return org.babyfish.jimmer.sql.ast.Predicate.and(subAstPredicates);
+		}
         if (predicate instanceof OrPredicate) {
-            List<Predicate> subPredicates = ((OrPredicate) predicate).getPredicates();
-            Predicate[] subAstPredicates =
-                    new Predicate[subPredicates.size()];
-            int index = 0;
-            for (Predicate subPredicate : subPredicates) {
-                subAstPredicates[index++] = astPredicate(table, subPredicate, args);
-            }
-            return Predicate.or(subAstPredicates);
-        }
+			List<Predicate> subPredicates = ((OrPredicate) predicate).getPredicates();
+			org.babyfish.jimmer.sql.ast.Predicate[] subAstPredicates =
+					new org.babyfish.jimmer.sql.ast.Predicate[subPredicates.size()];
+			int index = 0;
+			for (Predicate subPredicate : subPredicates) {
+				subAstPredicates[index++] = astPredicate(table, subPredicate, args);
+			}
+			return org.babyfish.jimmer.sql.ast.Predicate.or(subAstPredicates);
+		}
         throw new AssertionError("Internal bug, unexpected prop predicate " + predicate);
     }
 

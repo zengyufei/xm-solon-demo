@@ -1,5 +1,6 @@
 package com.xunmo.jimmer.repository.parser;
 
+
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.sql.ast.query.OrderMode;
 
@@ -7,9 +8,9 @@ import java.util.List;
 
 public class Query {
 
-    private final Action action;
+	private final Action action;
 
-    private final int limit;
+	private final int limit;
 
     private final boolean distinct;
 

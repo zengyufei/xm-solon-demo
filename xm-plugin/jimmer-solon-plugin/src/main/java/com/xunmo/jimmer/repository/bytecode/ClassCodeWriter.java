@@ -17,67 +17,63 @@ import java.util.stream.Collectors;
 
 public abstract class ClassCodeWriter implements Constants {
 
-    public static final String ASM_IMPL_SUFFIX = "{AsmImpl}";
+	public static final String ASM_IMPL_SUFFIX = "{AsmImpl}";
 
-    final RepositoryInformation metadata;
+	private final Class<?> superType;
+	private Class<?> repositoryInterface;
+	private Class<?> domainType;
 
-    private final Class<?> superType;
+	private final String interfaceInternalName;
 
-    private final String interfaceInternalName;
+	private final String implInternalName;
 
-    private final String implInternalName;
+	private final String superInternalName;
 
-    private final String superInternalName;
+	private final String entityInternalName;
 
-    private final String entityInternalName;
+	private final String sqlClientDescriptor;
 
-    private final String sqlClientDescriptor;
+	protected final List<MethodCodeWriter> methodCodeWriters;
 
-    protected final List<MethodCodeWriter> methodCodeWriters;
+	protected final List<MethodCodeWriter> autoGenMethodCodeWriters;
 
-    protected final List<MethodCodeWriter> autoGenMethodCodeWriters;
+	private ClassWriter cw;
 
-    private ClassWriter cw;
+	Context ctx = new Context();
 
-    Context ctx = new Context();
+	protected ClassCodeWriter(Class<?> repositoryInterface, Class<?> domainType, Class<?> sqlClientType, Class<?> superType) {
+		this.superType = superType;
+		this.repositoryInterface = repositoryInterface;
+		this.domainType = domainType;
+		this.interfaceInternalName = Type.getInternalName(repositoryInterface);
+		this.implInternalName = interfaceInternalName + ASM_IMPL_SUFFIX;
+		this.superInternalName = Type.getInternalName(superType);
+		this.entityInternalName = Type.getInternalName(domainType);
+		this.sqlClientDescriptor = Type.getDescriptor(sqlClientType);
+		List<MethodCodeWriter> list = new ArrayList<>();
+		Map<String, Integer> methodNameCountMap = new HashMap<>();
+		for (Method method : repositoryInterface.getMethods()) {
+			if (!Modifier.isStatic(method.getModifiers()) &&
+					!method.getDeclaringClass().isAssignableFrom(superType)) {
+				Integer count = methodNameCountMap.get(method.getName());
+				if (count == null) {
+					list.add(createMethodCodeWriter(method, method.getName()));
+					methodNameCountMap.put(method.getName(), 1);
+				} else {
+					++count;
+					list.add(createMethodCodeWriter(method, method.getName() + ":" + count));
+					methodNameCountMap.put(method.getName(), count);
+				}
+			}
+		}
+		this.methodCodeWriters = list;
+		this.autoGenMethodCodeWriters = list
+				.stream()
+				.filter(it -> !it.method.isDefault() && it.getDefaultImplMethod() == null)
+				.collect(Collectors.toList());
+	}
 
-    protected ClassCodeWriter(RepositoryInformation metadata, Class<?> sqlClientType, Class<?> superType) {
-        this.metadata = metadata;
-        this.superType = superType;
-        this.interfaceInternalName = Type.getInternalName(metadata.getRepositoryInterface());
-        this.implInternalName = interfaceInternalName + ASM_IMPL_SUFFIX;
-        this.superInternalName = Type.getInternalName(superType);
-        this.entityInternalName = Type.getInternalName(metadata.getDomainType());
-        this.sqlClientDescriptor = Type.getDescriptor(sqlClientType);
-        Class<?> repositoryInterface = metadata.getRepositoryInterface();
-        List<MethodCodeWriter> list = new ArrayList<>();
-        Map<String, Integer> methodNameCountMap = new HashMap<>();
-        for (Method method : repositoryInterface.getMethods()) {
-            if (!Modifier.isStatic(method.getModifiers()) &&
-                    !method.getDeclaringClass().isAssignableFrom(superType)) {
-                Integer count = methodNameCountMap.get(method.getName());
-                if (count == null) {
-                    list.add(createMethodCodeWriter(method, method.getName()));
-                    methodNameCountMap.put(method.getName(), 1);
-                } else {
-                    ++count;
-                    list.add(createMethodCodeWriter(method, method.getName() + ":" + count));
-                    methodNameCountMap.put(method.getName(), count);
-                }
-            }
-        }
-        this.methodCodeWriters = list;
-        this.autoGenMethodCodeWriters = list
-                .stream()
-                .filter(it -> !it.method.isDefault() && it.getDefaultImplMethod() == null)
-                .collect(Collectors.toList());
-    }
-
-    public RepositoryInformation getMetadata() {
-        return metadata;
-    }
-
-    public String getInterfaceInternalName() {
+	public String getInterfaceInternalName() {
         return interfaceInternalName;
     }
 
@@ -116,28 +112,28 @@ public abstract class ClassCodeWriter implements Constants {
     }
 
     private void writeInit() {
-        MethodVisitor mv = cw.visitMethod(
-                Opcodes.ACC_PUBLIC,
-                "<init>",
-                '(' + sqlClientDescriptor + ")V",
-                null,
-                null
-        );
-        mv.visitCode();
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitLdcInsn(Type.getType(metadata.getDomainType()));
-        mv.visitMethodInsn(
-                Opcodes.INVOKESPECIAL,
-                superInternalName,
-                "<init>",
-                "(" + sqlClientDescriptor + "Ljava/lang/Class;)V",
-                false
-        );
-        mv.visitInsn(Opcodes.RETURN);
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
-    }
+		MethodVisitor mv = cw.visitMethod(
+				Opcodes.ACC_PUBLIC,
+				"<init>",
+				'(' + sqlClientDescriptor + ")V",
+				null,
+				null
+		);
+		mv.visitCode();
+		mv.visitVarInsn(Opcodes.ALOAD, 0);
+		mv.visitVarInsn(Opcodes.ALOAD, 1);
+		mv.visitLdcInsn(Type.getType(this.domainType));
+		mv.visitMethodInsn(
+				Opcodes.INVOKESPECIAL,
+				superInternalName,
+				"<init>",
+				"(" + sqlClientDescriptor + "Ljava/lang/Class;)V",
+				false
+		);
+		mv.visitInsn(Opcodes.RETURN);
+		mv.visitMaxs(0, 0);
+		mv.visitEnd();
+	}
 
     private void writeStaticFields() {
         for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
@@ -162,41 +158,41 @@ public abstract class ClassCodeWriter implements Constants {
         mv.visitCode();
 
         mv.visitTypeInsn(Opcodes.NEW, CONTEXT_INTERNAL_NAME);
-        mv.visitInsn(Opcodes.DUP);
-        mv.visitMethodInsn(
-                Opcodes.INVOKESPECIAL,
-                CONTEXT_INTERNAL_NAME,
-                "<init>",
-                "()V",
-                false
-        );
-        mv.visitVarInsn(Opcodes.ASTORE, 0);
+		mv.visitInsn(Opcodes.DUP);
+		mv.visitMethodInsn(
+				Opcodes.INVOKESPECIAL,
+				CONTEXT_INTERNAL_NAME,
+				"<init>",
+				"()V",
+				false
+		);
+		mv.visitVarInsn(Opcodes.ASTORE, 0);
 
-        mv.visitLdcInsn(Type.getType(metadata.getDomainType()));
-        mv.visitMethodInsn(
-                Opcodes.INVOKESTATIC,
-                IMMUTABLE_TYPE_INTERNAL_NAME,
-                "get",
-                "(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR,
-                true
-        );
-        mv.visitVarInsn(Opcodes.ASTORE, 1);
+		mv.visitLdcInsn(Type.getType(this.domainType));
+		mv.visitMethodInsn(
+				Opcodes.INVOKESTATIC,
+				IMMUTABLE_TYPE_INTERNAL_NAME,
+				"get",
+				"(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR,
+				true
+		);
+		mv.visitVarInsn(Opcodes.ASTORE, 1);
 
-        for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitVarInsn(Opcodes.ALOAD, 1);
-            mv.visitLdcInsn(Type.getType(metadata.getRepositoryInterface()));
-            mv.visitLdcInsn(writer.method.getName());
-            mv.visitLdcInsn(writer.method.getParameterTypes().length);
-            mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Class");
-            int index = 0;
-            for (Class<?> clazz : writer.method.getParameterTypes()) {
-                mv.visitInsn(Opcodes.DUP);
-                mv.visitLdcInsn(index++);
-                if (clazz.isPrimitive()) {
-                    mv.visitFieldInsn(
-                            Opcodes.GETSTATIC,
-                            Type.getInternalName(Classes.boxTypeOf(clazz)),
+		for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
+			mv.visitVarInsn(Opcodes.ALOAD, 0);
+			mv.visitVarInsn(Opcodes.ALOAD, 1);
+			mv.visitLdcInsn(Type.getType(this.repositoryInterface));
+			mv.visitLdcInsn(writer.method.getName());
+			mv.visitLdcInsn(writer.method.getParameterTypes().length);
+			mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Class");
+			int index = 0;
+			for (Class<?> clazz : writer.method.getParameterTypes()) {
+				mv.visitInsn(Opcodes.DUP);
+				mv.visitLdcInsn(index++);
+				if (clazz.isPrimitive()) {
+					mv.visitFieldInsn(
+							Opcodes.GETSTATIC,
+							Type.getInternalName(Classes.boxTypeOf(clazz)),
                             "TYPE",
                             "Ljava/lang/Class;"
                     );
@@ -229,13 +225,22 @@ public abstract class ClassCodeWriter implements Constants {
         }
         mv.visitInsn(Opcodes.RETURN);
 
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
-    }
+		mv.visitMaxs(0, 0);
+		mv.visitEnd();
+	}
 
-    protected abstract MethodCodeWriter createMethodCodeWriter(Method method, String id);
+	protected abstract MethodCodeWriter createMethodCodeWriter(Method method, String id);
 
-    public static String implementationClassName(Class<?> itf) {
-        return itf.getName() + ASM_IMPL_SUFFIX;
-    }
+	public static String implementationClassName(Class<?> itf) {
+		return itf.getName() + ASM_IMPL_SUFFIX;
+	}
+
+	public Class<?> getRepositoryInterface() {
+		return repositoryInterface;
+	}
+
+
+	public Class<?> getDomainType() {
+		return domainType;
+	}
 }

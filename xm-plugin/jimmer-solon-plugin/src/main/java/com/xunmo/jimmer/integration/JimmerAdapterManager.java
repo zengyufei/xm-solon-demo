@@ -34,7 +34,7 @@ public class JimmerAdapterManager {
 			synchronized (bw.name().intern()) {
 				db = dbMap.get(bw.name());
 				if (db == null) {
-					db = buildJSqlClient(bw);
+					db = buildAdapter(bw);
 
 					dbMap.put(bw.name(), db);
 
@@ -61,7 +61,7 @@ public class JimmerAdapterManager {
 	/**
 	 * 构建适配器
 	 */
-	private static JimmerAdapter buildJSqlClient(BeanWrap bw) {
+	private static JimmerAdapter buildAdapter(BeanWrap bw) {
 		return adapterFactory.create(bw);
 	}
 

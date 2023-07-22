@@ -1,11 +1,11 @@
 package com.xunmo.jimmer.model;
 
+import com.xunmo.jimmer.page.Sort;
 import org.babyfish.jimmer.meta.ImmutableProp;
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.meta.TypedProp;
 import org.babyfish.jimmer.sql.ast.query.Order;
 import org.babyfish.jimmer.sql.ast.query.OrderMode;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;

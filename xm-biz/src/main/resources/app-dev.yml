@@ -35,3 +35,8 @@ xm:
     jdbcUrl: jdbc:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified&allowMultiQueries=true
     username: root
     password: "root"
+
+jimmer:
+  language: java
+  defaultBatchSize: 1000
+  dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect

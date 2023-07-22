@@ -1,12 +1,12 @@
 package com.xunmo.jimmer.repository.parser;
 
+import com.xunmo.jimmer.page.Page;
+import com.xunmo.jimmer.page.Pageable;
+import com.xunmo.jimmer.page.Sort;
 import kotlin.reflect.KClass;
 import org.babyfish.jimmer.impl.util.Classes;
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.sql.fetcher.Fetcher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

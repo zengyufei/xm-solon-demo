@@ -7,12 +7,12 @@ import java.lang.reflect.Method;
 
 public class JavaClassCodeWriter extends ClassCodeWriter {
 
-    public JavaClassCodeWriter(RepositoryInformation metadata) {
-        super(metadata, JSqlClient.class, JRepositoryImpl.class);
-    }
+	public JavaClassCodeWriter(Class<?> repositoryInterface, Class<?> domainType) {
+		super(repositoryInterface, domainType, JSqlClient.class, JRepositoryImpl.class);
+	}
 
-    @Override
-    protected MethodCodeWriter createMethodCodeWriter(Method method, String id) {
-        return new JavaMethodCodeWriter(this, method, id);
-    }
+	@Override
+	protected MethodCodeWriter createMethodCodeWriter(Method method, String id) {
+		return new JavaMethodCodeWriter(this, method, id);
+	}
 }

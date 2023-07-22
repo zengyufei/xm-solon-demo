@@ -76,21 +76,22 @@ public class XPluginImpl implements Plugin {
 
 
 	private void create0(Class<?> clz, BeanWrap dsBw) {
-		Object raw = JimmerAdapterManager.get(dsBw);
-		dsBw.context().wrapAndPut(clz, raw);
+		JimmerAdapter raw = JimmerAdapterManager.get(dsBw);
+		dsBw.context().wrapAndPut(clz, raw.getRepository(clz));
 	}
 
 	private void inject0(VarHolder varH, BeanWrap dsBw) {
 		JimmerAdapter jimmerAdapter = JimmerAdapterManager.get(dsBw);
 
-		if (JSqlClient.class.isAssignableFrom(varH.getType())) {
+		final Class<?> varHolderType = varH.getType();
+		if (JSqlClient.class.isAssignableFrom(varHolderType)) {
 			final JSqlClient sqlClient = jimmerAdapter.sqlClient();
 			if (sqlClient != null) {
 				varH.setValue(sqlClient);
 			}
 		}
-		if (Repository.class.isAssignableFrom(varH.getType())) {
-
+		if (Repository.class.isAssignableFrom(varHolderType)) {
+			varH.setValue(jimmerAdapter.getRepository(varHolderType));
 		}
 	}
 }

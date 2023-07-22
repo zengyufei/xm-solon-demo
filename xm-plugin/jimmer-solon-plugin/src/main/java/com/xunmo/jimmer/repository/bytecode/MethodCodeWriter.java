@@ -1,7 +1,6 @@
 package com.xunmo.jimmer.repository.bytecode;
 
-import com.xunmo.jimmer.repository.parser.PropPredicate;
-import com.xunmo.jimmer.repository.parser.QueryMethod;
+import com.xunmo.jimmer.repository.parser.*;
 import org.babyfish.jimmer.impl.asm.MethodVisitor;
 import org.babyfish.jimmer.impl.asm.Opcodes;
 import org.babyfish.jimmer.impl.asm.Type;
@@ -35,12 +34,12 @@ public abstract class MethodCodeWriter implements Constants {
         if (method.isDefault()) {
             return;
         }
-        QueryMethod queryMethod = QueryMethod.of(
-                parent.ctx,
-                ImmutableType.get(parent.metadata.getDomainType()),
-                method
-        );
-        List<Integer> slots = new ArrayList<>();
+		QueryMethod queryMethod = QueryMethod.of(
+				parent.ctx,
+				ImmutableType.get(parent.getDomainType()),
+				method
+		);
+		List<Integer> slots = new ArrayList<>();
         int slot = 0;
         for (Class<?> type : method.getParameterTypes()) {
             slots.add(++slot);
@@ -63,26 +62,26 @@ public abstract class MethodCodeWriter implements Constants {
 
     private void writeCode(QueryMethod queryMethod, List<Integer> slots) {
 
-        visitLoadJSqlClient();
+		visitLoadJSqlClient();
 
-        mv.visitLdcInsn(Type.getType(parent.metadata.getDomainType()));
-        mv.visitMethodInsn(
-                Opcodes.INVOKESTATIC,
-                IMMUTABLE_TYPE_INTERNAL_NAME,
-                "get",
-                "(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR,
-                true
-        );
+		mv.visitLdcInsn(Type.getType(parent.getDomainType()));
+		mv.visitMethodInsn(
+				Opcodes.INVOKESTATIC,
+				IMMUTABLE_TYPE_INTERNAL_NAME,
+				"get",
+				"(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR,
+				true
+		);
 
-        mv.visitFieldInsn(
-                Opcodes.GETSTATIC,
-                parent.getImplInternalName(),
-                queryMethodFieldName(),
-                QUERY_METHOD_DESCRIPTOR
-        );
+		mv.visitFieldInsn(
+				Opcodes.GETSTATIC,
+				parent.getImplInternalName(),
+				queryMethodFieldName(),
+				QUERY_METHOD_DESCRIPTOR
+		);
 
-        if (queryMethod.getPageableParamIndex() != -1) {
-            mv.visitVarInsn(Opcodes.ALOAD, slots.get(queryMethod.getPageableParamIndex()));
+		if (queryMethod.getPageableParamIndex() != -1) {
+			mv.visitVarInsn(Opcodes.ALOAD, slots.get(queryMethod.getPageableParamIndex()));
         } else {
             mv.visitInsn(Opcodes.ACONST_NULL);
         }

@@ -1,8 +1,12 @@
 package com.xunmo.jimmer.integration;
 
 import com.xunmo.jimmer.JimmerAdapter;
+import com.xunmo.jimmer.cfg.JimmerProperties;
+import com.xunmo.jimmer.repository.JRepository;
+import com.xunmo.jimmer.repository.support.JimmerRepositoryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.babyfish.jimmer.sql.dialect.Dialect;
 import org.babyfish.jimmer.sql.runtime.ConnectionManager;
 import org.babyfish.jimmer.sql.runtime.DefaultExecutor;
 import org.babyfish.jimmer.sql.runtime.Executor;
@@ -10,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import org.noear.solon.Solon;
 import org.noear.solon.core.BeanWrap;
 import org.noear.solon.core.Props;
+import org.noear.solon.core.util.GenericUtil;
 import org.noear.solon.data.tran.TranUtils;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -31,6 +35,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 	protected final BeanWrap dsWrap;
 	protected final Props dsProps;
 	protected final JSqlClient jSqlClient;
+	protected final JimmerRepositoryFactory jimmerRepositoryFactory;
 
 	/**
 	 * 构建Sql工厂适配器，使用默认的 typeAliases 和 mappers 配置
@@ -50,6 +55,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 			this.dsProps = dsProps;
 		}
 		jSqlClient = initSqlClient();
+		jimmerRepositoryFactory = new JimmerRepositoryFactory(jSqlClient);
 	}
 
 	protected DataSource getDataSource() {
@@ -63,7 +69,19 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 	}
 
 	private JSqlClient initSqlClient() {
-		return JSqlClient.newBuilder()
+		final JimmerProperties properties = Solon.cfg().getBean("jimmer", JimmerProperties.class);
+		final Dialect dialect = properties.getDialect();
+		final JSqlClient.Builder builder = JSqlClient.newBuilder();
+		builder.setDialect(dialect);
+		builder.setTriggerType(properties.getTriggerType());
+		builder.setDefaultEnumStrategy(properties.getDefaultEnumStrategy());
+		builder.setDefaultBatchSize(properties.getDefaultBatchSize());
+		builder.setDefaultListBatchSize(properties.getDefaultListBatchSize());
+		builder.setOffsetOptimizingThreshold(properties.getOffsetOptimizingThreshold());
+		builder.setForeignKeyEnabledByDefault(properties.isForeignKeyEnabledByDefault());
+		builder.setExecutorContextPrefixes(properties.getExecutorContextPrefixes());
+
+		return builder
 				.setConnectionManager(new ConnectionManager() {
 					@Override
 					public <R> R execute(Function<Connection, R> block) {
@@ -131,10 +149,16 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 			synchronized (repositoryClz) {
 				repository = mapperCached.get(repositoryClz);
 				if (repository == null) {
-					repository = Proxy.newProxyInstance(
-							repositoryClz.getClassLoader(),
-							new Class[]{repositoryClz},
-							(o, method, objects) -> method.invoke(o, objects));
+					Class<?>[] typeArguments = GenericUtil.resolveTypeArguments(repositoryClz, JRepository.class);
+					if (typeArguments == null) {
+						throw new IllegalArgumentException(
+								"The class \"" + this.getClass() + "\" " +
+										"does not explicitly specify the type arguments of \"" +
+										JRepository.class.getName() +
+										"\" so that the entityType must be specified"
+						);
+					}
+					repository = jimmerRepositoryFactory.getTargetRepository(repositoryClz, typeArguments[0]);
 					mapperCached.put(repositoryClz, repository);
 				}
 			}

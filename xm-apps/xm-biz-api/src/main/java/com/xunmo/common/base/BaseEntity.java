@@ -17,9 +17,11 @@ public interface BaseEntity {
 	 * 创建人ID
 	 * @return {@link String}
 	 */
+	@Nullable
 	@IdView
 	String createId();
 
+	@Nullable
 	@ManyToOne
 	@JoinColumn(name = Columns.createId)
 	User create();
