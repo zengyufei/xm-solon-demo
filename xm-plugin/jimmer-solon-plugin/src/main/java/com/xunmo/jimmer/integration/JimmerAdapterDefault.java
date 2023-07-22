@@ -1,6 +1,7 @@
 package com.xunmo.jimmer.integration;
 
 import com.xunmo.jimmer.JimmerAdapter;
+import com.xunmo.jimmer.Repository;
 import com.xunmo.jimmer.cfg.JimmerProperties;
 import com.xunmo.jimmer.repository.JRepository;
 import com.xunmo.jimmer.repository.support.JimmerRepositoryFactory;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.noear.solon.Solon;
 import org.noear.solon.core.BeanWrap;
 import org.noear.solon.core.Props;
+import org.noear.solon.core.VarHolder;
 import org.noear.solon.core.util.GenericUtil;
 import org.noear.solon.data.tran.TranUtils;
 
@@ -165,5 +167,19 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		}
 
 		return (T) repository;
+	}
+
+	@Override
+	public void injectTo(VarHolder varH) {
+		final Class<?> varHolderType = varH.getType();
+		if (JSqlClient.class.isAssignableFrom(varHolderType)) {
+			final JSqlClient sqlClient = this.sqlClient();
+			if (sqlClient != null) {
+				varH.setValue(sqlClient);
+			}
+		}
+		if (Repository.class.isAssignableFrom(varHolderType)) {
+			varH.setValue(this.getRepository(varHolderType));
+		}
 	}
 }

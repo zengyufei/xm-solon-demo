@@ -2,11 +2,9 @@ package com.xunmo.jimmer.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.jimmer.JimmerAdapter;
-import com.xunmo.jimmer.Repository;
 import com.xunmo.jimmer.annotation.Db;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
-import org.babyfish.jimmer.sql.JSqlClient;
 import org.noear.solon.Utils;
 import org.noear.solon.core.AopContext;
 import org.noear.solon.core.BeanWrap;
@@ -83,15 +81,8 @@ public class XPluginImpl implements Plugin {
 	private void inject0(VarHolder varH, BeanWrap dsBw) {
 		JimmerAdapter jimmerAdapter = JimmerAdapterManager.get(dsBw);
 
-		final Class<?> varHolderType = varH.getType();
-		if (JSqlClient.class.isAssignableFrom(varHolderType)) {
-			final JSqlClient sqlClient = jimmerAdapter.sqlClient();
-			if (sqlClient != null) {
-				varH.setValue(sqlClient);
-			}
-		}
-		if (Repository.class.isAssignableFrom(varHolderType)) {
-			varH.setValue(jimmerAdapter.getRepository(varHolderType));
+		if (jimmerAdapter != null) {
+			jimmerAdapter.injectTo(varH);
 		}
 	}
 }

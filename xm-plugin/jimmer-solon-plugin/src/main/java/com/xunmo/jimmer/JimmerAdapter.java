@@ -1,6 +1,7 @@
 package com.xunmo.jimmer;
 
 import org.babyfish.jimmer.sql.JSqlClient;
+import org.noear.solon.core.VarHolder;
 
 /**
  * 适配器
@@ -20,4 +21,9 @@ public interface JimmerAdapter {
 	 * 获取印映代理
 	 */
 	<T> T getRepository(Class<T> repositoryClz);
+
+	/**
+	 * 注入到
+	 */
+	void injectTo(VarHolder varH);
 }
