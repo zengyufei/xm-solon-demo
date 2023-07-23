@@ -26,7 +26,6 @@ public abstract class JacksonRenderFactoryBase implements JsonRenderFactory {
 		}
 	}
 
-
 	public <T> void addEncoder(Class<T> clz, JsonSerializer<T> encoder) {
 		if (module == null) {
 			module = new SimpleModule();
@@ -44,18 +43,24 @@ public abstract class JacksonRenderFactoryBase implements JsonRenderFactory {
 
 				if (val == null) {
 					out.writeNull();
-				} else if (val instanceof String) {
+				}
+				else if (val instanceof String) {
 					out.writeString((String) val);
-				} else if (val instanceof Number) {
+				}
+				else if (val instanceof Number) {
 					if (val instanceof Integer || val instanceof Long) {
 						out.writeNumber(((Number) val).longValue());
-					} else {
+					}
+					else {
 						out.writeNumber(((Number) val).doubleValue());
 					}
-				} else {
-					throw new IllegalArgumentException("The result type of the converter is not supported: " + val.getClass().getName());
+				}
+				else {
+					throw new IllegalArgumentException(
+							"The result type of the converter is not supported: " + val.getClass().getName());
 				}
 			}
 		});
 	}
+
 }

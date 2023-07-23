@@ -23,6 +23,7 @@ import java.util.List;
  * @since 1.2
  */
 public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
+
 	private static final String label = "/json";
 
 	private ObjectMapper mapper_type;
@@ -32,9 +33,9 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 		mapper_type.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		mapper_type.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper_type.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-//        mapper_type.activateDefaultTypingAsProperty(
-//                mapper_type.getPolymorphicTypeValidator(),
-//                ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
+		// mapper_type.activateDefaultTypingAsProperty(
+		// mapper_type.getPolymorphicTypeValidator(),
+		// ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
 		// 注册 JavaTimeModule ，以适配 java.time 下的时间类型
 		mapper_type.registerModule(new JavaTimeModule());
 		// 允许使用未带引号的字段名
@@ -55,7 +56,8 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 	public boolean matched(Context ctx, String ct) {
 		if (ct != null && ct.contains(label)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -80,7 +82,8 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 				}
 			}
 			return jsonNode;
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -91,7 +94,7 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 	@Override
 	protected Object changeValue(Context ctx, ParamWrap p, int pi, Class<?> pt, Object bodyObj) throws Exception {
 		if (p.requireBody() == false && ctx.paramMap().containsKey(p.getName())) {
-			//有可能是path、queryString变量
+			// 有可能是path、queryString变量
 			return super.changeValue(ctx, p, pi, pt, bodyObj);
 		}
 
@@ -104,7 +107,7 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 		if (tmp.isObject()) {
 			if (p.requireBody() == false) {
 				//
-				//如果没有 body 要求；尝试找按属性找
+				// 如果没有 body 要求；尝试找按属性找
 				//
 				if (tmp.has(p.getName())) {
 					JsonNode m1 = tmp.get(p.getName());
@@ -113,10 +116,11 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 				}
 			}
 
-			//尝试 body 转换
+			// 尝试 body 转换
 			if (pt.isPrimitive() || pt.getTypeName().startsWith("java.lang.")) {
 				return super.changeValue(ctx, p, pi, pt, bodyObj);
-			} else {
+			}
+			else {
 				if (List.class.isAssignableFrom(p.getType())) {
 					return null;
 				}
@@ -125,13 +129,13 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 					return null;
 				}
 
-				//支持泛型的转换 如：Map<T>
+				// 支持泛型的转换 如：Map<T>
 				return mapper_type.readValue(mapper_type.treeAsTokens(tmp), new TypeReferenceImp<>(p));
 			}
 		}
 
 		if (tmp.isArray()) {
-			//如果参数是非集合类型
+			// 如果参数是非集合类型
 			if (!Collection.class.isAssignableFrom(pt)) {
 				return null;
 			}
@@ -139,11 +143,13 @@ public class JacksonActionExecutor extends ActionExecuteHandlerDefault {
 			return mapper_type.readValue(mapper_type.treeAsTokens(tmp), new TypeReferenceImp<>(p));
 		}
 
-		//return tmp.val().getRaw();
+		// return tmp.val().getRaw();
 		if (tmp.isValueNode()) {
 			return mapper_type.readValue(mapper_type.treeAsTokens(tmp), new TypeReferenceImp<>(p));
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
+
 }

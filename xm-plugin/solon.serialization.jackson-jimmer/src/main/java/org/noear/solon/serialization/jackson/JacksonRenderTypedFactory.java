@@ -17,6 +17,7 @@ import org.noear.solon.serialization.StringSerializerRender;
  * @since 1.5
  */
 public class JacksonRenderTypedFactory extends JacksonRenderFactoryBase {
+
 	ObjectMapper config;
 
 	public JacksonRenderTypedFactory() {
@@ -24,8 +25,7 @@ public class JacksonRenderTypedFactory extends JacksonRenderFactoryBase {
 		config.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		config.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		config.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-		config.activateDefaultTypingAsProperty(
-				config.getPolymorphicTypeValidator(),
+		config.activateDefaultTypingAsProperty(config.getPolymorphicTypeValidator(),
 				ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
 		config.registerModule(new JavaTimeModule());
 		// 允许使用未带引号的字段名
@@ -50,4 +50,5 @@ public class JacksonRenderTypedFactory extends JacksonRenderFactoryBase {
 	public ObjectMapper config() {
 		return config;
 	}
+
 }

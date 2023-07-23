@@ -25,7 +25,8 @@ public class ArgsConsoleHandlerDefault implements ArgsConsoleHandler {
 			final String reqMethod = ctx.method();
 			if (StrUtil.equalsIgnoreCase(reqMethod, "post")) {
 				log.info("Method: {} Args: {}  Body: {}", method.getName(), ctx.paramMap(), ctx.body());
-			} else {
+			}
+			else {
 				log.info("Method: {} Args: {}", method.getName(), ctx.paramMap());
 			}
 

@@ -34,6 +34,7 @@ public class MqConsumerService implements EventListener<AppLoadEndEvent> {
 
 	@Inject
 	ObjectMapper objectMapper;
+
 	@Db
 	private JSqlClient sqlClient;
 
@@ -43,10 +44,10 @@ public class MqConsumerService implements EventListener<AppLoadEndEvent> {
 			final String group = cfg.get("solon.app.group");
 			final String appName = cfg.get("solon.app.name");
 			mqConfig = MqConfig.of()
-					.title("消费者")
-					.changeName(StrUtil.join("_", group, appName))
-					.queueName(MqSendService.BUSINESS_NAME)
-					.build();
+				.title("消费者")
+				.changeName(StrUtil.join("_", group, appName))
+				.queueName(MqSendService.BUSINESS_NAME)
+				.build();
 			isInit.compareAndSet(false, true);
 		}
 	}
@@ -60,7 +61,8 @@ public class MqConsumerService implements EventListener<AppLoadEndEvent> {
 					final ExceptionRecordInput exceptionRecordInput;
 					try {
 						exceptionRecordInput = objectMapper.readValue(content, ExceptionRecordInput.class).toUpdate();
-					} catch (JsonProcessingException e) {
+					}
+					catch (JsonProcessingException e) {
 						throw new RuntimeException(e);
 					}
 					log.info("{} 消息队列-收到-队列: {} {} {}", MqSendService.BUSINESS_NAME, exceptionRecordInput.getMethod(),
@@ -69,13 +71,15 @@ public class MqConsumerService implements EventListener<AppLoadEndEvent> {
 						final SimpleSaveResult<ExceptionRecord> saveResult = sqlClient.save(exceptionRecordInput,
 								SaveMode.INSERT_ONLY);
 						log.info("保存异常记录结果：{}", saveResult.getTotalAffectedRowCount());
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						log.info("保存异常记录异常：{}", ExceptionUtil.stacktraceToString(e));
 						return ConsumeAction.REJECT;
 					}
 					return ConsumeAction.ACCEPT;
 				});
-			} catch (IOException | TimeoutException e) {
+			}
+			catch (IOException | TimeoutException e) {
 				throw new RuntimeException(e);
 			}
 		});

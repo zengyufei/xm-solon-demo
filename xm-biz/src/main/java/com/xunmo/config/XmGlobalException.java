@@ -96,7 +96,6 @@ public class XmGlobalException {
 
 	/**
 	 * 打印请求信息
-	 *
 	 * @param ctx
 	 * @param throwable
 	 */
@@ -106,7 +105,6 @@ public class XmGlobalException {
 
 	/**
 	 * 打印请求信息
-	 *
 	 * @param ctx
 	 * @param throwable
 	 */
@@ -121,7 +119,8 @@ public class XmGlobalException {
 			params = ctx.paramMap();
 			ip = ctx.ip();
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.warn("打印请求信息时异常", e);
 			uri = "";
 			method = "";
@@ -137,17 +136,18 @@ public class XmGlobalException {
 				String stackTrace = ExceptionUtil.stacktraceToString(throwable);
 				String userId = "admin";
 				ExceptionRecordInput record = ExceptionRecordInput.of()
-						.uri(uri)
-						.method(method)
-						.params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
-						.ip(ip)
-						.userId(userId)
-						.happenTime(LocalDateTime.now())
-						.stackTrace(stackTrace)
-						.build();
+					.uri(uri)
+					.method(method)
+					.params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
+					.ip(ip)
+					.userId(userId)
+					.happenTime(LocalDateTime.now())
+					.stackTrace(stackTrace)
+					.build();
 				mqSendService.send(record);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 
 		}
 
@@ -155,7 +155,6 @@ public class XmGlobalException {
 
 	/**
 	 * 获取异常堆栈消息
-	 *
 	 * @param throwable 异常
 	 * @return 堆栈消息
 	 */
@@ -166,9 +165,11 @@ public class XmGlobalException {
 		try {
 			throwable.printStackTrace(pw);
 			return sw.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return throwable.getMessage();
-		} finally {
+		}
+		finally {
 			pw.close();
 		}
 	}

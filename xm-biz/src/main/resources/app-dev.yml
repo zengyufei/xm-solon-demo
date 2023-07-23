@@ -37,6 +37,7 @@ xm:
     password: "root"
 
 jimmer:
-  language: java
-  defaultBatchSize: 1000
-  dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect
+  db:
+    language: java
+    defaultBatchSize: 1000
+    dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect

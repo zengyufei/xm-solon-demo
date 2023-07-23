@@ -36,10 +36,12 @@ public class RedissonCodec extends BaseCodec {
 				ByteBufOutputStream os = new ByteBufOutputStream(out);
 				mapObjectMapper.writeValue((OutputStream) os, in);
 				return os.buffer();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				out.release();
 				throw e;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				out.release();
 				throw new IOException(e);
 			}
@@ -60,7 +62,8 @@ public class RedissonCodec extends BaseCodec {
 	public RedissonCodec(ObjectMapper mapObjectMapper, boolean copy) {
 		if (copy) {
 			this.mapObjectMapper = mapObjectMapper.copy();
-		} else {
+		}
+		else {
 			this.mapObjectMapper = mapObjectMapper;
 		}
 	}
@@ -83,4 +86,5 @@ public class RedissonCodec extends BaseCodec {
 
 		return super.getClassLoader();
 	}
+
 }

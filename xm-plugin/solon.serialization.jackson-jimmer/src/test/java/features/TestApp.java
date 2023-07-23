@@ -22,46 +22,47 @@ import java.util.Map;
  */
 @Controller
 public class TestApp {
-    public static void main(String[] args) {
-        Solon.start(TestApp.class, args, app -> {
-            app.onEvent(JacksonRenderFactory.class, factory->initMvcJsonCustom(factory));
-        });
-    }
 
-    /**
-     * 初始化json定制（需要在插件运行前定制）
-     */
-    private static void initMvcJsonCustom(JacksonRenderFactory factory) {
-        //通过转换器，做简单类型的定制
-        factory.addConvertor(Date.class, s -> s.getTime());
+	public static void main(String[] args) {
+		Solon.start(TestApp.class, args, app -> {
+			app.onEvent(JacksonRenderFactory.class, factory -> initMvcJsonCustom(factory));
+		});
+	}
 
-        factory.addConvertor(LocalDate.class, s -> s.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+	/**
+	 * 初始化json定制（需要在插件运行前定制）
+	 */
+	private static void initMvcJsonCustom(JacksonRenderFactory factory) {
+		// 通过转换器，做简单类型的定制
+		factory.addConvertor(Date.class, s -> s.getTime());
 
-        factory.addConvertor(LocalDateTime.class, s -> s.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+		factory.addConvertor(LocalDate.class, s -> s.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-        factory.addEncoder(Date.class, new JsonSerializer<Date>() {
-                    @Override
-                    public void serialize(Date date, JsonGenerator out, SerializerProvider sp) throws IOException {
-                        out.writeNumber(date.getTime());
-                    }
-                });
+		factory.addConvertor(LocalDateTime.class, s -> s.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
+		factory.addEncoder(Date.class, new JsonSerializer<Date>() {
+			@Override
+			public void serialize(Date date, JsonGenerator out, SerializerProvider sp) throws IOException {
+				out.writeNumber(date.getTime());
+			}
+		});
 
-        //factory.config().addHandler();
-    }
+		// factory.config().addHandler();
+	}
 
-    @Mapping("/")
-    public Object home() {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("time1", LocalDateTime.now());
-        data.put("time2", LocalDate.now());
-        data.put("time3", new Date());
+	@Mapping("/")
+	public Object home() {
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("time1", LocalDateTime.now());
+		data.put("time2", LocalDate.now());
+		data.put("time3", new Date());
 
-        return data;
-    }
+		return data;
+	}
 
-    @Mapping("/hello")
-    public Object hello(String name) {
-        return name;
-    }
+	@Mapping("/hello")
+	public Object hello(String name) {
+		return name;
+	}
+
 }

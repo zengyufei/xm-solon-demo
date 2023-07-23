@@ -11,25 +11,23 @@ import java.util.stream.Collectors;
 
 public class Context {
 
-    private static final Comparator<ImmutableProp> NAME_LEN_DESC_COMPARATOR =
-            Comparator
-                    .comparing((ImmutableProp prop) -> prop.getName().length())
-                    .reversed();
+	private static final Comparator<ImmutableProp> NAME_LEN_DESC_COMPARATOR = Comparator
+		.comparing((ImmutableProp prop) -> prop.getName().length())
+		.reversed();
 
-    private Map<ImmutableType, List<ImmutableProp>> orderedPropMap =
-            new HashMap<>();
+	private Map<ImmutableType, List<ImmutableProp>> orderedPropMap = new HashMap<>();
 
-    public List<ImmutableProp> getOrderedProps(ImmutableType type) {
-        return orderedPropMap.computeIfAbsent(type, this::createOrderedProps);
-    }
+	public List<ImmutableProp> getOrderedProps(ImmutableType type) {
+		return orderedPropMap.computeIfAbsent(type, this::createOrderedProps);
+	}
 
-    private List<ImmutableProp> createOrderedProps(ImmutableType type) {
-        return type
-                .getProps()
-                .values()
-                .stream()
-                .filter(it -> !it.isScalarList())
-                .sorted(NAME_LEN_DESC_COMPARATOR)
-                .collect(Collectors.toList());
-    }
+	private List<ImmutableProp> createOrderedProps(ImmutableType type) {
+		return type.getProps()
+			.values()
+			.stream()
+			.filter(it -> !it.isScalarList())
+			.sorted(NAME_LEN_DESC_COMPARATOR)
+			.collect(Collectors.toList());
+	}
+
 }

@@ -34,9 +34,13 @@ import java.util.function.Function;
  */
 @Slf4j
 public class JimmerAdapterDefault implements JimmerAdapter {
+
 	protected final BeanWrap dsWrap;
+
 	protected final Props dsProps;
+
 	protected final JSqlClient jSqlClient;
+
 	protected final JimmerRepositoryFactory jimmerRepositoryFactory;
 
 	/**
@@ -56,7 +60,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		} else {
 			this.dsProps = dsProps;
 		}
-		jSqlClient = initSqlClient();
+		jSqlClient = initSqlClient(this.dsProps.getBean(JimmerProperties.class));
 		jimmerRepositoryFactory = new JimmerRepositoryFactory(jSqlClient);
 	}
 
@@ -64,14 +68,12 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		return dsWrap.raw();
 	}
 
-
 	@Override
 	public JSqlClient sqlClient() {
 		return jSqlClient;
 	}
 
-	private JSqlClient initSqlClient() {
-		final JimmerProperties properties = Solon.cfg().getBean("jimmer", JimmerProperties.class);
+	private JSqlClient initSqlClient(JimmerProperties properties) {
 		final Dialect dialect = properties.getDialect();
 		final JSqlClient.Builder builder = JSqlClient.newBuilder();
 		builder.setDialect(dialect);
@@ -83,63 +85,56 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		builder.setForeignKeyEnabledByDefault(properties.isForeignKeyEnabledByDefault());
 		builder.setExecutorContextPrefixes(properties.getExecutorContextPrefixes());
 
-		return builder
-				.setConnectionManager(new ConnectionManager() {
-					@Override
-					public <R> R execute(Function<Connection, R> block) {
-						Connection connection = null;
-						R var3;
+		return builder.setConnectionManager(new ConnectionManager() {
+			@Override
+			public <R> R execute(Function<Connection, R> block) {
+				Connection connection = null;
+				R var3;
+				try {
+					connection = TranUtils.getConnection(getDataSource());
+					connection.setAutoCommit(false);
+					var3 = block.apply(connection);
+					if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
+						connection.commit();
+					}
+				} catch (Throwable var6) {
+					if (connection != null) {
 						try {
-							connection = TranUtils.getConnection(getDataSource());
-							connection.setAutoCommit(false);
-							var3 = block.apply(connection);
 							if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
-								connection.commit();
+								connection.rollback();
 							}
-						} catch (Throwable var6) {
-							if (connection != null) {
-								try {
-									if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
-										connection.rollback();
-									}
-								} catch (SQLException e) {
-									throw new RuntimeException(e);
-								}
-							}
-							throw new RuntimeException(var6);
-						} finally {
-							if (connection != null && !TranUtils.inTrans()) {
-								try {
-									connection.close();
-								} catch (SQLException e) {
-									throw new RuntimeException(e);
-								}
-							}
+						} catch (SQLException e) {
+							throw new RuntimeException(e);
 						}
-						return var3;
 					}
-				})
-				.setExecutor(new Executor() {
+					throw new RuntimeException(var6);
+				} finally {
+					if (connection != null && !TranUtils.inTrans()) {
+						try {
+							connection.close();
+						} catch (SQLException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+				return var3;
+			}
+		}).setExecutor(new Executor() {
 
-					@Override
-					public <R> R execute(@NotNull Args<R> args) {
-						long millis = System.currentTimeMillis();
-						if (!args.sql.contains("t_exception_record")) {
-							// Log SQL and variables.
-							log.info("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables,
-									args.purpose);
-						}
-						// Call DefaultExecutor
-						R result = DefaultExecutor.INSTANCE.execute(args);
-						millis = System.currentTimeMillis() - millis;
-						return result;
-					}
-				})
-				.setDefaultBatchSize(256)
-				.setDefaultListBatchSize(32)
-				.build();
+			@Override
+			public <R> R execute(@NotNull Args<R> args) {
+				long millis = System.currentTimeMillis();
+				if (!args.sql.contains("t_exception_record")) {
+					// Log SQL and variables.
+					log.info("Execute sql : {}, variables: {}, purpose: {}", args.sql, args.variables, args.purpose);
+				}
+				// Call DefaultExecutor
+				R result = DefaultExecutor.INSTANCE.execute(args);
+				millis = System.currentTimeMillis() - millis;
+				return result;
+			}
+		}).build();
 	}
-
 
 	Map<Class<?>, Object> mapperCached = new HashMap<>();
 
@@ -153,12 +148,9 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 				if (repository == null) {
 					Class<?>[] typeArguments = GenericUtil.resolveTypeArguments(repositoryClz, JRepository.class);
 					if (typeArguments == null) {
-						throw new IllegalArgumentException(
-								"The class \"" + this.getClass() + "\" " +
-										"does not explicitly specify the type arguments of \"" +
-										JRepository.class.getName() +
-										"\" so that the entityType must be specified"
-						);
+						throw new IllegalArgumentException("The class \"" + this.getClass() + "\" "
+								+ "does not explicitly specify the type arguments of \"" + JRepository.class.getName()
+								+ "\" so that the entityType must be specified");
 					}
 					repository = jimmerRepositoryFactory.getTargetRepository(repositoryClz, typeArguments[0]);
 					mapperCached.put(repositoryClz, repository);
@@ -170,7 +162,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 	}
 
 	@Override
-	public void injectTo(VarHolder varH) {
+	public void injectTo(VarHolder varH, BeanWrap dsBw) {
 		final Class<?> varHolderType = varH.getType();
 		if (JSqlClient.class.isAssignableFrom(varHolderType)) {
 			final JSqlClient sqlClient = this.sqlClient();
@@ -179,7 +171,11 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 			}
 		}
 		if (Repository.class.isAssignableFrom(varHolderType)) {
-			varH.setValue(this.getRepository(varHolderType));
+			final Object repository = this.getRepository(varHolderType);
+			varH.setValue(repository);
+			// 进入容器，用于 @Inject 注入
+			dsBw.context().wrapAndPut(varHolderType, repository);
 		}
 	}
+
 }

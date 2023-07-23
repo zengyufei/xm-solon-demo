@@ -24,24 +24,14 @@ public class JimmerRepositoryFactory {
 		boolean jRepository = JRepository.class.isAssignableFrom(repositoryInterface);
 		if (sqlClient instanceof JSqlClient) {
 			if (!jRepository) {
-				throw new IllegalStateException(
-						"The type of current sqlClient object is \"" +
-								JSqlClient.class.getName() +
-								"\", but repository interface \"" +
-								repositoryInterface.getName() +
-								"\" does not extend  \"" +
-								JRepository.class.getName() +
-								"\""
-				);
+				throw new IllegalStateException("The type of current sqlClient object is \""
+						+ JSqlClient.class.getName() + "\", but repository interface \"" + repositoryInterface.getName()
+						+ "\" does not extend  \"" + JRepository.class.getName() + "\"");
 			}
-		} else {
-			throw new IllegalStateException(
-					"Illegal repository interface \"" +
-							repositoryInterface.getName() +
-							"\", it is neither \"" +
-							JRepository.class.getName() +
-							"\""
-			);
+		}
+		else {
+			throw new IllegalStateException("Illegal repository interface \"" + repositoryInterface.getName()
+					+ "\", it is neither \"" + JRepository.class.getName() + "\"");
 		}
 		return getObject(repositoryInterface, domainType, jRepository);
 	}
@@ -50,12 +40,10 @@ public class JimmerRepositoryFactory {
 	private Object getObject(Class<?> repositoryInterface, Class<?> domainType, boolean jRepository) {
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName(
-					ClassCodeWriter.implementationClassName(repositoryInterface),
-					true,
-					repositoryInterface.getClassLoader()
-			);
-		} catch (ClassNotFoundException ex) {
+			clazz = Class.forName(ClassCodeWriter.implementationClassName(repositoryInterface), true,
+					repositoryInterface.getClassLoader());
+		}
+		catch (ClassNotFoundException ex) {
 			// Do nothing
 		}
 		if (clazz == null) {
@@ -65,9 +53,11 @@ public class JimmerRepositoryFactory {
 		}
 		try {
 			return clazz.getConstructor(jRepository ? JSqlClient.class : KSqlClient.class).newInstance(sqlClient);
-		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException ex) {
+		}
+		catch (InstantiationException | IllegalAccessException | NoSuchMethodException ex) {
 			throw new AssertionError("Internal bug", ex);
-		} catch (InvocationTargetException ex) {
+		}
+		catch (InvocationTargetException ex) {
 			Throwable targetException = ex.getTargetException();
 			if (targetException instanceof RuntimeException) {
 				throw (RuntimeException) targetException;

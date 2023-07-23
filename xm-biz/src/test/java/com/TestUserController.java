@@ -79,11 +79,11 @@ public class TestUserController extends HttpTester {
 	@Test
 	public void test_006_testRepository() throws Throwable {
 		HttpUtils httpUtils = path("/user/testRepository?size=10&page=1")
-				// .bodyJson("{\"orgName\": \"Organization 2\"}")
-				// .bodyJson("{\"roleName\": \"Role 10\"}")
-				.bodyJson("{\"permissionName\": \"Permission 103\"}")
-				// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
-				;
+			// .bodyJson("{\"orgName\": \"Organization 2\"}")
+			// .bodyJson("{\"roleName\": \"Role 10\"}")
+			.bodyJson("{\"permissionName\": \"Permission 103\"}")
+		// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
+		;
 		httpUtils.post();
 	}
 

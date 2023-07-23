@@ -22,16 +22,20 @@ public final class SolonConnectionManager implements ConnectionManager {
 		try {
 			con = TranUtils.getConnection(dataSource);
 			return block.apply(con);
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			throw new RuntimeException(e);
-		} finally {
+		}
+		finally {
 			if (con != null && !TranUtils.inTrans()) {
 				try {
 					con.close();
-				} catch (SQLException e) {
+				}
+				catch (SQLException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
 	}
+
 }

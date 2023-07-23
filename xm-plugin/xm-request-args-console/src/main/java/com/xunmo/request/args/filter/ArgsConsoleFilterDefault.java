@@ -26,10 +26,12 @@ public class ArgsConsoleFilterDefault implements ArgsConsoleFilter {
 			final String reqMethod = ctx.method();
 			if (StrUtil.equalsIgnoreCase(reqMethod, "post")) {
 				log.info("Method: {} Args: {}  Body: {}", method.getName(), ctx.paramMap(), ctx.body());
-			} else {
+			}
+			else {
 				log.info("Method: {} Args: {}", method.getName(), ctx.paramMap());
 			}
-		} else {
+		}
+		else {
 			// 处理这种写法
 			// Solon.app().get("/XXX", ctx -> {});
 		}

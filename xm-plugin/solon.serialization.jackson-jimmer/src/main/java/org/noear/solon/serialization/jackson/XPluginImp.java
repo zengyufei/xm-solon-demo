@@ -23,20 +23,17 @@ public class XPluginImp implements Plugin {
 	public void start(AopContext context) {
 		JsonProps jsonProps = JsonProps.create(context);
 
-
-		//::renderTypedFactory
+		// ::renderTypedFactory
 		JacksonRenderTypedFactory renderTypedFactory = new JacksonRenderTypedFactory();
 		applyProps(renderTypedFactory, jsonProps);
 		context.wrapAndPut(JacksonRenderTypedFactory.class, renderTypedFactory);
 		final ObjectMapper objectMapper = renderTypedFactory.config();
-		objectMapper.setDefaultTyping(null);
-		EventBus.push(objectMapper);
 
-		//::renderFactory
-		//绑定属性
+		// ::renderFactory
+		// 绑定属性
 		JacksonRenderFactory renderFactory = new JacksonRenderFactory(objectMapper);
 
-		//事件扩展
+		// 事件扩展
 		context.wrapAndPut(JacksonRenderFactory.class, renderFactory);
 		EventBus.push(renderFactory);
 
@@ -46,13 +43,14 @@ public class XPluginImp implements Plugin {
 			RenderManager.mapping("@type_json", render);
 		});
 
-		//支持 json 内容类型执行
+		// 支持 json 内容类型执行
 		JacksonActionExecutor actionExecutor = new JacksonActionExecutor(objectMapper);
 		context.wrapAndPut(JacksonActionExecutor.class, actionExecutor);
 		EventBus.push(actionExecutor);
 		context.wrapAndPut(ObjectMapper.class, objectMapper);
 
 		Solon.app().chainManager().addExecuteHandler(actionExecutor);
+		EventBus.push(objectMapper);
 	}
 
 	private void applyProps(JacksonRenderTypedFactory factory, JsonProps jsonProps) {
@@ -60,19 +58,11 @@ public class XPluginImp implements Plugin {
 
 		if (JsonPropsUtil.apply(factory, jsonProps)) {
 
-			writeNulls = jsonProps.nullAsWriteable ||
-					jsonProps.nullNumberAsZero ||
-					jsonProps.nullArrayAsEmpty ||
-					jsonProps.nullBoolAsFalse ||
-					jsonProps.nullStringAsEmpty;
+			writeNulls = jsonProps.nullAsWriteable || jsonProps.nullNumberAsZero || jsonProps.nullArrayAsEmpty
+					|| jsonProps.nullBoolAsFalse || jsonProps.nullStringAsEmpty;
 
 			if (writeNulls) {
-//                factory.config()
-//                        .getSerializerFactory()
-//                        .withSerializerModifier(new NullBeanSerializerModifierImpl(jsonProps));
-				factory.config()
-						.getSerializerProvider()
-						.setNullValueSerializer(new NullValueSerializer(jsonProps));
+				factory.config().getSerializerProvider().setNullValueSerializer(new NullValueSerializer(jsonProps));
 			}
 
 			if (jsonProps.enumAsName) {
@@ -84,23 +74,23 @@ public class XPluginImp implements Plugin {
 			factory.config().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		}
 
-		//启用 transient 关键字
+		// 启用 transient 关键字
 		factory.config().configure(PROPAGATE_TRANSIENT_MARKER, true);
-		//启用排序（即使用 LinkedHashMap）
+		// 启用排序（即使用 LinkedHashMap）
 		factory.config().configure(SORT_PROPERTIES_ALPHABETICALLY, true);
-		//是否识别不带引号的key
+		// 是否识别不带引号的key
 		factory.config().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		//是否识别单引号的key
+		// 是否识别单引号的key
 		factory.config().configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-		//浮点数默认类型（dubbod 转 BigDecimal）
+		// 浮点数默认类型（dubbod 转 BigDecimal）
 		factory.config().configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
 
-
-		//反序列化时候遇到不匹配的属性并不抛出异常
+		// 反序列化时候遇到不匹配的属性并不抛出异常
 		factory.config().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		//序列化时候遇到空对象不抛出异常
+		// 序列化时候遇到空对象不抛出异常
 		factory.config().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		//反序列化的时候如果是无效子类型,不抛出异常
+		// 反序列化的时候如果是无效子类型,不抛出异常
 		factory.config().configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
 	}
+
 }

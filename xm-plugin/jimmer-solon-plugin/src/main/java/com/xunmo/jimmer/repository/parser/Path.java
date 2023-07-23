@@ -9,37 +9,38 @@ import java.util.stream.Collectors;
 
 public class Path {
 
-    private final Source source;
+	private final Source source;
 
-    private final List<ImmutableProp> props;
+	private final List<ImmutableProp> props;
 
-    public static Path of(Context ctx, boolean allowCollection, Source source, ImmutableType type) {
-        return new PathParser(ctx, allowCollection).parse(source, type);
-    }
+	public static Path of(Context ctx, boolean allowCollection, Source source, ImmutableType type) {
+		return new PathParser(ctx, allowCollection).parse(source, type);
+	}
 
-    public Path(Source source, List<ImmutableProp> props) {
-        this.source = source;
-        this.props = props;
-    }
+	public Path(Source source, List<ImmutableProp> props) {
+		this.source = source;
+		this.props = props;
+	}
 
-    public Source getSource() {
-        return source;
-    }
+	public Source getSource() {
+		return source;
+	}
 
-    public List<ImmutableProp> getProps() {
-        return props;
-    }
+	public List<ImmutableProp> getProps() {
+		return props;
+	}
 
-    public boolean isScalar() {
-        return props.get(props.size() - 1).isScalar(TargetLevel.PERSISTENT);
-    }
+	public boolean isScalar() {
+		return props.get(props.size() - 1).isScalar(TargetLevel.PERSISTENT);
+	}
 
-    public Class<?> getType() {
-        return props.get(props.size() - 1).getElementClass();
-    }
+	public Class<?> getType() {
+		return props.get(props.size() - 1).getElementClass();
+	}
 
-    @Override
-    public String toString() {
-        return props.stream().map(ImmutableProp::getName).collect(Collectors.joining("."));
-    }
+	@Override
+	public String toString() {
+		return props.stream().map(ImmutableProp::getName).collect(Collectors.joining("."));
+	}
+
 }

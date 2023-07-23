@@ -13,21 +13,29 @@ import java.util.Map;
 @Getter
 @Setter
 public class UserDo implements Serializable {
-    String s0;
 
-    String s1 = "noear";
+	String s0;
 
-    Boolean b0;
-    boolean b1 = true;
+	String s1 = "noear";
 
-    Long n0;
-    Long n1 = 1L;
+	Boolean b0;
 
-    Double d0;
-    Double d1 = 1.0D;
+	boolean b1 = true;
 
-    Object obj0;
-    List list0;
-    Map map0;
-    Map map1;
+	Long n0;
+
+	Long n1 = 1L;
+
+	Double d0;
+
+	Double d1 = 1.0D;
+
+	Object obj0;
+
+	List list0;
+
+	Map map0;
+
+	Map map1;
+
 }

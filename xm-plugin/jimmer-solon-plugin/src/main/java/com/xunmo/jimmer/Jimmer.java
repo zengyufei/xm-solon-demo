@@ -9,10 +9,12 @@ import com.xunmo.jimmer.integration.JimmerAdapterManager;
  * @since 1.10
  */
 public interface Jimmer {
+
 	/**
 	 * 获取源
 	 */
 	static JimmerAdapter use(String name) {
 		return JimmerAdapterManager.getOnly(name);
 	}
+
 }

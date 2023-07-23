@@ -36,4 +36,6 @@ public interface XmPackageNameConstants {
 
 	String XM_CORE_WEB = "xm-core-web";
 
+	String XM_JIMMER = "jimmer-solon-plugin";
+
 }

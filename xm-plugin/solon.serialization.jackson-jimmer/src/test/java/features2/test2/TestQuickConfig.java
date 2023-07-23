@@ -19,28 +19,31 @@ import java.util.Map;
 @TestPropertySource("classpath:features2_test2.yml")
 @RunWith(SolonJUnit4ClassRunner.class)
 public class TestQuickConfig {
-    @Inject
-    JacksonRenderFactory renderFactory;
 
-    @Test
-    public void hello2() throws Throwable{
-        UserDo userDo = new UserDo();
+	@Inject
+	JacksonRenderFactory renderFactory;
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("time", new Date(1673861993477L));
-        data.put("long", 12L);
-        data.put("int", 12);
-        data.put("null", null);
+	@Test
+	public void hello2() throws Throwable {
+		UserDo userDo = new UserDo();
 
-        userDo.setMap1(data);
+		Map<String, Object> data = new HashMap<>();
+		data.put("time", new Date(1673861993477L));
+		data.put("long", 12L);
+		data.put("int", 12);
+		data.put("null", null);
 
-        ContextEmpty ctx = new ContextEmpty();
-        renderFactory.create().render(userDo, ctx);
-        String output = ctx.attr("output");
+		userDo.setMap1(data);
 
-        System.out.println(output);
+		ContextEmpty ctx = new ContextEmpty();
+		renderFactory.create().render(userDo, ctx);
+		String output = ctx.attr("output");
 
-        //完美
-        assert "{\"s1\":\"noear\",\"b1\":true,\"n1\":\"1\",\"d1\":1.0,\"map1\":{\"time\":\"2023-01-16 17:39:53\",\"long\":\"12\",\"int\":12}}".equals(output);
-    }
+		System.out.println(output);
+
+		// 完美
+		assert "{\"s1\":\"noear\",\"b1\":true,\"n1\":\"1\",\"d1\":1.0,\"map1\":{\"time\":\"2023-01-16 17:39:53\",\"long\":\"12\",\"int\":12}}"
+			.equals(output);
+	}
+
 }

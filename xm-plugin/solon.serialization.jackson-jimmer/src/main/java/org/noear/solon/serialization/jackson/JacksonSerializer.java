@@ -10,13 +10,16 @@ import java.io.IOException;
  * @since 1.5
  */
 public class JacksonSerializer implements StringSerializer {
-    final ObjectMapper real;
-    public JacksonSerializer(ObjectMapper real){
-        this.real = real;
-    }
 
-    @Override
-    public String serialize(Object obj) throws IOException {
-        return real.writeValueAsString(obj);
-    }
+	final ObjectMapper real;
+
+	public JacksonSerializer(ObjectMapper real) {
+		this.real = real;
+	}
+
+	@Override
+	public String serialize(Object obj) throws IOException {
+		return real.writeValueAsString(obj);
+	}
+
 }

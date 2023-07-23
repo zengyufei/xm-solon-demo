@@ -16,6 +16,7 @@ import org.redisson.config.SingleServerConfig;
 import java.util.Properties;
 
 public class XmRedissonBuilder {
+
 	public XmRedissonBuilder() {
 	}
 
@@ -37,7 +38,8 @@ public class XmRedissonBuilder {
 			Utils.injectProperties(serverConfig, prop);
 			address = resolveServers(server_str.split(","));
 			serverConfig.addNodeAddress(address).setUsername(user_str).setPassword(password_str);
-		} else {
+		}
+		else {
 			SingleServerConfig serverConfig = config.useSingleServer();
 			Utils.injectProperties(serverConfig, prop);
 			address = resolveServers(server_str);
@@ -54,11 +56,13 @@ public class XmRedissonBuilder {
 			String sev = servers[i];
 			if (sev.contains("://")) {
 				uris[i] = sev;
-			} else {
+			}
+			else {
 				uris[i] = "redis://" + sev;
 			}
 		}
 
 		return uris;
 	}
+
 }

@@ -43,27 +43,27 @@ public class BizApp {
 				LuaTool.setRedissonClient(bean);
 			});
 
-//			// 2.添加资源路径
-//			StaticMappings.add("/railway-bureau-test", false, new
-//					ClassPathStaticRepository("railway-bureau-test"));
-//			// 3.添加扩展目录：${solon.extend}/static/
-//			StaticMappings.add("/railway-bureau-test", relativePath -> {
-//				String location;
-//				String path = Solon.cfg().sourceLocation().getPath();
-//				if (path == null) {
-//					throw new IllegalStateException("No extension directory exists");
-//				} else {
-//					location = path + "railway-bureau-test";
-//				}
-//				File file = new File(location, relativePath);
-//				return file.exists() ? file.toURI().toURL() : null;
-//			});
+			// // 2.添加资源路径
+			// StaticMappings.add("/railway-bureau-test", false, new
+			// ClassPathStaticRepository("railway-bureau-test"));
+			// // 3.添加扩展目录：${solon.extend}/static/
+			// StaticMappings.add("/railway-bureau-test", relativePath -> {
+			// String location;
+			// String path = Solon.cfg().sourceLocation().getPath();
+			// if (path == null) {
+			// throw new IllegalStateException("No extension directory exists");
+			// } else {
+			// location = path + "railway-bureau-test";
+			// }
+			// File file = new File(location, relativePath);
+			// return file.exists() ? file.toURI().toURL() : null;
+			// });
 
 			// 向外提供钩子
-//			app.before(9999999, ctx -> {
-//				final PageRequest pageRequest = ctx.paramAsBean(PageRequest.class);
-//				ctx.paramSet("pageRequest", JSONUtil.toJsonStr(pageRequest));
-//			});
+			// app.before(9999999, ctx -> {
+			// final PageRequest pageRequest = ctx.paramAsBean(PageRequest.class);
+			// ctx.paramSet("pageRequest", JSONUtil.toJsonStr(pageRequest));
+			// });
 
 		});
 	}

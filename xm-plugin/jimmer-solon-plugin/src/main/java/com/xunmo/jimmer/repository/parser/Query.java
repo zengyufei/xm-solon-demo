@@ -1,6 +1,5 @@
 package com.xunmo.jimmer.repository.parser;
 
-
 import org.babyfish.jimmer.meta.ImmutableType;
 import org.babyfish.jimmer.sql.ast.query.OrderMode;
 
@@ -12,115 +11,101 @@ public class Query {
 
 	private final int limit;
 
-    private final boolean distinct;
+	private final boolean distinct;
 
-    private final Path selectedPath;
+	private final Path selectedPath;
 
-    private final Predicate predicate;
+	private final Predicate predicate;
 
-    private final List<Order> orders;
+	private final List<Order> orders;
 
-    public Query(
-            Action action,
-            int limit,
-            boolean distinct,
-            Path selectedPath,
-            Predicate predicate,
-            List<Order> orders
-    ) {
-        this.action = action;
-        this.limit = limit;
-        this.distinct = distinct;
-        this.selectedPath = selectedPath;
-        this.predicate = predicate;
-        this.orders = orders;
-    }
+	public Query(Action action, int limit, boolean distinct, Path selectedPath, Predicate predicate,
+			List<Order> orders) {
+		this.action = action;
+		this.limit = limit;
+		this.distinct = distinct;
+		this.selectedPath = selectedPath;
+		this.predicate = predicate;
+		this.orders = orders;
+	}
 
-    public Query(Query base, Predicate predicate) {
-        this.action = base.action;
-        this.limit = base.limit;
-        this.distinct = base.distinct;
-        this.selectedPath = base.selectedPath;
-        this.predicate = predicate;
-        this.orders = base.orders;
-    }
+	public Query(Query base, Predicate predicate) {
+		this.action = base.action;
+		this.limit = base.limit;
+		this.distinct = base.distinct;
+		this.selectedPath = base.selectedPath;
+		this.predicate = predicate;
+		this.orders = base.orders;
+	}
 
-    public Action getAction() {
-        return action;
-    }
+	public Action getAction() {
+		return action;
+	}
 
-    public int getLimit() {
-        return limit;
-    }
+	public int getLimit() {
+		return limit;
+	}
 
-    public boolean isDistinct() {
-        return distinct;
-    }
+	public boolean isDistinct() {
+		return distinct;
+	}
 
-    public Path getSelectedPath() {
-        return selectedPath;
-    }
+	public Path getSelectedPath() {
+		return selectedPath;
+	}
 
-    public Predicate getPredicate() {
-        return predicate;
-    }
+	public Predicate getPredicate() {
+		return predicate;
+	}
 
-    public List<Order> getOrders() {
-        return orders;
-    }
+	public List<Order> getOrders() {
+		return orders;
+	}
 
-    @Override
-    public String toString() {
-        return "Query{" +
-                "action=" + action +
-                ", limit=" + limit +
-                ", distinct=" + distinct +
-                ", selectedPath=" + selectedPath +
-                ", predicate=" + predicate +
-                ", orders=" + orders +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Query{" + "action=" + action + ", limit=" + limit + ", distinct=" + distinct + ", selectedPath="
+				+ selectedPath + ", predicate=" + predicate + ", orders=" + orders + '}';
+	}
 
-    public static Query of(Context ctx, Source source, ImmutableType type) {
-        return new QueryParser(ctx, type).parse(source, true);
-    }
+	public static Query of(Context ctx, Source source, ImmutableType type) {
+		return new QueryParser(ctx, type).parse(source, true);
+	}
 
-    public static Query of(Context ctx, Source source, ImmutableType type, boolean allowProjection) {
-        return new QueryParser(ctx, type).parse(source, allowProjection);
-    }
+	public static Query of(Context ctx, Source source, ImmutableType type, boolean allowProjection) {
+		return new QueryParser(ctx, type).parse(source, allowProjection);
+	}
 
-    public enum Action {
-        FIND,
-        COUNT,
-        EXISTS,
-        DELETE
-    }
+	public enum Action {
 
-    public static class Order {
+		FIND, COUNT, EXISTS, DELETE
 
-        private final Path path;
+	}
 
-        private final OrderMode orderMode;
+	public static class Order {
 
-        public Order(Path path, OrderMode orderMode) {
-            this.path = path;
-            this.orderMode = orderMode;
-        }
+		private final Path path;
 
-        public Path getPath() {
-            return path;
-        }
+		private final OrderMode orderMode;
 
-        public OrderMode getOrderMode() {
-            return orderMode;
-        }
+		public Order(Path path, OrderMode orderMode) {
+			this.path = path;
+			this.orderMode = orderMode;
+		}
 
-        @Override
-        public String toString() {
-            return "Order{" +
-                    "path=" + path +
-                    ", orderMode=" + orderMode +
-                    '}';
-        }
-    }
+		public Path getPath() {
+			return path;
+		}
+
+		public OrderMode getOrderMode() {
+			return orderMode;
+		}
+
+		@Override
+		public String toString() {
+			return "Order{" + "path=" + path + ", orderMode=" + orderMode + '}';
+		}
+
+	}
+
 }

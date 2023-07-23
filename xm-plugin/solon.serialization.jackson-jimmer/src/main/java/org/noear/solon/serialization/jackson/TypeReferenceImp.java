@@ -10,18 +10,21 @@ import java.lang.reflect.Type;
  * @since 1.2
  */
 public class TypeReferenceImp<T> extends TypeReference<T> {
-    protected final Type _type2;
 
-    public TypeReferenceImp(ParamWrap p) {
-        if (p.getGenericType() == null) {
-            this._type2 = p.getType();
-        } else {
-            this._type2 = p.getGenericType();
-        }
-    }
+	protected final Type _type2;
 
-    @Override
-    public Type getType() {
-        return _type2;
-    }
+	public TypeReferenceImp(ParamWrap p) {
+		if (p.getGenericType() == null) {
+			this._type2 = p.getType();
+		}
+		else {
+			this._type2 = p.getGenericType();
+		}
+	}
+
+	@Override
+	public Type getType() {
+		return _type2;
+	}
+
 }

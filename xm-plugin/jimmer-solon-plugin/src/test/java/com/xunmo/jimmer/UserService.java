@@ -8,13 +8,12 @@ import org.noear.solon.annotation.ProxyComponent;
 public class UserService {
 
 	final UserTable table = UserTable.$;
+
 	@Db
 	JSqlClient sqlClient;
 
 	public int count() {
-		return sqlClient.createQuery(table)
-				.select(table)
-				.count();
+		return sqlClient.createQuery(table).select(table).count();
 	}
 
 }

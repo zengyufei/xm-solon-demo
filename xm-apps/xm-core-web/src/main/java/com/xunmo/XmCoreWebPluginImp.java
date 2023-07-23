@@ -69,10 +69,11 @@ public class XmCoreWebPluginImp implements Plugin {
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(ObjectMapper.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				log.info("异步订阅 ObjectMapper, 执行初始化动作");
+				log.info("{} 异步订阅 ObjectMapper, 执行初始化动作", XmPackageNameConstants.XM_CORE_WEB);
 
 				ThreadUtil.execute(() -> {
-					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"), new RedissonCodec(bean, false));
+					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"),
+							new RedissonCodec(bean, false));
 					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);

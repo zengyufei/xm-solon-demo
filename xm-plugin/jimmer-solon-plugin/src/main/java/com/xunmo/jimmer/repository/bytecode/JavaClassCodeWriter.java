@@ -15,4 +15,5 @@ public class JavaClassCodeWriter extends ClassCodeWriter {
 	protected MethodCodeWriter createMethodCodeWriter(Method method, String id) {
 		return new JavaMethodCodeWriter(this, method, id);
 	}
+
 }

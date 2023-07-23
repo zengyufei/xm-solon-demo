@@ -55,6 +55,7 @@ public class UserController extends BaseController {
 
 	@Db
 	private JSqlClient sqlClient;
+
 	@Db
 	private UserRepository userRepository;
 
@@ -68,8 +69,7 @@ public class UserController extends BaseController {
 	@Post
 	@Mapping("/list")
 	@Cache(tags = "user", seconds = 10)
-	public ResponseEntity<Page<User>> list(@Validated UserQuery query, PageRequest pageRequest)
-			throws Exception {
+	public ResponseEntity<Page<User>> list(@Validated UserQuery query, PageRequest pageRequest) throws Exception {
 		final String userId = query.getUserId();
 		final String userName = query.getUserName();
 		final LocalDateTime beginCreateTime = query.getBeginCreateTime();
@@ -80,7 +80,7 @@ public class UserController extends BaseController {
 		final String roleName = query.getRoleName();
 		final String permissionId = query.getPermissionId();
 		final String permissionName = query.getPermissionName();
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, pager(pageRequest).execute(sqlClient.createQuery(TABLE)
+		final Page<User> page = pager(pageRequest).execute(sqlClient.createQuery(TABLE)
 				// 根据 用户id 查询
 				.whereIf(StrUtil.isNotBlank(userId), () -> TABLE.userId().eq(userId))
 				// 根据 用户名称 模糊查询
@@ -116,12 +116,12 @@ public class UserController extends BaseController {
 								.organization(OrganizationFetcher.$.organizationName())
 								.roles(RoleFetcher.$.parentRoleId()
 										.roleName()
-										.permissions(PermissionFetcher.$.permissionName()))))));
+										.permissions(PermissionFetcher.$.permissionName())))));
+		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, page);
 	}
 
 	/**
 	 * 通过主键查询单条数据
-	 *
 	 * @param id 主键
 	 * @return 单条数据
 	 */
@@ -133,7 +133,6 @@ public class UserController extends BaseController {
 
 	/**
 	 * 新增数据
-	 *
 	 * @param input 实体
 	 * @return 新增结果
 	 */
@@ -146,7 +145,6 @@ public class UserController extends BaseController {
 
 	/**
 	 * 编辑数据
-	 *
 	 * @param input 实体
 	 * @return 编辑结果
 	 */
@@ -159,7 +157,6 @@ public class UserController extends BaseController {
 
 	/**
 	 * 删除数据
-	 *
 	 * @param ids 主键集合
 	 * @return 删除是否成功
 	 */
@@ -184,8 +181,7 @@ public class UserController extends BaseController {
 
 	/**
 	 * 分页查询
-	 *
-	 * @param input       筛选条件
+	 * @param input 筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */

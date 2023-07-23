@@ -20,7 +20,9 @@ public abstract class ClassCodeWriter implements Constants {
 	public static final String ASM_IMPL_SUFFIX = "{AsmImpl}";
 
 	private final Class<?> superType;
+
 	private Class<?> repositoryInterface;
+
 	private Class<?> domainType;
 
 	private final String interfaceInternalName;
@@ -41,7 +43,8 @@ public abstract class ClassCodeWriter implements Constants {
 
 	Context ctx = new Context();
 
-	protected ClassCodeWriter(Class<?> repositoryInterface, Class<?> domainType, Class<?> sqlClientType, Class<?> superType) {
+	protected ClassCodeWriter(Class<?> repositoryInterface, Class<?> domainType, Class<?> sqlClientType,
+			Class<?> superType) {
 		this.superType = superType;
 		this.repositoryInterface = repositoryInterface;
 		this.domainType = domainType;
@@ -53,13 +56,13 @@ public abstract class ClassCodeWriter implements Constants {
 		List<MethodCodeWriter> list = new ArrayList<>();
 		Map<String, Integer> methodNameCountMap = new HashMap<>();
 		for (Method method : repositoryInterface.getMethods()) {
-			if (!Modifier.isStatic(method.getModifiers()) &&
-					!method.getDeclaringClass().isAssignableFrom(superType)) {
+			if (!Modifier.isStatic(method.getModifiers()) && !method.getDeclaringClass().isAssignableFrom(superType)) {
 				Integer count = methodNameCountMap.get(method.getName());
 				if (count == null) {
 					list.add(createMethodCodeWriter(method, method.getName()));
 					methodNameCountMap.put(method.getName(), 1);
-				} else {
+				}
+				else {
 					++count;
 					list.add(createMethodCodeWriter(method, method.getName() + ":" + count));
 					methodNameCountMap.put(method.getName(), count);
@@ -67,115 +70,76 @@ public abstract class ClassCodeWriter implements Constants {
 			}
 		}
 		this.methodCodeWriters = list;
-		this.autoGenMethodCodeWriters = list
-				.stream()
-				.filter(it -> !it.method.isDefault() && it.getDefaultImplMethod() == null)
-				.collect(Collectors.toList());
+		this.autoGenMethodCodeWriters = list.stream()
+			.filter(it -> !it.method.isDefault() && it.getDefaultImplMethod() == null)
+			.collect(Collectors.toList());
 	}
 
 	public String getInterfaceInternalName() {
-        return interfaceInternalName;
-    }
+		return interfaceInternalName;
+	}
 
-    public String getImplInternalName() {
-        return implInternalName;
-    }
+	public String getImplInternalName() {
+		return implInternalName;
+	}
 
-    public String getEntityInternalName() {
-        return entityInternalName;
-    }
+	public String getEntityInternalName() {
+		return entityInternalName;
+	}
 
-    public ClassWriter getClassVisitor() {
-        return cw;
-    }
+	public ClassWriter getClassVisitor() {
+		return cw;
+	}
 
-    public byte[] write() {
-        cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        cw.visit(
-                Opcodes.V1_8,
-                Opcodes.ACC_PUBLIC,
-                implInternalName,
-                null,
-                superInternalName,
-                new String[]{interfaceInternalName}
-        );
-        writeInit();
-        if (!autoGenMethodCodeWriters.isEmpty()) {
-            writeStaticFields();
-            writeClinit();
-        }
-        for (MethodCodeWriter writer : methodCodeWriters) {
-            writer.write();
-        }
-        cw.visitEnd();
-        return cw.toByteArray();
-    }
+	public byte[] write() {
+		cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+		cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, implInternalName, null, superInternalName,
+				new String[] { interfaceInternalName });
+		writeInit();
+		if (!autoGenMethodCodeWriters.isEmpty()) {
+			writeStaticFields();
+			writeClinit();
+		}
+		for (MethodCodeWriter writer : methodCodeWriters) {
+			writer.write();
+		}
+		cw.visitEnd();
+		return cw.toByteArray();
+	}
 
-    private void writeInit() {
-		MethodVisitor mv = cw.visitMethod(
-				Opcodes.ACC_PUBLIC,
-				"<init>",
-				'(' + sqlClientDescriptor + ")V",
-				null,
-				null
-		);
+	private void writeInit() {
+		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", '(' + sqlClientDescriptor + ")V", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitVarInsn(Opcodes.ALOAD, 1);
 		mv.visitLdcInsn(Type.getType(this.domainType));
-		mv.visitMethodInsn(
-				Opcodes.INVOKESPECIAL,
-				superInternalName,
-				"<init>",
-				"(" + sqlClientDescriptor + "Ljava/lang/Class;)V",
-				false
-		);
+		mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superInternalName, "<init>",
+				"(" + sqlClientDescriptor + "Ljava/lang/Class;)V", false);
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
 
-    private void writeStaticFields() {
-        for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
-            cw.visitField(
-                    Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL,
-                    writer.queryMethodFieldName(),
-                    QUERY_METHOD_DESCRIPTOR,
-                    null,
-                    null
-            ).visitEnd();
-        }
-    }
+	private void writeStaticFields() {
+		for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
+			cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL, writer.queryMethodFieldName(),
+					QUERY_METHOD_DESCRIPTOR, null, null)
+				.visitEnd();
+		}
+	}
 
-    private void writeClinit() {
-        MethodVisitor mv = cw.visitMethod(
-                Opcodes.ACC_STATIC,
-                "<clinit>",
-                "()V",
-                null,
-                null
-        );
-        mv.visitCode();
+	private void writeClinit() {
+		MethodVisitor mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+		mv.visitCode();
 
-        mv.visitTypeInsn(Opcodes.NEW, CONTEXT_INTERNAL_NAME);
+		mv.visitTypeInsn(Opcodes.NEW, CONTEXT_INTERNAL_NAME);
 		mv.visitInsn(Opcodes.DUP);
-		mv.visitMethodInsn(
-				Opcodes.INVOKESPECIAL,
-				CONTEXT_INTERNAL_NAME,
-				"<init>",
-				"()V",
-				false
-		);
+		mv.visitMethodInsn(Opcodes.INVOKESPECIAL, CONTEXT_INTERNAL_NAME, "<init>", "()V", false);
 		mv.visitVarInsn(Opcodes.ASTORE, 0);
 
 		mv.visitLdcInsn(Type.getType(this.domainType));
-		mv.visitMethodInsn(
-				Opcodes.INVOKESTATIC,
-				IMMUTABLE_TYPE_INTERNAL_NAME,
-				"get",
-				"(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR,
-				true
-		);
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, IMMUTABLE_TYPE_INTERNAL_NAME, "get",
+				"(Ljava/lang/Class;)" + IMMUTABLE_TYPE_DESCRIPTOR, true);
 		mv.visitVarInsn(Opcodes.ASTORE, 1);
 
 		for (MethodCodeWriter writer : autoGenMethodCodeWriters) {
@@ -190,40 +154,22 @@ public abstract class ClassCodeWriter implements Constants {
 				mv.visitInsn(Opcodes.DUP);
 				mv.visitLdcInsn(index++);
 				if (clazz.isPrimitive()) {
-					mv.visitFieldInsn(
-							Opcodes.GETSTATIC,
-							Type.getInternalName(Classes.boxTypeOf(clazz)),
-                            "TYPE",
-                            "Ljava/lang/Class;"
-                    );
-                } else {
-                    mv.visitLdcInsn(Type.getType(clazz));
-                }
-                mv.visitInsn(Opcodes.AASTORE);
-            }
-            mv.visitMethodInsn(
-                    Opcodes.INVOKEVIRTUAL,
-                    "java/lang/Class",
-                    "getMethod",
-                    "(Ljava/lang/String;[Ljava/lang/Class;)" + METHOD_DESCRIPTOR,
-                    false
-            );
-            mv.visitMethodInsn(
-                    Opcodes.INVOKESTATIC,
-                    QUERY_METHOD_INTERNAL_NAME,
-                    "of",
-                    "(" + CONTEXT_DESCRIPTOR + IMMUTABLE_TYPE_DESCRIPTOR + METHOD_DESCRIPTOR + ")" +
-                            QUERY_METHOD_DESCRIPTOR,
-                    false
-            );
-            mv.visitFieldInsn(
-                    Opcodes.PUTSTATIC,
-                    implInternalName,
-                    writer.queryMethodFieldName(),
-                    QUERY_METHOD_DESCRIPTOR
-            );
-        }
-        mv.visitInsn(Opcodes.RETURN);
+					mv.visitFieldInsn(Opcodes.GETSTATIC, Type.getInternalName(Classes.boxTypeOf(clazz)), "TYPE",
+							"Ljava/lang/Class;");
+				}
+				else {
+					mv.visitLdcInsn(Type.getType(clazz));
+				}
+				mv.visitInsn(Opcodes.AASTORE);
+			}
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Class", "getMethod",
+					"(Ljava/lang/String;[Ljava/lang/Class;)" + METHOD_DESCRIPTOR, false);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, QUERY_METHOD_INTERNAL_NAME, "of", "(" + CONTEXT_DESCRIPTOR
+					+ IMMUTABLE_TYPE_DESCRIPTOR + METHOD_DESCRIPTOR + ")" + QUERY_METHOD_DESCRIPTOR, false);
+			mv.visitFieldInsn(Opcodes.PUTSTATIC, implInternalName, writer.queryMethodFieldName(),
+					QUERY_METHOD_DESCRIPTOR);
+		}
+		mv.visitInsn(Opcodes.RETURN);
 
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
@@ -239,8 +185,8 @@ public abstract class ClassCodeWriter implements Constants {
 		return repositoryInterface;
 	}
 
-
 	public Class<?> getDomainType() {
 		return domainType;
 	}
+
 }

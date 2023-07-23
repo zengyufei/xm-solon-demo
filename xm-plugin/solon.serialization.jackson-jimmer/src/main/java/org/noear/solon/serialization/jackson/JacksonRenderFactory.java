@@ -27,11 +27,9 @@ public class JacksonRenderFactory extends JacksonRenderFactoryBase {
 		config.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 	}
 
-
 	public JacksonRenderFactory(ObjectMapper config) {
 		this.config = config;
 	}
-
 
 	@Override
 	public Render create() {
@@ -44,4 +42,5 @@ public class JacksonRenderFactory extends JacksonRenderFactoryBase {
 	public ObjectMapper config() {
 		return config;
 	}
+
 }

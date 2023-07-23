@@ -16,6 +16,7 @@ import java.util.Date;
 
 @Configuration
 public class JacksonConfig {
+
 	@Bean
 	public void initJackson(@Inject ObjectMapper objectMapper) {
 		SimpleModule simpleModule = new SimpleModule();
@@ -23,20 +24,20 @@ public class JacksonConfig {
 		objectMapper.registerModule(simpleModule);
 	}
 
-	private void initModule(SimpleModule immutableModule) {
+	private void initModule(SimpleModule simpleModule) {
 
-		immutableModule.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
+		simpleModule.addDeserializer(String.class, new StdScalarDeserializer<String>(String.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
 			@Override
 			public String deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
-				if (StrUtil.isBlank(jsonParser.getValueAsString())) {
+				if (jsonParser == null || StrUtil.isBlank(jsonParser.getValueAsString())) {
 					return null;
 				}
 				return StrUtil.trim(jsonParser.getValueAsString());
 			}
 		});
-		immutableModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
+		simpleModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
 			private final String[] DATE_FORMAT_STRS = new String[]{"yyyy",
