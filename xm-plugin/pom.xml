@@ -23,7 +23,7 @@
 		<module>./xm-request-args-console</module>
 		<module>./xm-request-xss-filter</module>
 		<module>./xm-health</module>
-		<module>./solon.serialization.jackson-jimmer</module>
+<!--		<module>./solon.serialization.jackson-jimmer</module>-->
 		<module>./jimmer-solon-plugin</module>
 	</modules>
 
