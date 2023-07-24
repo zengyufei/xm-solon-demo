@@ -1,6 +1,7 @@
 package com.xunmo.config;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -34,7 +35,7 @@ public class JacksonConfig {
 				if (jsonParser == null || StrUtil.isBlank(jsonParser.getValueAsString())) {
 					return null;
 				}
-				return StrUtil.trim(jsonParser.getValueAsString());
+				return StrUtil.trim(EscapeUtil.unescapeHtml4(jsonParser.getValueAsString()));
 			}
 		});
 		simpleModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
