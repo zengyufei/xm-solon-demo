@@ -3,9 +3,6 @@ package com.xunmo;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xunmo.config.CacheInterceptor;
-import com.xunmo.config.CachePutInterceptor;
-import com.xunmo.config.CacheRemoveInterceptor;
 import com.xunmo.config.RedissonCodec;
 import com.xunmo.utils.XmRedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +10,6 @@ import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.*;
-import org.noear.solon.data.annotation.Cache;
-import org.noear.solon.data.annotation.CachePut;
-import org.noear.solon.data.annotation.CacheRemove;
-import org.noear.solon.data.cache.CacheLib;
 import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.web.cors.CrossHandler;
 import org.redisson.api.RedissonClient;
@@ -64,8 +57,6 @@ public class XmCoreWebPluginImp implements Plugin {
 		// 手动注册缓存
 		final boolean isEnabled = props.getBool("xm.web.cache.enable", true);
 		if (isEnabled) {
-			app.enableCaching(false);
-
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(ObjectMapper.class, objectMapper -> {
 				// bean 获取后，可以做些后续处理。。。
@@ -76,31 +67,16 @@ public class XmCoreWebPluginImp implements Plugin {
 							new RedissonCodec(objectMapper, false));
 					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
-					context.beanInject(redisCacheService);
-
-					// 添加缓存控制支持
-					CacheLib.cacheServiceAdd("", redisCacheService);
+//					context.beanInject(redisCacheService);
 					// 包装Bean（指定类型的）
 					// 以类型注册
 					context.putWrap(CacheService.class,
 							new BeanWrap(context, CacheService.class, redisCacheService, null, true));
-					context.putWrap(RedissonClient.class,
-							new BeanWrap(context, RedissonClient.class, redissonClient, null, true));
+					context.wrapAndPut(RedissonClient.class, redissonClient);
 
 				});
 
 			});
-//			Solon.context().getBeanAsync(RedissonClient.class, bean -> {
-//				log.info("{} 异步订阅 RedissonClient, 执行初始化动作", XmPackageNameConstants.XM_CORE_WEB);
-//				context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
-//				context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);
-//				context.beanAroundAdd(Cache.class, new CacheInterceptor(), 111);
-//			});
-
-			// 这样才生效
-			context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
-			context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);
-			context.beanAroundAdd(Cache.class, new CacheInterceptor(), 111);
 		}
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {

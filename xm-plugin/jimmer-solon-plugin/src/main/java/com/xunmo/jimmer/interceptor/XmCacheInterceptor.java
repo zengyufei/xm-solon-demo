@@ -1,4 +1,4 @@
-package com.xunmo.config;
+package com.xunmo.jimmer.interceptor;
 
 import org.noear.solon.core.aspect.Interceptor;
 import org.noear.solon.core.aspect.Invocation;
@@ -12,7 +12,7 @@ import org.noear.solon.data.cache.CacheLib;
  * @author noear
  * @since 1.0
  */
-public class CacheInterceptor implements Interceptor {
+public class XmCacheInterceptor implements Interceptor {
 	@Override
 	public Object doIntercept(Invocation inv) throws Throwable {
 		if (CacheLib.cacheServiceMap().isEmpty()) {

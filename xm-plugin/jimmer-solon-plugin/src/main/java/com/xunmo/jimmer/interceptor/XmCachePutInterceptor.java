@@ -1,18 +1,19 @@
-package com.xunmo.config;
+package com.xunmo.jimmer.interceptor;
 
 import org.noear.solon.core.aspect.Interceptor;
 import org.noear.solon.core.aspect.Invocation;
-import org.noear.solon.data.annotation.CacheRemove;
+import org.noear.solon.data.annotation.CachePut;
 import org.noear.solon.data.cache.CacheExecutorImp;
 import org.noear.solon.data.cache.CacheLib;
 
 /**
- * 缓存移除拦截器
+ * 缓存更新拦截器
  *
  * @author noear
  * @since 1.0
  */
-public class CacheRemoveInterceptor implements Interceptor {
+public class XmCachePutInterceptor implements Interceptor {
+
 	@Override
 	public Object doIntercept(Invocation inv) throws Throwable {
 		Object tmp = inv.invoke();
@@ -20,9 +21,9 @@ public class CacheRemoveInterceptor implements Interceptor {
 		if (CacheLib.cacheServiceMap().isEmpty()) {
 			return tmp;
 		}
-		CacheRemove anno = inv.method().getAnnotation(CacheRemove.class);
+		CachePut anno = inv.method().getAnnotation(CachePut.class);
 		CacheExecutorImp.global
-				.cacheRemove(anno, inv, tmp);
+				.cachePut(anno, inv, tmp);
 
 		return tmp;
 	}

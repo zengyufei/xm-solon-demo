@@ -4,14 +4,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.XmPackageNameConstants;
 import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.annotation.Db;
+import com.xunmo.jimmer.interceptor.XmCacheInterceptor;
+import com.xunmo.jimmer.interceptor.XmCachePutInterceptor;
+import com.xunmo.jimmer.interceptor.XmCacheRemoveInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
+import org.noear.solon.Solon;
 import org.noear.solon.Utils;
 import org.noear.solon.core.AopContext;
 import org.noear.solon.core.BeanWrap;
 import org.noear.solon.core.Plugin;
 import org.noear.solon.core.VarHolder;
 import org.noear.solon.core.event.EventBus;
+import org.noear.solon.data.annotation.Cache;
+import org.noear.solon.data.annotation.CachePut;
+import org.noear.solon.data.annotation.CacheRemove;
+import org.noear.solon.data.cache.CacheService;
+import org.noear.solon.data.cache.CacheServiceWrapConsumer;
 
 import javax.sql.DataSource;
 
@@ -20,6 +29,7 @@ public class XmJimmerPluginImp implements Plugin {
 
 	@Override
 	public void start(AopContext context) {
+		Solon.app().enableCaching(false);
 
 		context.getBeanAsync(ObjectMapper.class, bean -> {
 			// bean 获取后，可以做些后续处理。。。
@@ -41,6 +51,15 @@ public class XmJimmerPluginImp implements Plugin {
 		context.beanInjectorAdd(Db.class, (varH, anno) -> {
 			injectorAddDo(varH, anno.value());
 		});
+
+		Solon.context().getBeanAsync(CacheService.class, cacheService -> {
+			log.info("{} 异步订阅 CacheService, 执行初始化动作", XmPackageNameConstants.XM_JIMMER);
+			Solon.context().subWrapsOfType(CacheService.class, new CacheServiceWrapConsumer());
+		});
+
+		context.beanAroundAdd(CachePut.class, new XmCachePutInterceptor(), 110);
+		context.beanAroundAdd(CacheRemove.class, new XmCacheRemoveInterceptor(), 110);
+		context.beanAroundAdd(Cache.class, new XmCacheInterceptor(), 111);
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_JIMMER);
