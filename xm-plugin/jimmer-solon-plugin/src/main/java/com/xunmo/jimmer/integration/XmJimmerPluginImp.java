@@ -1,6 +1,13 @@
 package com.xunmo.jimmer.integration;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.xunmo.XmPackageNameConstants;
 import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.annotation.Db;
@@ -10,34 +17,43 @@ import com.xunmo.jimmer.interceptor.XmCacheRemoveInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.jackson.ImmutableModule;
 import org.noear.solon.Solon;
+import org.noear.solon.SolonApp;
 import org.noear.solon.Utils;
-import org.noear.solon.core.AopContext;
-import org.noear.solon.core.BeanWrap;
-import org.noear.solon.core.Plugin;
-import org.noear.solon.core.VarHolder;
+import org.noear.solon.core.*;
 import org.noear.solon.core.event.EventBus;
+import org.noear.solon.core.handle.Context;
+import org.noear.solon.core.handle.RenderManager;
 import org.noear.solon.data.annotation.Cache;
 import org.noear.solon.data.annotation.CachePut;
 import org.noear.solon.data.annotation.CacheRemove;
 import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.data.cache.CacheServiceWrapConsumer;
+import org.noear.solon.serialization.StringSerializerRender;
+import org.noear.solon.serialization.jackson.JacksonActionExecutor;
+import org.noear.solon.serialization.jackson.JacksonSerializer;
 
 import javax.sql.DataSource;
+
+import static com.fasterxml.jackson.databind.MapperFeature.PROPAGATE_TRANSIENT_MARKER;
+import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
 
 @Slf4j
 public class XmJimmerPluginImp implements Plugin {
 
 	@Override
 	public void start(AopContext context) {
-		Solon.app().enableCaching(false);
+		final SolonApp app = Solon.app();
+		app.enableCaching(false);
+		initJackson(app, context);
 
-		context.getBeanAsync(ObjectMapper.class, bean -> {
-			// bean 获取后，可以做些后续处理。。。
-			log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作", XmPackageNameConstants.XM_JIMMER);
-			final ImmutableModule immutableModule = new ImmutableModule();
-			bean.registerModule(immutableModule);
-			EventBus.push(immutableModule);
-		});
+		// context.getBeanAsync(ObjectMapper.class, bean -> {
+		// // bean 获取后，可以做些后续处理。。。
+		// log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作",
+		// XmPackageNameConstants.XM_JIMMER);
+		// final ImmutableModule immutableModule = new ImmutableModule();
+		// bean.registerModule(immutableModule);
+		// EventBus.push(immutableModule);
+		// });
 
 		context.subWrapsOfType(DataSource.class, bw -> {
 			JimmerAdapterManager.register(bw);
@@ -125,6 +141,81 @@ public class XmJimmerPluginImp implements Plugin {
 		else {
 			System.out.println(XmPackageNameConstants.XM_JIMMER + " 插件关闭!");
 		}
+	}
+
+	private static void initJackson(SolonApp app, AopContext context) {
+		// 给 body 塞入 arg 参数
+		context.beanOnloaded(aopContext -> {
+			final ChainManager chainManager = app.chainManager();
+			chainManager.removeExecuteHandler(JacksonActionExecutor.class);
+			final JacksonActionExecutor jacksonActionExecutor = new JacksonActionExecutor() {
+				@Override
+				protected Object changeBody(Context ctx) throws Exception {
+					final Object o = super.changeBody(ctx);
+					if (o instanceof ObjectNode) {
+						final ObjectNode changeBody = (ObjectNode) o;
+						ctx.paramMap().forEach((key, value) -> {
+							if (!changeBody.has(key)) {
+								changeBody.put(key, value);
+							}
+						});
+					}
+					return o;
+				}
+			};
+			final ObjectMapper objectMapper = jacksonActionExecutor.config();
+			getObjectMapper(objectMapper);
+
+			// 框架默认 -99
+			aopContext.lifecycle(-199, () -> {
+				final StringSerializerRender render = new StringSerializerRender(false,
+						new JacksonSerializer(objectMapper));
+				RenderManager.mapping("@json", render);
+				RenderManager.mapping("@type_json", render);
+			});
+
+			// 支持 json 内容类型执行
+			aopContext.wrapAndPut(JacksonActionExecutor.class, jacksonActionExecutor);
+			EventBus.push(jacksonActionExecutor);
+			aopContext.wrapAndPut(ObjectMapper.class, objectMapper);
+			EventBus.push(objectMapper);
+
+			chainManager.addExecuteHandler(jacksonActionExecutor);
+		});
+
+	}
+
+	private static void getObjectMapper(ObjectMapper objectMapper) {
+		objectMapper.registerModule(new ImmutableModule());
+		objectMapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+		objectMapper.activateDefaultTypingAsProperty(objectMapper.getPolymorphicTypeValidator(),
+				ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
+		objectMapper.registerModule(new JavaTimeModule());
+		// 允许使用未带引号的字段名
+		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		// 允许使用单引号
+		objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		objectMapper.setDefaultTyping(null);
+
+		// 启用 transient 关键字
+		objectMapper.configure(PROPAGATE_TRANSIENT_MARKER, true);
+		// 启用排序（即使用 LinkedHashMap）
+		objectMapper.configure(SORT_PROPERTIES_ALPHABETICALLY, true);
+		// 是否识别不带引号的key
+		objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		// 是否识别单引号的key
+		objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		// 浮点数默认类型（dubbod 转 BigDecimal）
+		objectMapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
+
+		// 反序列化时候遇到不匹配的属性并不抛出异常
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		// 序列化时候遇到空对象不抛出异常
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		// 反序列化的时候如果是无效子类型,不抛出异常
+		objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
 	}
 
 }

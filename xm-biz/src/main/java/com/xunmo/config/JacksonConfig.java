@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.noear.solon.annotation.Bean;
+import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Inject;
 
@@ -19,6 +20,7 @@ import java.util.Date;
 public class JacksonConfig {
 
 	@Bean
+	@Condition(onClass = ObjectMapper.class)
 	public void initJackson(@Inject ObjectMapper objectMapper) {
 		SimpleModule simpleModule = new SimpleModule();
 		initModule(simpleModule);

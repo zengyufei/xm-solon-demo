@@ -22,10 +22,14 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>com.xunmo</groupId>
-			<artifactId>solon.serialization.jackson-jimmer</artifactId>
-			<version>${revision}</version>
+			<groupId>org.noear</groupId>
+			<artifactId>solon.serialization.jackson</artifactId>
 		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>com.xunmo</groupId>-->
+		<!--			<artifactId>solon.serialization.jackson-jimmer</artifactId>-->
+		<!--			<version>${revision}</version>-->
+		<!--		</dependency>-->
 
 
 		<dependency>
