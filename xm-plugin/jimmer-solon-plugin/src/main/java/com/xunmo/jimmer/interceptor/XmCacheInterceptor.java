@@ -13,13 +13,14 @@ import org.noear.solon.data.cache.CacheLib;
  * @since 1.0
  */
 public class XmCacheInterceptor implements Interceptor {
+
 	@Override
 	public Object doIntercept(Invocation inv) throws Throwable {
 		if (CacheLib.cacheServiceMap().isEmpty()) {
 			return inv.invoke();
 		}
 		Cache anno = inv.method().getAnnotation(Cache.class);
-		return CacheExecutorImp.global
-				.cache(anno, inv, inv::invoke);
+		return CacheExecutorImp.global.cache(anno, inv, inv::invoke);
 	}
+
 }

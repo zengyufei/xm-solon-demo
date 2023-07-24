@@ -1,6 +1,7 @@
 package com.xunmo;
 
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xunmo.config.RedissonCodec;
@@ -45,8 +46,9 @@ public class XmCoreWebPluginImp implements Plugin {
 						final String value = entry.getValue();
 						if (StrUtil.isBlankOrUndefined(value)) {
 							entryIterator.remove();
-						} else {
-							final String val = StrUtil.trim(value);
+						}
+						else {
+							final String val = StrUtil.trim(EscapeUtil.unescapeHtml4(value));
 							paramMap.put(key, val);
 						}
 					}
@@ -67,7 +69,7 @@ public class XmCoreWebPluginImp implements Plugin {
 							new RedissonCodec(objectMapper, false));
 					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
-//					context.beanInject(redisCacheService);
+					// context.beanInject(redisCacheService);
 					// 包装Bean（指定类型的）
 					// 以类型注册
 					context.putWrap(CacheService.class,
@@ -81,7 +83,8 @@ public class XmCoreWebPluginImp implements Plugin {
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
 		}
 	}
@@ -90,7 +93,8 @@ public class XmCoreWebPluginImp implements Plugin {
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE_WEB);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 插件关闭!");
 		}
 	}

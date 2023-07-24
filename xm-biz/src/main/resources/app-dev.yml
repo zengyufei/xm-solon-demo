@@ -40,4 +40,4 @@ jimmer:
   db:
     language: java
     defaultBatchSize: 1000
-    dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect
+#    dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect

@@ -26,6 +26,7 @@ public class XPluginImp implements Plugin {
 		JacksonRenderTypedFactory renderTypedFactory = new JacksonRenderTypedFactory();
 		applyProps(renderTypedFactory, jsonProps);
 		context.wrapAndPut(JacksonRenderTypedFactory.class, renderTypedFactory);
+
 		final ObjectMapper objectMapper = renderTypedFactory.config();
 
 		// ::renderFactory
@@ -53,16 +54,18 @@ public class XPluginImp implements Plugin {
 	}
 
 	private void applyProps(JacksonRenderTypedFactory factory, JsonProps jsonProps) {
+		boolean writeNulls = false;
+		if (jsonProps != null) {
+			writeNulls = jsonProps.nullAsWriteable || jsonProps.nullNumberAsZero || jsonProps.nullArrayAsEmpty
+					|| jsonProps.nullBoolAsFalse || jsonProps.nullStringAsEmpty;
 
-		boolean writeNulls = jsonProps.nullAsWriteable || jsonProps.nullNumberAsZero || jsonProps.nullArrayAsEmpty
-				|| jsonProps.nullBoolAsFalse || jsonProps.nullStringAsEmpty;
+			if (writeNulls) {
+				factory.config().getSerializerProvider().setNullValueSerializer(new NullValueSerializer(jsonProps));
+			}
 
-		if (writeNulls) {
-			factory.config().getSerializerProvider().setNullValueSerializer(new NullValueSerializer(jsonProps));
-		}
-
-		if (jsonProps.enumAsName) {
-			factory.config().configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+			if (jsonProps.enumAsName) {
+				factory.config().configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+			}
 		}
 
 		if (!writeNulls) {

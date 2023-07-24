@@ -57,7 +57,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		this.dsWrap = dsWrap;
 		if (dsProps == null) {
 			this.dsProps = new Props();
-		} else {
+		}
+		else {
 			this.dsProps = dsProps;
 		}
 		jSqlClient = initSqlClient(this.dsProps.getBean(JimmerProperties.class));
@@ -97,22 +98,26 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 					if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
 						connection.commit();
 					}
-				} catch (Throwable var6) {
+				}
+				catch (Throwable var6) {
 					if (connection != null) {
 						try {
 							if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
 								connection.rollback();
 							}
-						} catch (SQLException e) {
+						}
+						catch (SQLException e) {
 							throw new RuntimeException(e);
 						}
 					}
 					throw new RuntimeException(var6);
-				} finally {
+				}
+				finally {
 					if (connection != null && !TranUtils.inTrans()) {
 						try {
 							connection.close();
-						} catch (SQLException e) {
+						}
+						catch (SQLException e) {
 							throw new RuntimeException(e);
 						}
 					}

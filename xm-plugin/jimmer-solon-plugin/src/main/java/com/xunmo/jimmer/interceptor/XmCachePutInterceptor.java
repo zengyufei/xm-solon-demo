@@ -22,9 +22,9 @@ public class XmCachePutInterceptor implements Interceptor {
 			return tmp;
 		}
 		CachePut anno = inv.method().getAnnotation(CachePut.class);
-		CacheExecutorImp.global
-				.cachePut(anno, inv, tmp);
+		CacheExecutorImp.global.cachePut(anno, inv, tmp);
 
 		return tmp;
 	}
+
 }

@@ -32,16 +32,20 @@ public class JacksonConfig {
 
 			@Override
 			public String deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
-				if (jsonParser == null || StrUtil.isBlank(jsonParser.getValueAsString())) {
+				if (jsonParser == null) {
 					return null;
 				}
-				return StrUtil.trim(EscapeUtil.unescapeHtml4(jsonParser.getValueAsString()));
+				final String valueAsString = jsonParser.getValueAsString();
+				if (StrUtil.isBlank(valueAsString)) {
+					return null;
+				}
+				return StrUtil.trim(EscapeUtil.unescapeHtml4(valueAsString));
 			}
 		});
 		simpleModule.addDeserializer(Date.class, new StdScalarDeserializer<Date>(Date.class) {
 			private static final long serialVersionUID = -2186517763342421483L;
 
-			private final String[] DATE_FORMAT_STRS = new String[]{"yyyy",
+			private final String[] DATE_FORMAT_STRS = new String[] { "yyyy",
 
 					"yyyy-M", "yyyy/M", "yyyy.M",
 
@@ -61,10 +65,13 @@ public class JacksonConfig {
 
 					"yyyy年M月dd日", "yyyy年M月d日", "yyyy年MM月d日",
 
-					"yyyyMdd", "yyyyMd", "yyyyMMd",};
+					"yyyyMdd", "yyyyMd", "yyyyMMd", };
 
 			@Override
 			public Date deserialize(JsonParser jsonParser, DeserializationContext ctx) throws IOException {
+				if (jsonParser == null) {
+					return null;
+				}
 				String text = jsonParser.getText();
 				if (StrUtil.isBlank(text)) {
 					return null;
@@ -75,11 +82,13 @@ public class JacksonConfig {
 			public Date formatToDate(String parameter) {
 				try {
 					return DateUtil.parse(parameter);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					for (String dateFormatStr : DATE_FORMAT_STRS) {
 						try {
 							return DateUtil.parse(parameter, dateFormatStr);
-						} catch (Exception ignored2) {
+						}
+						catch (Exception ignored2) {
 						}
 					}
 					throw e;

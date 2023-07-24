@@ -63,7 +63,8 @@ public class XmJimmerPluginImp implements Plugin {
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_JIMMER);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_JIMMER + " 包加载完毕!");
 		}
 	}
@@ -77,7 +78,8 @@ public class XmJimmerPluginImp implements Plugin {
 			wrap.context().getWrapAsync(DataSource.class, (dsBw) -> {
 				create0(clz, dsBw);
 			});
-		} else {
+		}
+		else {
 			wrap.context().getWrapAsync(annoValue, (dsBw) -> {
 				if (dsBw.raw() instanceof DataSource) {
 					create0(clz, dsBw);
@@ -91,7 +93,8 @@ public class XmJimmerPluginImp implements Plugin {
 			varH.context().getWrapAsync(DataSource.class, (dsBw) -> {
 				inject0(varH, dsBw);
 			});
-		} else {
+		}
+		else {
 			varH.context().getWrapAsync(annoValue, (dsBw) -> {
 				if (dsBw.raw() instanceof DataSource) {
 					inject0(varH, dsBw);
@@ -118,8 +121,10 @@ public class XmJimmerPluginImp implements Plugin {
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件关闭!", XmPackageNameConstants.XM_JIMMER);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_JIMMER + " 插件关闭!");
 		}
 	}
+
 }

@@ -13,6 +13,7 @@ import org.noear.solon.data.cache.CacheLib;
  * @since 1.0
  */
 public class XmCacheRemoveInterceptor implements Interceptor {
+
 	@Override
 	public Object doIntercept(Invocation inv) throws Throwable {
 		Object tmp = inv.invoke();
@@ -21,9 +22,9 @@ public class XmCacheRemoveInterceptor implements Interceptor {
 			return tmp;
 		}
 		CacheRemove anno = inv.method().getAnnotation(CacheRemove.class);
-		CacheExecutorImp.global
-				.cacheRemove(anno, inv, tmp);
+		CacheExecutorImp.global.cacheRemove(anno, inv, tmp);
 
 		return tmp;
 	}
+
 }
