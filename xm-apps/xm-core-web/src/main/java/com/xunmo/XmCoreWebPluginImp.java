@@ -3,6 +3,9 @@ package com.xunmo;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xunmo.config.CacheInterceptor;
+import com.xunmo.config.CachePutInterceptor;
+import com.xunmo.config.CacheRemoveInterceptor;
 import com.xunmo.config.RedissonCodec;
 import com.xunmo.utils.XmRedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +16,6 @@ import org.noear.solon.core.*;
 import org.noear.solon.data.annotation.Cache;
 import org.noear.solon.data.annotation.CachePut;
 import org.noear.solon.data.annotation.CacheRemove;
-import org.noear.solon.data.around.CacheInterceptor;
-import org.noear.solon.data.around.CachePutInterceptor;
-import org.noear.solon.data.around.CacheRemoveInterceptor;
 import org.noear.solon.data.cache.CacheLib;
 import org.noear.solon.data.cache.CacheService;
 import org.noear.solon.web.cors.CrossHandler;
@@ -67,13 +67,13 @@ public class XmCoreWebPluginImp implements Plugin {
 			app.enableCaching(false);
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
-			Solon.context().getBeanAsync(ObjectMapper.class, bean -> {
+			Solon.context().getBeanAsync(ObjectMapper.class, objectMapper -> {
 				// bean 获取后，可以做些后续处理。。。
 				log.info("{} 异步订阅 ObjectMapper, 执行初始化动作", XmPackageNameConstants.XM_CORE_WEB);
 
 				ThreadUtil.execute(() -> {
 					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"),
-							new RedissonCodec(bean, false));
+							new RedissonCodec(objectMapper, false));
 					RedissonCacheService redisCacheService = new RedissonCacheService(redissonClient, 30);
 					// 可以进行手动字段注入
 					context.beanInject(redisCacheService);
@@ -90,13 +90,21 @@ public class XmCoreWebPluginImp implements Plugin {
 				});
 
 			});
+//			Solon.context().getBeanAsync(RedissonClient.class, bean -> {
+//				log.info("{} 异步订阅 RedissonClient, 执行初始化动作", XmPackageNameConstants.XM_CORE_WEB);
+//				context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
+//				context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);
+//				context.beanAroundAdd(Cache.class, new CacheInterceptor(), 111);
+//			});
+
+			// 这样才生效
 			context.beanAroundAdd(CachePut.class, new CachePutInterceptor(), 110);
 			context.beanAroundAdd(CacheRemove.class, new CacheRemoveInterceptor(), 110);
 			context.beanAroundAdd(Cache.class, new CacheInterceptor(), 111);
 		}
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
-			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
+			log.info("{} 插件包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
 		} else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
 		}

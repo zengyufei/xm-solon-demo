@@ -12,7 +12,6 @@ import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Render;
 import org.noear.solon.core.handle.RenderManager;
 import org.noear.solon.serialization.prop.JsonProps;
-import org.noear.solon.serialization.prop.JsonPropsUtil;
 
 import static com.fasterxml.jackson.databind.MapperFeature.PROPAGATE_TRANSIENT_MARKER;
 import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
@@ -54,23 +53,19 @@ public class XPluginImp implements Plugin {
 	}
 
 	private void applyProps(JacksonRenderTypedFactory factory, JsonProps jsonProps) {
-		boolean writeNulls = false;
 
-		if (JsonPropsUtil.apply(factory, jsonProps)) {
+		boolean writeNulls = jsonProps.nullAsWriteable || jsonProps.nullNumberAsZero || jsonProps.nullArrayAsEmpty
+				|| jsonProps.nullBoolAsFalse || jsonProps.nullStringAsEmpty;
 
-			writeNulls = jsonProps.nullAsWriteable || jsonProps.nullNumberAsZero || jsonProps.nullArrayAsEmpty
-					|| jsonProps.nullBoolAsFalse || jsonProps.nullStringAsEmpty;
-
-			if (writeNulls) {
-				factory.config().getSerializerProvider().setNullValueSerializer(new NullValueSerializer(jsonProps));
-			}
-
-			if (jsonProps.enumAsName) {
-				factory.config().configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-			}
+		if (writeNulls) {
+			factory.config().getSerializerProvider().setNullValueSerializer(new NullValueSerializer(jsonProps));
 		}
 
-		if (writeNulls == false) {
+		if (jsonProps.enumAsName) {
+			factory.config().configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+		}
+
+		if (!writeNulls) {
 			factory.config().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		}
 
