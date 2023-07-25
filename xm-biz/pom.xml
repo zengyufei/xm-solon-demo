@@ -95,6 +95,13 @@
 		<!--            <artifactId>quartz-solon-plugin</artifactId>-->
 		<!--        </dependency>-->
 
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>6.5.7</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.alibaba.cola</groupId>
 			<artifactId>cola-component-statemachine</artifactId>

@@ -13,9 +13,12 @@ public class RequestTimesConsoleHandlerDefault implements RequestTimesConsoleHan
 	@Override
 	public void before(Context ctx) {
 		final TimeInterval timer = DateUtil.timer();
-		final String reqMethod = ctx.method();
 		ctx.attrSet("timer", timer);
 
+		if (ctx.action() == null) {
+			return;
+		}
+		final String reqMethod = ctx.method();
 		final String path = ctx.pathNew();
 		// 1.开始计时（用于计算响应时长）
 		if (log.isInfoEnabled()) {
@@ -29,6 +32,9 @@ public class RequestTimesConsoleHandlerDefault implements RequestTimesConsoleHan
 
 	@Override
 	public void after(Context ctx) {
+//		if (ctx.action() == null) {
+//			return;
+//		}
 		final TimeInterval timer = ctx.attr("timer");
 		final String path = ctx.pathNew();
 		// 2.获得接口响应时长
