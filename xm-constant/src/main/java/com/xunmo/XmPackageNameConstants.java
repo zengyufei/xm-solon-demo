@@ -26,6 +26,8 @@ public interface XmPackageNameConstants {
 
 	String XM_HEALTH = "xm-health";
 
+	String XM_FLYWAY = "xm-flyway";
+
 	String XM_STOP = "xm-stop";
 
 	String XM_EXCEPTION_RECORD = "xm-exception-record";

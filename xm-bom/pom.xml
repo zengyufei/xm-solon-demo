@@ -118,6 +118,11 @@
 				<artifactId>xm-request-xss-filter</artifactId>
 				<version>${revision}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.xunmo</groupId>
+				<artifactId>xm-flyway</artifactId>
+				<version>${revision}</version>
+			</dependency>
 			<!-- plugin end -->
 
 
