@@ -48,24 +48,22 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/run.error.%d{yyyy-MM-dd}.%i</fileNamePattern>
-            <!-- 单log文件最大大小 -->
-            <maxFileSize>${maxFileSize}</maxFileSize>
-            <!-- 保存的最长时间：天数 -->
-            <maxHistory>${saveMaxDay}</maxHistory>
-        </rollingPolicy>
-    </appender>
+			<fileNamePattern>${LOG_HOME}/run.error.%d{yyyy-MM-dd}.%i</fileNamePattern>
+			<!-- 单log文件最大大小 -->
+			<maxFileSize>${maxFileSize}</maxFileSize>
+			<!-- 保存的最长时间：天数 -->
+			<maxHistory>${saveMaxDay}</maxHistory>
+		</rollingPolicy>
+	</appender>
 
 
-    <logger name="com.xunmo.webs" level="DEBUG"/>
-    <logger name="com.xunmo.file_service" level="DEBUG"/>
-    <logger name="com.xunmo.file_service.webs" level="ERROR"/>
-    <logger name="com.xunmo.webs.*.mapper" level="ERROR"/>
-    <logger name="org.apache.ibatis" level="DEBUG"/>
+	<logger name="com.xunmo.webs" level="DEBUG"/>
 
-    <root level="${ROOT_LEVEL}">
-        <appender-ref ref="console"/>
-        <appender-ref ref="file"/>
-        <appender-ref ref="file.error"/>
-    </root>
+	<logger name="org.flywaydb" level="DEBUG"/>
+
+	<root level="${ROOT_LEVEL}">
+		<appender-ref ref="console"/>
+		<appender-ref ref="file"/>
+		<appender-ref ref="file.error"/>
+	</root>
 </configuration>
