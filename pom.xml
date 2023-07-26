@@ -2,10 +2,10 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<groupId>com.xunmo</groupId>
+		<groupId>vip.xunmo</groupId>
 		<artifactId>xm-bom</artifactId>
 		<version>${revision}</version>
-		<relativePath>xm-bom/pom.xml</relativePath>
+		<relativePath>./xm-bom/pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -14,41 +14,30 @@
 	<name>${project.artifactId}</name>
 	<packaging>pom</packaging>
 
-	<properties>
-		<java.version>1.8</java.version>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<jimmer.version>0.7.118</jimmer.version>
-		<mapstruct-plus.version>1.3.2</mapstruct-plus.version>
-	</properties>
-
 	<modules>
 		<module>xm-constant</module>
 		<module>xm-common</module>
 		<module>xm-apps</module>
 		<module>xm-biz</module>
-		<module>xm-plugin</module>
+		<module>xm-solon-plugin</module>
 	</modules>
 
 	<dependencies>
-		<!-- 基础常量 -->
 		<dependency>
-			<groupId>com.xunmo</groupId>
+			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-constant</artifactId>
 		</dependency>
 		<!--hutool-->
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-all</artifactId>
-			<version>5.7.15</version>
+			<version>${hutool.version}</version>
 		</dependency>
 		<!--Lombok-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>1.18.26</version>
 		</dependency>
 		<dependency>
 			<groupId>org.noear</groupId>
@@ -61,7 +50,7 @@
 		<dependencies>
 			<!-- 公共版本定义-->
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-bom</artifactId>
 				<version>${revision}</version>
 				<type>pom</type>
@@ -95,20 +84,6 @@
 		<plugins>
 			<!-- 配置编译插件 -->
 			<plugin>
-				<groupId>io.spring.javaformat</groupId>
-				<artifactId>spring-javaformat-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>validate</goal>
-						</goals>
-						<inherited>true</inherited>
-						<phase>validate</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- 配置编译插件 -->
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.verison}</version>
@@ -136,124 +111,9 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-
-
-			<!-- 测试插件 -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>flatten-maven-plugin</artifactId>
-				<configuration>
-					<flattenMode>resolveCiFriendliesOnly</flattenMode>
-					<updatePomFile>true</updatePomFile>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>flatten</goal>
-						</goals>
-						<id>flatten</id>
-						<phase>process-resources</phase>
-					</execution>
-					<execution>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-						<id>flatten.clean</id>
-						<phase>clean</phase>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 
 	</build>
 
 
-	<!--环境变量-->
-	<profiles>
-		<profile>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<configuration>
-							<additionalJOption>-J-Dfile.encoding=UTF-8</additionalJOption>
-							<doclint>none</doclint>
-							<tags>
-								<tag>
-									<name>date</name>
-								</tag>
-							</tags>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-								<id>attach-javadocs</id>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-								<id>attach-sources</id>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<configuration>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<serverId>ossrh</serverId>
-							<stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
-						</configuration>
-						<extensions>true</extensions>
-					</plugin>
-				</plugins>
-			</build>
-			<id>ossrh</id>
-		</profile>
-		<profile>
-			<properties>
-				<profiles.active>dev</profiles.active>
-			</properties>
-			<activation>
-				<!-- 默认环境 -->
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<id>dev</id>
-		</profile>
-		<profile>
-			<properties>
-				<profiles.active>test</profiles.active>
-			</properties>
-			<id>test</id>
-		</profile>
-		<profile>
-			<properties>
-				<profiles.active>prod</profiles.active>
-			</properties>
-			<id>prod</id>
-		</profile>
-	</profiles>
 </project>

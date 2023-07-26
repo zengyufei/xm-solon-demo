@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.xunmo</groupId>
+		<groupId>vip.xunmo</groupId>
 		<artifactId>xm-apps</artifactId>
 		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
@@ -24,23 +24,22 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>com.xunmo</groupId>
-			<artifactId>jimmer-solon-plugin</artifactId>
-			<scope>compile</scope>
+			<groupId>vip.xunmo</groupId>
+			<artifactId>xm-jimmer-solon-plugin</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.xunmo</groupId>
+			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-biz-api</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.xunmo</groupId>
+			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-rabbitmq-util</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.xunmo</groupId>
+			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-core-web</artifactId>
 		</dependency>
 

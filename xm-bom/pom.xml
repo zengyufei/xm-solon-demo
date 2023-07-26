@@ -4,26 +4,34 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.xunmo</groupId>
+	<groupId>vip.xunmo</groupId>
 	<artifactId>xm-bom</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>../</module>
+	</modules>
 
 	<properties>
 		<!-- 本系统 版本 -->
 		<!-- 自 Maven 3.5.0-beta-1 开始，可以使用 ${revision}, ${sha1} and/or ${changelist} 这样的变量作为版本占位符。-->
 		<!-- 只能命名成revision，不可以更改成其他命名；-->
-		<revision>1.0.0</revision>
+		<revision>1.0.4</revision>
+		<java.version>1.8</java.version>
 		<maven.compiler.source>8</maven.compiler.source>
 		<maven.compiler.target>8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 
 		<!-- bom 版本 -->
-		<solon.version>2.3.7</solon.version>
-		<hutool.version>5.7.15</hutool.version>
+		<solon.version>2.4.0</solon.version>
+		<hutool.version>5.8.20</hutool.version>
+		<xm.version>1.0.3</xm.version>
 
 		<!-- 依赖版本 -->
+		<jimmer.version>0.7.118</jimmer.version>
+		<mapstruct-plus.version>1.3.2</mapstruct-plus.version>
 		<easyexcel.version>3.0.5</easyexcel.version>
 
 		<!-- 插件版本 -->
@@ -39,6 +47,29 @@
 		<spring-javaformat-checkstyle.version>0.0.39</spring-javaformat-checkstyle.version>
 	</properties>
 
+	<description>jimmer support solon plugin</description>
+	<url>https://github.com/zengyufei/xm-solon-demo/tree/jim</url>
+
+	<licenses>
+		<license>
+			<name>BSD3-Clause</name>
+			<url>https://spdx.org/licenses/BSD-3-Clause.html</url>
+		</license>
+	</licenses>
+	<scm>
+		<connection>https://github.com/zengyufei/xm-solon-demo/tree/jim</connection>
+		<url>https://github.com/zengyufei/xm-solon-demo/tree/jim</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>zengyufei</name>
+			<email>312636208@qq.com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
 
 	<dependencyManagement>
 		<dependencies>
@@ -62,7 +93,13 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-
+			<dependency>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-solon-plugin</artifactId>
+				<version>${xm.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
 
 			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -70,7 +107,7 @@
 
 			<!-- xm-constant begin -->
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-constant</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -84,43 +121,49 @@
 
 			<!-- plugin begin -->
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-auto-tran</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-exception-handler</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
-				<artifactId>xm-health</artifactId>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-health-solon-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-request-args-console</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-request-times-console</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-request-trace-id</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-request-xss-filter</artifactId>
 				<version>${revision}</version>
 			</dependency>
+
 			<dependency>
-				<groupId>com.xunmo</groupId>
-				<artifactId>xm-flyway</artifactId>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-flyway-solon-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-jimmer-solon-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<!-- plugin end -->
@@ -133,48 +176,38 @@
 
 			<!-- common begin -->
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-annotation</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-core</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-exception</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-package-util</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-pool</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-test</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-zip</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.xunmo</groupId>
-				<artifactId>solon.serialization.jackson-jimmer</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.xunmo</groupId>
-				<artifactId>jimmer-solon-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<!-- common end -->
@@ -187,32 +220,32 @@
 
 			<!-- app begin -->
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-biz-api</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-core-web</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-exception-record</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-execl</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-rabbitmq-util</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.xunmo</groupId>
+				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-rabbitmq-util2</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -304,35 +337,121 @@
 		</dependencies>
 	</dependencyManagement>
 
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+
 	<!--环境变量-->
 	<profiles>
 		<profile>
-			<id>ossrh</id>
+			<id>release</id>
 			<build>
 				<plugins>
+					<!--Source-->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>${maven-gpg-plugin.version}</version>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
 						<executions>
 							<execution>
+								<phase>package</phase>
 								<goals>
-									<goal>sign</goal>
+									<goal>jar-no-fork</goal>
 								</goals>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
 							</execution>
 						</executions>
 					</plugin>
+					<!--Javadoc-->
 					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>${nexus-staging-maven-plugin.version}</version>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
 						<configuration>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<serverId>ossrh</serverId>
+							<show>private</show>
+							<nohelp>true</nohelp>
+							<charset>UTF-8</charset>
+							<encoding>UTF-8</encoding>
+							<docencoding>UTF-8</docencoding>
+							<additionalparam>-Xdoclint:none</additionalparam>
+							<!--TODO临时解决不规范的javadoc生成报错,后面要规范化后把这行去掉-->
 						</configuration>
-						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!--GPG-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!--Compiler-->
+					<!-- 配置编译插件 -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<fork>true</fork>
+							<verbose>true</verbose>
+							<compilerArgument>-parameters</compilerArgument>
+							<encoding>UTF-8</encoding>
+						</configuration>
+					</plugin>
+					<!--Release-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>2.5.1</version>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>flatten-maven-plugin</artifactId>
+						<version>${flatten-maven-plugin.version}</version>
+						<configuration>
+							<!-- 是否更新pom文件，此处还有更高级的用法 -->
+							<updatePomFile>true</updatePomFile>
+							<flattenMode>resolveCiFriendliesOnly</flattenMode>
+						</configuration>
+						<executions>
+							<execution>
+								<id>flatten</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>flatten</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>flatten.clean</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -380,6 +499,18 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- 配置编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<compilerArgument>-parameters</compilerArgument>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -418,23 +549,12 @@
 	</build>
 
 
-	<distributionManagement>
-		<repository>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-			<id>ossrh</id>
-		</repository>
-		<snapshotRepository>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<id>ossrh</id>
-		</snapshotRepository>
-	</distributionManagement>
-
 
 	<repositories>
 		<repository>
 			<id>tencent</id>
 			<name>tencent maven</name>
-			<url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+			<url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
 			<layout>default</layout>
 			<releases>
 				<enabled>true</enabled>
@@ -461,7 +581,7 @@
 		<pluginRepository>
 			<id>tencent</id>
 			<name>tencent maven</name>
-			<url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+			<url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
 			<layout>default</layout>
 			<releases>
 				<enabled>true</enabled>

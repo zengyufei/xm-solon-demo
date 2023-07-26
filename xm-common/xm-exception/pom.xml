@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.xunmo</groupId>
+        <groupId>vip.xunmo</groupId>
         <artifactId>xm-common</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
@@ -16,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.xunmo</groupId>
+            <groupId>vip.xunmo</groupId>
             <artifactId>xm-annotation</artifactId>
         </dependency>
     </dependencies>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>vip.xunmo</groupId>
+		<artifactId>xm-parent</artifactId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>xm-solon-plugin</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>./xm-exception-handler</module>
+		<module>./xm-auto-tran</module>
+		<module>./xm-request-trace-id</module>
+		<module>./xm-request-times-console</module>
+		<module>./xm-request-args-console</module>
+		<module>./xm-request-xss-filter</module>
+
+		<module>./xm-stop-solon-plugin</module>
+		<module>./xm-health-solon-plugin</module>
+		<module>./xm-flyway-solon-plugin</module>
+		<module>./xm-jimmer-solon-plugin</module>
+	</modules>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.noear</groupId>
+			<artifactId>solon</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>
