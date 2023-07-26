@@ -22,6 +22,7 @@
 		<module>./xm-request-args-console</module>
 		<module>./xm-request-xss-filter</module>
 
+		<module>./xm-h2-solon-plugin</module>
 		<module>./xm-stop-solon-plugin</module>
 		<module>./xm-health-solon-plugin</module>
 		<module>./xm-flyway-solon-plugin</module>
