@@ -23,13 +23,14 @@ public class XmFlywayPluginImp implements Plugin {
 		props.loadAddIfAbsent(XmPackageNameConstants.XM_FLYWAY + ".yml");
 		// final SolonApp app = Solon.app();
 
-		final boolean isEnabled = props.getBool("flyway.enable", true);
+		context.subWrapsOfType(DataSource.class, bw -> {
+			final String keyStarts = "flyway." + bw.name();
+			final boolean isEnabled = props.getBool(keyStarts + ".enable", true);
 
-		if (isEnabled) {
-			context.getBeanAsync(DataSource.class, dataSource -> {
+			if (isEnabled) {
 				ThreadUtil.execute(() -> {
 					final Properties properties = new Properties();
-					final Props flayWayProps = Solon.cfg().getProp("flyway");
+					final Props flayWayProps = Solon.cfg().getProp(keyStarts);
 					for (Map.Entry<Object, Object> entry : flayWayProps.entrySet()) {
 						final String key = (String) entry.getKey();
 						final Object value = entry.getValue();
@@ -37,19 +38,21 @@ public class XmFlywayPluginImp implements Plugin {
 						if (StrUtil.equalsIgnoreCase(key, "enable")) {
 							continue;
 						}
+						if (StrUtil.containsAnyIgnoreCase(key, "-")) {
+							continue;
+						}
 
-						final String newKey = StrUtil.toCamelCase(StrUtil.replace(key, "-", "_"));
-						properties.put("flyway." + newKey, value);
+						properties.put("flyway." + key, value);
 					}
 					final FluentConfiguration fluentConfiguration = new FluentConfiguration();
 					fluentConfiguration.configuration(properties);
 					final Flyway flyway = fluentConfiguration
-							.dataSource(dataSource)
+							.dataSource(bw.raw())
 							.load();
 					flyway.migrate();
 				});
-			});
-		}
+			}
+		});
 
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 包加载完毕!", XmPackageNameConstants.XM_FLYWAY);
