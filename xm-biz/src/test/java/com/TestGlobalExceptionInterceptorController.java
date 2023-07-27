@@ -13,7 +13,7 @@ import org.noear.solon.test.SolonTest;
 @Slf4j
 @RunWith(SolonJUnit4ClassRunner.class)
 @SolonTest(BizApp.class)
-public class TestGlobalExceptionController extends HttpTestBase {
+public class TestGlobalExceptionInterceptorController extends HttpTestBase {
 
 	@Test
 	@Order(1)

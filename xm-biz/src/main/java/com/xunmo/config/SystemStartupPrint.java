@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class AppLoadEndEventListener implements EventListener<AppLoadEndEvent> {
+public class SystemStartupPrint implements EventListener<AppLoadEndEvent> {
 
 	// @Inject("${solon.env}")
 	// private String env;

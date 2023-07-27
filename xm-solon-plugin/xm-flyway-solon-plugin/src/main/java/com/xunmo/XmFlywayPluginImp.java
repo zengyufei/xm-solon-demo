@@ -24,7 +24,10 @@ public class XmFlywayPluginImp implements Plugin {
 		// final SolonApp app = Solon.app();
 
 		context.subWrapsOfType(DataSource.class, bw -> {
-			final String keyStarts = "flyway." + bw.name();
+			final String named = bw.name();
+			log.info("{} 异步订阅 DataSource({}), 执行 flyway 动作", XmPackageNameConstants.XM_FLYWAY, named);
+
+			final String keyStarts = "flyway." + named;
 			final boolean isEnabled = props.getBool(keyStarts + ".enable", true);
 
 			if (isEnabled) {

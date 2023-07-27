@@ -2,7 +2,7 @@ package com.xunmo;
 
 import cn.hutool.core.thread.ThreadUtil;
 import com.xunmo.annotations.ExceptionHandler;
-import com.xunmo.exceptions.GlobalException;
+import com.xunmo.exceptions.GlobalExceptionInterceptor;
 import com.xunmo.exceptions.XmExceptionEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.core.AopContext;
@@ -23,15 +23,15 @@ public class XmExceptionHandlerPluginImp implements Plugin {
 				final Class<? extends Throwable> errorClass = anno.value();
 				final Object object = bw.raw();
 				if (errorClass == Throwable.class) {
-					GlobalException.errorByXmExceptionEntity.put(Throwable.class,
+					GlobalExceptionInterceptor.errorByXmExceptionEntity.put(Throwable.class,
 							new XmExceptionEntity(errorClass, object, method));
 				}
 				else if (errorClass == Exception.class) {
-					GlobalException.errorByXmExceptionEntity.put(Exception.class,
+					GlobalExceptionInterceptor.errorByXmExceptionEntity.put(Exception.class,
 							new XmExceptionEntity(errorClass, object, method));
 				}
 				else {
-					GlobalException.errorByXmExceptionEntity.put(errorClass,
+					GlobalExceptionInterceptor.errorByXmExceptionEntity.put(errorClass,
 							new XmExceptionEntity(errorClass, object, method));
 				}
 			});

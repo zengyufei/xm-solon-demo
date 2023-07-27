@@ -24,11 +24,13 @@ public interface XmPackageNameConstants {
 
 	String XM_ZIP = "xm-zip";
 
-	String XM_HEALTH = "xm-health";
+	String XM_H2 = "xm-h2-solon-plugin";
 
-	String XM_FLYWAY = "xm-flyway";
+	String XM_HEALTH = "xm-health-solon-plugin";
 
-	String XM_STOP = "xm-stop";
+	String XM_FLYWAY = "xm-flyway-solon-plugin";
+
+	String XM_STOP = "xm-stop-solon-plugin";
 
 	String XM_EXCEPTION_RECORD = "xm-exception-record";
 
@@ -38,6 +40,6 @@ public interface XmPackageNameConstants {
 
 	String XM_CORE_WEB = "xm-core-web";
 
-	String XM_JIMMER = "jimmer-solon-plugin";
+	String XM_JIMMER = "xm-jimmer-solon-plugin";
 
 }

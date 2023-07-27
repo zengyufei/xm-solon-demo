@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.xunmo.XmConstants;
 import com.xunmo.annotations.ExceptionHandler;
 import com.xunmo.common.CustomException;
@@ -39,6 +40,32 @@ public class XmGlobalException {
 	// 是否开启异常记录
 	@Inject
 	private MqSendService mqSendService;
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public AjaxJson handlerIllegalArgumentException(Context ctx, IllegalArgumentException e) throws Throwable {
+		if (e.getCause() instanceof JsonMappingException) {
+			return handlerJsonMappingException(ctx, (JsonMappingException) e.getCause());
+		}
+		log.error("", e);
+
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
+
+		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
+
+	public AjaxJson handlerJsonMappingException(Context ctx, JsonMappingException e) {
+		log.error("", e);
+
+		// 打印请求和异常信息
+		printRequestInfo(ctx, e);
+
+		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
+		return error;
+	}
 
 	@ExceptionHandler(CustomException.class)
 	public AjaxJson handlerCustomException(Context ctx, CustomException e) {

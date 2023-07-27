@@ -36,7 +36,8 @@ public class DbConfig {
 				}
 				System.out.println(JSONUtil.toJsonStr(row));
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return ds;

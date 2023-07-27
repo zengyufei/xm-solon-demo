@@ -70,7 +70,7 @@ public class XmJimmerPluginImp implements Plugin {
 		});
 
 		Solon.context().getBeanAsync(CacheService.class, cacheService -> {
-			log.info("{} 异步订阅 CacheService, 执行初始化动作", XmPackageNameConstants.XM_JIMMER);
+			log.info("{} 异步订阅 CacheService, 执行 jimmer 动作", XmPackageNameConstants.XM_JIMMER);
 			Solon.context().subWrapsOfType(CacheService.class, new CacheServiceWrapConsumer());
 		});
 

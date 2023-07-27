@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component(index = 0)
-public class GlobalException implements RouterInterceptor {
+public class GlobalExceptionInterceptor implements RouterInterceptor {
 
 	public static final Map<Class<? extends Throwable>, XmExceptionEntity> errorByXmExceptionEntity = new HashMap<>();
 

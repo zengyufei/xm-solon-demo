@@ -4,7 +4,11 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.xunmo.config.RedissonCodec;
+import com.xunmo.jackson.DoubleDeserializer;
+import com.xunmo.jackson.IntegerDeserializer;
+import com.xunmo.jackson.LongDeserializer;
 import com.xunmo.utils.XmRedissonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
@@ -46,8 +50,7 @@ public class XmCoreWebPluginImp implements Plugin {
 						final String value = entry.getValue();
 						if (StrUtil.isBlankOrUndefined(value)) {
 							entryIterator.remove();
-						}
-						else {
+						} else {
 							final String val = StrUtil.trim(EscapeUtil.unescapeHtml4(value));
 							paramMap.put(key, val);
 						}
@@ -62,7 +65,7 @@ public class XmCoreWebPluginImp implements Plugin {
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(ObjectMapper.class, objectMapper -> {
 				// bean 获取后，可以做些后续处理。。。
-				log.info("{} 异步订阅 ObjectMapper, 执行初始化动作", XmPackageNameConstants.XM_CORE_WEB);
+				log.info("{} 异步订阅 ObjectMapper, 执行 手动注册缓存 动作", XmPackageNameConstants.XM_CORE_WEB);
 
 				ThreadUtil.execute(() -> {
 					final RedissonClient redissonClient = XmRedissonBuilder.build(props.getProp("xm.web.cache"),
@@ -81,10 +84,21 @@ public class XmCoreWebPluginImp implements Plugin {
 			});
 		}
 
+		// 反序列化超长处理
+		Solon.context().getBeanAsync(ObjectMapper.class, objectMapper -> {
+			// bean 获取后，可以做些后续处理。。。
+			log.info("{} 异步订阅 ObjectMapper, 执行 反序列化超长处理 动作", XmPackageNameConstants.XM_CORE_WEB);
+
+			final SimpleModule simpleModule = new SimpleModule();
+			simpleModule.addDeserializer(Double.class, new DoubleDeserializer());
+			simpleModule.addDeserializer(Long.class, new LongDeserializer());
+			simpleModule.addDeserializer(Integer.class, new IntegerDeserializer());
+			objectMapper.registerModule(simpleModule);
+		});
+
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
-		}
-		else {
+		} else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
 		}
 	}
@@ -93,8 +107,7 @@ public class XmCoreWebPluginImp implements Plugin {
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE_WEB);
-		}
-		else {
+		} else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 插件关闭!");
 		}
 	}

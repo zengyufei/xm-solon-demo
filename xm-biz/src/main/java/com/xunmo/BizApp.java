@@ -33,13 +33,13 @@ public class BizApp {
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(CacheService.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				log.info("异步订阅 CacheService, 执行初始化缓存动作");
+				log.info("app 异步订阅 CacheService, 执行初始化缓存动作");
 			});
 
 			// 异步订阅方式，根据bean type获取Bean（已存在或产生时，会通知回调；否则，一直不回调）
 			Solon.context().getBeanAsync(RedissonClient.class, bean -> {
 				// bean 获取后，可以做些后续处理。。。
-				log.info("异步订阅 RedissonClient, 执行初始化缓存动作");
+				log.info("app 异步订阅 RedissonClient, 执行 初始化LuaTool 动作");
 				LuaTool.setRedissonClient(bean);
 			});
 
