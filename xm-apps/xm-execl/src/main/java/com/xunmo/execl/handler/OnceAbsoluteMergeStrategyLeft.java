@@ -21,18 +21,22 @@ import java.util.List;
  * @author Jiaju Zhuang
  */
 public class OnceAbsoluteMergeStrategyLeft implements SheetWriteHandler, CellWriteHandler {
+
 	/**
 	 * First row
 	 */
 	private int firstRowIndex;
+
 	/**
 	 * Last row
 	 */
 	private int lastRowIndex;
+
 	/**
 	 * First column
 	 */
 	private int firstColumnIndex;
+
 	/**
 	 * Last row
 	 */
@@ -40,7 +44,8 @@ public class OnceAbsoluteMergeStrategyLeft implements SheetWriteHandler, CellWri
 
 	private HorizontalAlignment horizontalAlignment;
 
-	public OnceAbsoluteMergeStrategyLeft(int firstRowIndex, int lastRowIndex, int firstColumnIndex, int lastColumnIndex, HorizontalAlignment horizontalAlignment) {
+	public OnceAbsoluteMergeStrategyLeft(int firstRowIndex, int lastRowIndex, int firstColumnIndex, int lastColumnIndex,
+			HorizontalAlignment horizontalAlignment) {
 		if (firstRowIndex < 0 || lastRowIndex < 0 || firstColumnIndex < 0 || lastColumnIndex < 0) {
 			throw new IllegalArgumentException("All parameters must be greater than 0");
 		}
@@ -53,14 +58,15 @@ public class OnceAbsoluteMergeStrategyLeft implements SheetWriteHandler, CellWri
 
 	@Override
 	public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
-		CellRangeAddress cellRangeAddress =
-				new CellRangeAddress(firstRowIndex, lastRowIndex, firstColumnIndex, lastColumnIndex);
+		CellRangeAddress cellRangeAddress = new CellRangeAddress(firstRowIndex, lastRowIndex, firstColumnIndex,
+				lastColumnIndex);
 		final Sheet sheet = writeSheetHolder.getSheet();
 		sheet.addMergedRegionUnsafe(cellRangeAddress);
 	}
 
 	@Override
-	public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+	public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder,
+			List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
 		final int columnIndex = cell.getColumnIndex();
 		final int rowIndex = cell.getRowIndex();
 		if (rowIndex == firstRowIndex && columnIndex == firstColumnIndex) {
@@ -70,4 +76,5 @@ public class OnceAbsoluteMergeStrategyLeft implements SheetWriteHandler, CellWri
 			}
 		}
 	}
+
 }

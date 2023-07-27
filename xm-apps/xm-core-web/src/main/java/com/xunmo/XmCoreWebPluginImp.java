@@ -5,17 +5,24 @@ import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.xunmo.annotations.valid.IsDate;
+import com.xunmo.annotations.valid.IsEnum;
+import com.xunmo.annotations.valid.IsNumber;
 import com.xunmo.config.RedissonCodec;
 import com.xunmo.jackson.DoubleDeserializer;
 import com.xunmo.jackson.IntegerDeserializer;
 import com.xunmo.jackson.LongDeserializer;
 import com.xunmo.utils.XmRedissonBuilder;
+import com.xunmo.valid.IsDateValidator;
+import com.xunmo.valid.IsEnumValidator;
+import com.xunmo.valid.IsNumberValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.cache.redisson.RedissonCacheService;
 import org.noear.solon.core.*;
 import org.noear.solon.data.cache.CacheService;
+import org.noear.solon.validation.ValidatorManager;
 import org.noear.solon.web.cors.CrossHandler;
 import org.redisson.api.RedissonClient;
 
@@ -50,7 +57,8 @@ public class XmCoreWebPluginImp implements Plugin {
 						final String value = entry.getValue();
 						if (StrUtil.isBlankOrUndefined(value)) {
 							entryIterator.remove();
-						} else {
+						}
+						else {
 							final String val = StrUtil.trim(EscapeUtil.unescapeHtml4(value));
 							paramMap.put(key, val);
 						}
@@ -96,9 +104,15 @@ public class XmCoreWebPluginImp implements Plugin {
 			objectMapper.registerModule(simpleModule);
 		});
 
+		// 注册自定义验证器
+		ValidatorManager.register(IsDate.class, IsDateValidator.instance);
+		ValidatorManager.register(IsNumber.class, IsNumberValidator.instance);
+		ValidatorManager.register(IsEnum.class, IsEnumValidator.instance);
+
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件包加载完毕!", XmPackageNameConstants.XM_CORE_WEB);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 包加载完毕!");
 		}
 	}
@@ -107,7 +121,8 @@ public class XmCoreWebPluginImp implements Plugin {
 	public void stop() throws Throwable {
 		if (XmPackageNameConstants.IS_CONSOLE_LOG) {
 			log.info("{} 插件关闭!", XmPackageNameConstants.XM_CORE_WEB);
-		} else {
+		}
+		else {
 			System.out.println(XmPackageNameConstants.XM_CORE_WEB + " 插件关闭!");
 		}
 	}

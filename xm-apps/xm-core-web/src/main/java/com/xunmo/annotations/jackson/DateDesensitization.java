@@ -1,4 +1,4 @@
-package com.xunmo.annotations;
+package com.xunmo.annotations.jackson;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -14,7 +14,8 @@ public class DateDesensitization implements StringDesensitization {
 		try {
 			final DateTime parse = DateUtil.parse(target);
 			return parse.toDateStr();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return target;
 		}
 	}

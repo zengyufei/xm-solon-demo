@@ -2,8 +2,7 @@ package com.xunmo.core.utils;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-
-import java.util.function.Consumer;
+import com.xunmo.function.XmConsumer;
 
 public class XmDateUtil {
 
@@ -46,7 +45,7 @@ public class XmDateUtil {
 		return parameter;
 	}
 
-	public static DateTime checkDateStr(String parameter, Consumer<String> errorMsg) {
+	public static DateTime checkDateStr(String parameter, XmConsumer<String> errorMsg) throws Exception {
 		DateTime parse = null;
 		try {
 			parse = DateUtil.parse(parameter);
@@ -63,7 +62,24 @@ public class XmDateUtil {
 		if (parse == null) {
 			errorMsg.accept(parameter);
 		}
-		return null;
+		return parse;
+	}
+
+	public static DateTime checkDateStr(String parameter) {
+		DateTime parse = null;
+		try {
+			parse = DateUtil.parse(parameter);
+		}
+		catch (Exception ignored) {
+			for (String dateFormatStr : DATE_FORMAT_STRS) {
+				try {
+					parse = DateUtil.parse(parameter, dateFormatStr);
+				}
+				catch (Exception ignored2) {
+				}
+			}
+		}
+		return parse;
 	}
 
 }

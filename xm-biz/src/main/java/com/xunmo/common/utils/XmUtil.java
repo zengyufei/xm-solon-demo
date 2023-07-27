@@ -13,6 +13,7 @@ import com.xunmo.common.CustomException;
 import com.xunmo.common.XmFunction;
 import com.xunmo.core.AjaxError;
 import com.xunmo.core.utils.*;
+import com.xunmo.function.XmConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.javers.core.Changes;
 import org.javers.core.Javers;
@@ -45,7 +46,7 @@ public class XmUtil extends CheckUtil {
 		return XmDateUtil.formatToDateStr(parameter);
 	}
 
-	public static DateTime checkDateStr(String parameter, Consumer<String> errorMsg) {
+	public static DateTime checkDateStr(String parameter, XmConsumer<String> errorMsg) throws Exception {
 		return XmDateUtil.checkDateStr(parameter, errorMsg);
 	}
 

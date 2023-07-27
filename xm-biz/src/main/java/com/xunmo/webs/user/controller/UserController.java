@@ -172,9 +172,8 @@ public class UserController extends BaseController {
 	 */
 	@Get
 	@Mapping("/exception")
-	@Tran
 	@CacheRemove(tags = "user")
-	public ResponseEntity<Boolean> exception() throws Exception {
+	public ResponseEntity<Boolean> exception(PageRequest pageRequest) throws Exception {
 		throw new NullPointerException("主动抛出异常 - 用于测试 " + DateUtil.now());
 	}
 

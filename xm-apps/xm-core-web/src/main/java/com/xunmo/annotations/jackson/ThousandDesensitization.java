@@ -1,4 +1,4 @@
-package com.xunmo.annotations;
+package com.xunmo.annotations.jackson;
 
 import cn.hutool.core.util.StrUtil;
 import com.xunmo.jackson.desensitize.StringDesensitization;

@@ -46,12 +46,19 @@ public class XmGlobalException {
 		if (e.getCause() instanceof JsonMappingException) {
 			return handlerJsonMappingException(ctx, (JsonMappingException) e.getCause());
 		}
+		if (e.getCause() instanceof NumberFormatException) {
+			return handlerNumberFormatException(ctx, (NumberFormatException) e.getCause());
+		}
+		return handlerThrowable(ctx, e);
+	}
+
+	public AjaxJson handlerNumberFormatException(Context ctx, NumberFormatException e) {
 		log.error("", e);
 
 		// 打印请求和异常信息
 		printRequestInfo(ctx, e);
 
-		final AjaxJson error = AjaxJson.getError(e.getMessage());
+		final AjaxJson error = AjaxJson.getError("输入的数不合法, 请输入合法的数值, " + e.getMessage());
 		error.set(XmConstants.REQ_ID, ctx.param(XmConstants.REQ_ID));
 		return error;
 	}
