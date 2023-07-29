@@ -1,5 +1,6 @@
 package com.xunmo.jimmer.integration;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser;
@@ -40,99 +41,6 @@ import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHA
 
 @Slf4j
 public class XmJimmerPluginImp implements Plugin {
-
-	@Override
-	public void start(AopContext context) {
-		final SolonApp app = Solon.app();
-		app.enableCaching(false);
-		initJackson(app, context);
-
-		// context.getBeanAsync(ObjectMapper.class, bean -> {
-		// // bean 获取后，可以做些后续处理。。。
-		// log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作",
-		// XmPackageNameConstants.XM_JIMMER);
-		// final ImmutableModule immutableModule = new ImmutableModule();
-		// bean.registerModule(immutableModule);
-		// EventBus.push(immutableModule);
-		// });
-
-		context.subWrapsOfType(DataSource.class, bw -> {
-			JimmerAdapterManager.register(bw);
-		});
-
-		// for new
-		context.beanBuilderAdd(Db.class, (clz, wrap, anno) -> {
-			builderAddDo(clz, wrap, anno.value());
-		});
-
-		context.beanInjectorAdd(Db.class, (varH, anno) -> {
-			injectorAddDo(varH, anno.value());
-		});
-
-		Solon.context().getBeanAsync(CacheService.class, cacheService -> {
-			log.info("{} 异步订阅 CacheService, 执行 jimmer 动作", XmPackageNameConstants.XM_JIMMER);
-			Solon.context().subWrapsOfType(CacheService.class, new CacheServiceWrapConsumer());
-		});
-
-		context.beanAroundAdd(CachePut.class, new XmCachePutInterceptor(), 110);
-		context.beanAroundAdd(CacheRemove.class, new XmCacheRemoveInterceptor(), 110);
-		context.beanAroundAdd(Cache.class, new XmCacheInterceptor(), 111);
-
-		log.info("{} 包加载完毕!", XmPackageNameConstants.XM_JIMMER);
-	}
-
-	private void builderAddDo(Class<?> clz, BeanWrap wrap, String annoValue) {
-		if (!clz.isInterface()) {
-			return;
-		}
-
-		if (Utils.isEmpty(annoValue)) {
-			wrap.context().getWrapAsync(DataSource.class, (dsBw) -> {
-				create0(clz, dsBw);
-			});
-		}
-		else {
-			wrap.context().getWrapAsync(annoValue, (dsBw) -> {
-				if (dsBw.raw() instanceof DataSource) {
-					create0(clz, dsBw);
-				}
-			});
-		}
-	}
-
-	private void injectorAddDo(VarHolder varH, String annoValue) {
-		if (Utils.isEmpty(annoValue)) {
-			varH.context().getWrapAsync(DataSource.class, (dsBw) -> {
-				inject0(varH, dsBw);
-			});
-		}
-		else {
-			varH.context().getWrapAsync(annoValue, (dsBw) -> {
-				if (dsBw.raw() instanceof DataSource) {
-					inject0(varH, dsBw);
-				}
-			});
-		}
-	}
-
-	private void create0(Class<?> clz, BeanWrap dsBw) {
-		JimmerAdapter raw = JimmerAdapterManager.get(dsBw);
-		// 进入容器，用于 @Inject 注入
-		dsBw.context().wrapAndPut(clz, raw.getRepository(clz));
-	}
-
-	private void inject0(VarHolder varH, BeanWrap dsBw) {
-		JimmerAdapter jimmerAdapter = JimmerAdapterManager.get(dsBw);
-
-		if (jimmerAdapter != null) {
-			jimmerAdapter.injectTo(varH, dsBw);
-		}
-	}
-
-	@Override
-	public void stop() throws Throwable {
-		log.info("{} 插件关闭!", XmPackageNameConstants.XM_JIMMER);
-	}
 
 	private static void initJackson(SolonApp app, AopContext context) {
 		// 给 body 塞入 arg 参数
@@ -207,6 +115,116 @@ public class XmJimmerPluginImp implements Plugin {
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		// 反序列化的时候如果是无效子类型,不抛出异常
 		objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+	}
+
+	@Override
+	public void start(AopContext context) {
+		final SolonApp app = Solon.app();
+		app.enableCaching(false);
+		initJackson(app, context);
+
+		// context.getBeanAsync(ObjectMapper.class, bean -> {
+		// // bean 获取后，可以做些后续处理。。。
+		// log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作",
+		// XmPackageNameConstants.XM_JIMMER);
+		// final ImmutableModule immutableModule = new ImmutableModule();
+		// bean.registerModule(immutableModule);
+		// EventBus.push(immutableModule);
+		// });
+
+		context.subWrapsOfType(DataSource.class, bw -> {
+			JimmerAdapterManager.add(bw);
+		});
+
+		context.lifecycle(-99, () -> {
+			JimmerAdapterManager.register();
+		});
+
+		// for new
+		context.beanBuilderAdd(Db.class, (clz, wrap, anno) -> {
+			builderAddDo(clz, wrap, anno.value());
+		});
+
+		context.beanInjectorAdd(Db.class, (varH, anno) -> {
+			injectorAddDo(varH, anno.value());
+		});
+
+		Solon.context().getBeanAsync(CacheService.class, cacheService -> {
+			log.info("{} 异步订阅 CacheService, 执行 jimmer 动作", XmPackageNameConstants.XM_JIMMER);
+			Solon.context().subWrapsOfType(CacheService.class, new CacheServiceWrapConsumer());
+		});
+
+		context.beanAroundAdd(CachePut.class, new XmCachePutInterceptor(), 110);
+		context.beanAroundAdd(CacheRemove.class, new XmCacheRemoveInterceptor(), 110);
+		context.beanAroundAdd(Cache.class, new XmCacheInterceptor(), 111);
+
+		log.info("{} 包加载完毕!", XmPackageNameConstants.XM_JIMMER);
+	}
+
+	private void builderAddDo(Class<?> clz, BeanWrap wrap, String annoValue) {
+		if (!clz.isInterface()) {
+			return;
+		}
+
+		if (Utils.isEmpty(annoValue)) {
+			wrap.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
+				final JimmerAdapter adapter = dsBw.raw();
+				final BeanWrap dsWrap = adapter.getDsWrap();
+				final String name = dsWrap.name();
+				if (dsWrap.typed()) {
+					create0(clz, dsWrap);
+				}
+			});
+		} else {
+			wrap.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
+				final JimmerAdapter adapter = dsBw.raw();
+				final BeanWrap dsWrap = adapter.getDsWrap();
+				final String name = dsWrap.name();
+				if (!dsWrap.typed() && StrUtil.equalsIgnoreCase(name, annoValue)) {
+					create0(clz, dsWrap);
+				}
+			});
+		}
+	}
+
+	private void injectorAddDo(VarHolder varH, String annoValue) {
+		if (Utils.isEmpty(annoValue)) {
+			varH.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
+				final JimmerAdapter adapter = dsBw.raw();
+				final BeanWrap dsWrap = adapter.getDsWrap();
+				if (dsWrap.typed()) {
+					inject0(varH, dsWrap);
+				}
+			});
+		} else {
+			varH.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
+				final JimmerAdapter adapter = dsBw.raw();
+				final BeanWrap dsWrap = adapter.getDsWrap();
+				final String name = dsWrap.name();
+				if (!dsWrap.typed() && StrUtil.equalsIgnoreCase(name, annoValue)) {
+					inject0(varH, dsWrap);
+				}
+			});
+		}
+	}
+
+	private void create0(Class<?> clz, BeanWrap dsBw) {
+		JimmerAdapter raw = JimmerAdapterManager.get(dsBw);
+		// 进入容器，用于 @Inject 注入
+		dsBw.context().wrapAndPut(clz, raw.getRepository(clz));
+	}
+
+	private void inject0(VarHolder varH, BeanWrap dsBw) {
+		JimmerAdapter jimmerAdapter = JimmerAdapterManager.get(dsBw);
+
+		if (jimmerAdapter != null) {
+			jimmerAdapter.injectTo(varH, dsBw);
+		}
+	}
+
+	@Override
+	public void stop() throws Throwable {
+		log.info("{} 插件关闭!", XmPackageNameConstants.XM_JIMMER);
 	}
 
 }

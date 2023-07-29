@@ -14,6 +14,8 @@ import org.noear.solon.core.VarHolder;
  */
 public interface JimmerAdapter {
 
+	BeanWrap getDsWrap();
+
 	JSqlClient sqlClient();
 
 	/**

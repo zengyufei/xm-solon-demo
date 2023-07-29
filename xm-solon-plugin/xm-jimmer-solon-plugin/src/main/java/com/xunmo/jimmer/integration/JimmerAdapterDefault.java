@@ -6,6 +6,7 @@ import com.xunmo.jimmer.cfg.JimmerProperties;
 import com.xunmo.jimmer.repository.JRepository;
 import com.xunmo.jimmer.repository.support.JimmerRepositoryFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.babyfish.jimmer.sql.DraftInterceptor;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.dialect.Dialect;
 import org.babyfish.jimmer.sql.runtime.ConnectionManager;
@@ -22,7 +23,9 @@ import org.noear.solon.data.tran.TranUtils;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -42,6 +45,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 	protected final JSqlClient jSqlClient;
 
 	protected final JimmerRepositoryFactory jimmerRepositoryFactory;
+	Map<Class<?>, Object> mapperCached = new HashMap<>();
 
 	/**
 	 * 构建Sql工厂适配器，使用默认的 typeAliases 和 mappers 配置
@@ -57,12 +61,16 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		this.dsWrap = dsWrap;
 		if (dsProps == null) {
 			this.dsProps = new Props();
-		}
-		else {
+		} else {
 			this.dsProps = dsProps;
 		}
 		jSqlClient = initSqlClient(this.dsProps.getBean(JimmerProperties.class));
 		jimmerRepositoryFactory = new JimmerRepositoryFactory(jSqlClient);
+	}
+
+	@Override
+	public BeanWrap getDsWrap() {
+		return dsWrap;
 	}
 
 	protected DataSource getDataSource() {
@@ -79,6 +87,9 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		if (properties != null) {
 			final Dialect dialect = properties.getDialect();
 			builder.setDialect(dialect);
+			final List<DraftInterceptor<?>> interceptors = new ArrayList<>();
+			Solon.context().subBeansOfType(DraftInterceptor.class, interceptors::add);
+			builder.addDraftInterceptors(interceptors);
 			builder.setTriggerType(properties.getTriggerType());
 			builder.setDefaultEnumStrategy(properties.getDefaultEnumStrategy());
 			builder.setDefaultBatchSize(properties.getDefaultBatchSize());
@@ -100,26 +111,22 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 					if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
 						connection.commit();
 					}
-				}
-				catch (Throwable var6) {
+				} catch (Throwable var6) {
 					if (connection != null) {
 						try {
 							if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
 								connection.rollback();
 							}
-						}
-						catch (SQLException e) {
+						} catch (SQLException e) {
 							throw new RuntimeException(e);
 						}
 					}
 					throw new RuntimeException(var6);
-				}
-				finally {
+				} finally {
 					if (connection != null && !TranUtils.inTrans()) {
 						try {
 							connection.close();
-						}
-						catch (SQLException e) {
+						} catch (SQLException e) {
 							throw new RuntimeException(e);
 						}
 					}
@@ -142,8 +149,6 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 			}
 		}).build();
 	}
-
-	Map<Class<?>, Object> mapperCached = new HashMap<>();
 
 	@Override
 	public <T> T getRepository(Class<T> repositoryClz) {

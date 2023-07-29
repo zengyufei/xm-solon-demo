@@ -88,7 +88,6 @@
 		<dependency>
 			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-flyway-solon-plugin</artifactId>
-			<version>1.0.1</version>
 		</dependency>
 
 		<!--        <dependency>-->
@@ -100,7 +99,6 @@
 		<!--            <groupId>org.noear</groupId>-->
 		<!--            <artifactId>quartz-solon-plugin</artifactId>-->
 		<!--        </dependency>-->
-
 
 
 		<dependency>
@@ -132,10 +130,10 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.postgresql</groupId>-->
-<!--            <artifactId>postgresql</artifactId>-->
-<!--        </dependency>-->
+		<!--        <dependency>-->
+		<!--            <groupId>org.postgresql</groupId>-->
+		<!--            <artifactId>postgresql</artifactId>-->
+		<!--        </dependency>-->
 
 
 		<dependency>
@@ -150,36 +148,36 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<!-- 配置资源目录  -->
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.xlsx</exclude>
-                    <exclude>**/*.xls</exclude>
-                    <exclude>**/*.ql</exclude>
-                    <exclude>**/*.json</exclude>
-                    <exclude>**/*.sql</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.xlsx</include>
-                    <include>**/*.xls</include>
-                    <include>**/*.ql</include>
-                    <include>**/*.json</include>
-                    <include>**/*.sql</include>
-                </includes>
-            </resource>
-        </resources>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.xlsx</exclude>
+					<exclude>**/*.xls</exclude>
+					<exclude>**/*.ql</exclude>
+					<exclude>**/*.json</exclude>
+					<exclude>**/*.sql</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.xlsx</include>
+					<include>**/*.xls</include>
+					<include>**/*.ql</include>
+					<include>**/*.json</include>
+					<include>**/*.sql</include>
+				</includes>
+			</resource>
+		</resources>
 
 		<plugins>
 

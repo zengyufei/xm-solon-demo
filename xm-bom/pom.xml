@@ -27,7 +27,7 @@
 		<!-- bom 版本 -->
 		<solon.version>2.4.0</solon.version>
 		<hutool.version>5.8.20</hutool.version>
-		<xm.version>1.0.3</xm.version>
+		<xm.version>1.0.0</xm.version>
 
 		<!-- 依赖版本 -->
 		<jimmer.version>0.7.118</jimmer.version>
@@ -95,13 +95,6 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-			<dependency>
-				<groupId>vip.xunmo</groupId>
-				<artifactId>xm-solon-plugin</artifactId>
-				<version>${xm.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
 
 			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 			<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -130,6 +123,11 @@
 			<dependency>
 				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-exception-handler</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-stop-solon-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
@@ -166,6 +164,11 @@
 			<dependency>
 				<groupId>vip.xunmo</groupId>
 				<artifactId>xm-jimmer-solon-plugin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>vip.xunmo</groupId>
+				<artifactId>xm-h2-solon-plugin</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<!-- plugin end -->
