@@ -26,11 +26,11 @@ public class TestUserController extends HttpTester {
 	@Test
 	public void test_001_GetList() throws Exception {
 		HttpUtils httpUtils = path("/user/list?size=10&page=1")
-			// .bodyJson("{\"orgName\": \"Organization 2\"}")
-			// .bodyJson("{\"roleName\": \"Role 10\"}")
-			.bodyJson("{\"permissionName\": \"Permission 103\"}")
-		// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
-		;
+				// .bodyJson("{\"orgName\": \"Organization 2\"}")
+				// .bodyJson("{\"roleName\": \"Role 10\"}")
+				.bodyJson("{\"permissionName\": \"Permission 103\"}")
+				// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
+				;
 		httpUtils.post();
 	}
 
@@ -49,7 +49,7 @@ public class TestUserController extends HttpTester {
 	@Test
 	public void test_004_Add() throws Exception {
 		final String data = "{\n" + "  \"userId\": \"user_1009\",\n" + "  \"userName\": \"User 1008\",\n"
-				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
+//				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
 				+ "  \"createId\": \"user_2450\",\n" + "  \"updateId\": \"user_9427\",\n"
 				+ "  \"approvalStatus\": \"1\",\n" + "  \"approverId\": \"user_1009\",\n"
 				+ "  \"approvalComment\": \"审批通过\",\n" + "  \"approvalTime\": \"2023-06-29 11:49:36\",\n"
@@ -79,11 +79,11 @@ public class TestUserController extends HttpTester {
 	@Test
 	public void test_006_testRepository() throws Throwable {
 		HttpUtils httpUtils = path("/user/testRepository?size=10&page=1")
-			// .bodyJson("{\"orgName\": \"Organization 2\"}")
-			// .bodyJson("{\"roleName\": \"Role 10\"}")
-			.bodyJson("{\"permissionName\": \"Permission 103\"}")
-		// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
-		;
+				// .bodyJson("{\"orgName\": \"Organization 2\"}")
+				// .bodyJson("{\"roleName\": \"Role 10\"}")
+				.bodyJson("{\"permissionName\": \"Permission 103\"}")
+				// .bodyJson("{\"size\": 10, \"page\": 1, \"userName\": \"张三\"}")
+				;
 		httpUtils.post();
 	}
 
