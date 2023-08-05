@@ -175,7 +175,8 @@ public class XmJimmerPluginImp implements Plugin {
 					create0(clz, dsWrap);
 				}
 			});
-		} else {
+		}
+		else {
 			wrap.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
 				final JimmerAdapter adapter = dsBw.raw();
 				final BeanWrap dsWrap = adapter.getDsWrap();
@@ -196,7 +197,8 @@ public class XmJimmerPluginImp implements Plugin {
 					inject0(varH, dsWrap);
 				}
 			});
-		} else {
+		}
+		else {
 			varH.context().getWrapAsync(JimmerAdapter.class, (dsBw) -> {
 				final JimmerAdapter adapter = dsBw.raw();
 				final BeanWrap dsWrap = adapter.getDsWrap();

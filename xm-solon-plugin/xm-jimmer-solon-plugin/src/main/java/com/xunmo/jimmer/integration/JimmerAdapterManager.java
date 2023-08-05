@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.1
  */
 public class JimmerAdapterManager {
+
 	private static List<BeanWrap> dsWraps = new ArrayList<>();
 
 	private static JimmerAdapterFactory adapterFactory = new JimmerAdapterFactoryDefault();
@@ -58,7 +59,6 @@ public class JimmerAdapterManager {
 
 	/**
 	 * 注册数据源，并生成适配器
-	 *
 	 * @param bw 数据源的BW
 	 */
 	public static void add(BeanWrap bw) {
@@ -67,7 +67,6 @@ public class JimmerAdapterManager {
 
 	/**
 	 * 注册数据源，并生成适配器
-	 *
 	 * @param bw 数据源的BW
 	 */
 	public static void register(BeanWrap bw) {
@@ -90,7 +89,8 @@ public class JimmerAdapterManager {
 		JimmerAdapter adapter;
 		if (Utils.isEmpty(bw.name())) {
 			adapter = adapterFactory.create(bw);
-		} else {
+		}
+		else {
 			adapter = adapterFactory.create(bw, Solon.cfg().getProp("jimmer." + bw.name()));
 		}
 
