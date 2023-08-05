@@ -1,0 +1,5 @@
+
+datasource.db:
+  type: "com.zaxxer.hikari.HikariDataSource"
+  driverClassName: org.h2.Driver
+  jdbcUrl: jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=TRUE;IGNORECASE=TRUE;NON_KEYWORDS=user
