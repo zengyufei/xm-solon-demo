@@ -26,7 +26,6 @@ import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Get;
 import org.noear.solon.annotation.Mapping;
 import org.noear.solon.annotation.Post;
-import org.noear.solon.data.annotation.Cache;
 import org.noear.solon.data.annotation.CacheRemove;
 import org.noear.solon.data.annotation.Tran;
 import org.noear.solon.validation.annotation.NotBlank;
@@ -68,7 +67,7 @@ public class UserController extends BaseController {
 	 */
 	@Post
 	@Mapping("/list")
-	@Cache(tags = "user", seconds = 10)
+//	@Cache(tags = "user", seconds = 10)
 	public ResponseEntity<Page<User>> list(@Validated UserQuery query, PageRequest pageRequest) throws Exception {
 		final String userId = query.getUserId();
 		final String userName = query.getUserName();

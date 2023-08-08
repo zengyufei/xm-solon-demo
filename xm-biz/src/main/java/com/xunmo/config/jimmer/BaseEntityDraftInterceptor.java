@@ -1,4 +1,4 @@
-package com.xunmo.config;
+package com.xunmo.config.jimmer;
 
 
 import com.xunmo.common.base.BaseEntityDraft;

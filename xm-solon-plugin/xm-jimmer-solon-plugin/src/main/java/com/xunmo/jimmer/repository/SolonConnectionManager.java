@@ -18,24 +18,40 @@ public final class SolonConnectionManager implements ConnectionManager {
 
 	@Override
 	public <R> R execute(Function<Connection, R> block) {
-		Connection con = null;
+		Connection connection = null;
+		R var3;
 		try {
-			con = TranUtils.getConnection(dataSource);
-			return block.apply(con);
+			connection = TranUtils.getConnection(dataSource);
+			connection.setAutoCommit(false);
+			var3 = block.apply(connection);
+			if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
+				connection.commit();
+			}
 		}
-		catch (SQLException e) {
-			throw new RuntimeException(e);
+		catch (Throwable var6) {
+			if (connection != null) {
+				try {
+					if (!TranUtils.inTrans() && !connection.getAutoCommit()) {
+						connection.rollback();
+					}
+				}
+				catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			throw new RuntimeException(var6);
 		}
 		finally {
-			if (con != null && !TranUtils.inTrans()) {
+			if (connection != null && !TranUtils.inTrans()) {
 				try {
-					con.close();
+					connection.close();
 				}
 				catch (SQLException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
+		return var3;
 	}
 
 }

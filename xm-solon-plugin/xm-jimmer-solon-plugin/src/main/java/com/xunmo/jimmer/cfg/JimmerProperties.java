@@ -15,29 +15,33 @@ public class JimmerProperties {
 
 	private String language;
 
-	private Dialect dialect;
+	private String dialect;
 
-	private boolean showSql;
+	private Dialect finalDialect;
 
-	private boolean prettySql;
+	private Boolean showSql;
+
+	private Boolean prettySql;
 
 	private DatabaseValidation databaseValidation;
+
+	private DatabaseValidationMode databaseValidationMode;
 
 	private TriggerType triggerType;
 
 	// private IdOnlyTargetCheckingLevel idOnlyTargetCheckingLevel;
 
-	private int transactionCacheOperatorFixedDelay;
+	private Integer transactionCacheOperatorFixedDelay;
 
 	private EnumType.Strategy defaultEnumStrategy;
 
-	private int defaultBatchSize = 1000;
+	private Integer defaultBatchSize = 1000;
 
-	private int defaultListBatchSize = 1000;
+	private Integer defaultListBatchSize = 1000;
 
-	private int offsetOptimizingThreshold;
+	private Integer offsetOptimizingThreshold;
 
-	private boolean isForeignKeyEnabledByDefault;
+	private Boolean isForeignKeyEnabledByDefault;
 
 	private Collection<String> executorContextPrefixes;
 
@@ -50,48 +54,41 @@ public class JimmerProperties {
 	private Map<String, Client> clients;
 
 	public JimmerProperties() {
-		if (language == null) {
-			this.language = "java";
-		}
-		else {
-			if (!language.equals("java") && !language.equals("kotlin")) {
-				throw new IllegalArgumentException("`jimmer.language` must be \"java\" or \"kotlin\"");
-			}
-			this.language = language;
-		}
-		this.showSql = showSql;
-		this.prettySql = prettySql;
-		this.executorContextPrefixes = executorContextPrefixes;
-		this.microServiceName = microServiceName != null ? microServiceName : "";
-		if (errorTranslator == null) {
-			this.errorTranslator = new ErrorTranslator(null, null, null, null);
-		}
-		else {
-			this.errorTranslator = errorTranslator;
-		}
-		if (client == null) {
-			this.client = new Client(null, null);
-		}
-		else {
-			this.client = client;
-		}
-		this.clients = clients;
+	}
+
+	public JimmerProperties setLanguage(String language) {
+		this.language = language;
+		return this;
 	}
 
 	public String getLanguage() {
 		return language;
 	}
 
-	public Dialect getDialect() {
+	public String getDialect() {
 		return dialect;
 	}
 
-	public boolean isShowSql() {
+	public Dialect getFinalDialect() {
+		return finalDialect;
+	}
+
+	public JimmerProperties setFinalDialect(Dialect finalDialect) {
+		this.finalDialect = finalDialect;
+		return this;
+	}
+
+	public Boolean isShowSql() {
 		return showSql;
 	}
 
-	public boolean isPrettySql() {
+	public Boolean isPrettySql() {
 		return prettySql;
+	}
+
+	public JimmerProperties setDatabaseValidation(DatabaseValidation databaseValidation) {
+		this.databaseValidation = databaseValidation;
+		return this;
 	}
 
 	public DatabaseValidation getDatabaseValidation() {
@@ -107,15 +104,94 @@ public class JimmerProperties {
 	// return idOnlyTargetCheckingLevel;
 	// }
 
+	public JimmerProperties setDialect(String dialect) {
+		this.dialect = dialect;
+		return this;
+	}
+
+	public JimmerProperties setShowSql(Boolean showSql) {
+		this.showSql = showSql;
+		return this;
+	}
+
+	public JimmerProperties setPrettySql(Boolean prettySql) {
+		this.prettySql = prettySql;
+		return this;
+	}
+
+	public JimmerProperties setTriggerType(TriggerType triggerType) {
+		this.triggerType = triggerType;
+		return this;
+	}
+
+	public JimmerProperties setTransactionCacheOperatorFixedDelay(Integer transactionCacheOperatorFixedDelay) {
+		this.transactionCacheOperatorFixedDelay = transactionCacheOperatorFixedDelay;
+		return this;
+	}
+
+	public Integer getTransactionCacheOperatorFixedDelay() {
+		return transactionCacheOperatorFixedDelay;
+	}
+
+	public JimmerProperties setDefaultEnumStrategy(EnumType.Strategy defaultEnumStrategy) {
+		this.defaultEnumStrategy = defaultEnumStrategy;
+		return this;
+	}
+
+	public JimmerProperties setDefaultBatchSize(Integer defaultBatchSize) {
+		this.defaultBatchSize = defaultBatchSize;
+		return this;
+	}
+
+	public JimmerProperties setDefaultListBatchSize(Integer defaultListBatchSize) {
+		this.defaultListBatchSize = defaultListBatchSize;
+		return this;
+	}
+
+	public JimmerProperties setOffsetOptimizingThreshold(Integer offsetOptimizingThreshold) {
+		this.offsetOptimizingThreshold = offsetOptimizingThreshold;
+		return this;
+	}
+
+	public JimmerProperties setForeignKeyEnabledByDefault(Boolean foreignKeyEnabledByDefault) {
+		isForeignKeyEnabledByDefault = foreignKeyEnabledByDefault;
+		return this;
+	}
+
+	public JimmerProperties setExecutorContextPrefixes(Collection<String> executorContextPrefixes) {
+		this.executorContextPrefixes = executorContextPrefixes;
+		return this;
+	}
+
+	public JimmerProperties setMicroServiceName(String microServiceName) {
+		this.microServiceName = microServiceName;
+		return this;
+	}
+
+	public JimmerProperties setErrorTranslator(ErrorTranslator errorTranslator) {
+		this.errorTranslator = errorTranslator;
+		return this;
+	}
+
+	public JimmerProperties setClient(Client client) {
+		this.client = client;
+		return this;
+	}
+
+	public JimmerProperties setClients(Map<String, Client> clients) {
+		this.clients = clients;
+		return this;
+	}
+
 	public EnumType.Strategy getDefaultEnumStrategy() {
 		return defaultEnumStrategy;
 	}
 
-	public int getDefaultBatchSize() {
+	public Integer getDefaultBatchSize() {
 		return defaultBatchSize;
 	}
 
-	public int getDefaultListBatchSize() {
+	public Integer getDefaultListBatchSize() {
 		return defaultListBatchSize;
 	}
 
@@ -141,7 +217,7 @@ public class JimmerProperties {
 	 * }</pre>
 	 * @return An integer which is greater than 0
 	 */
-	public int getOffsetOptimizingThreshold() {
+	public Integer getOffsetOptimizingThreshold() {
 		return offsetOptimizingThreshold;
 	}
 
@@ -162,7 +238,7 @@ public class JimmerProperties {
 	 * <li>Using database that does not support foreign key, such as TiDB</li>
 	 * </ul>
 	 */
-	public boolean isForeignKeyEnabledByDefault() {
+	public Boolean isForeignKeyEnabledByDefault() {
 		return isForeignKeyEnabledByDefault;
 	}
 
@@ -201,6 +277,15 @@ public class JimmerProperties {
 
 	public Client getClient() {
 		return client;
+	}
+
+	public DatabaseValidationMode getDatabaseValidationMode() {
+		return databaseValidationMode;
+	}
+
+	public JimmerProperties setDatabaseValidationMode(DatabaseValidationMode databaseValidationMode) {
+		this.databaseValidationMode = databaseValidationMode;
+		return this;
 	}
 
 	@Override
@@ -252,13 +337,13 @@ public class JimmerProperties {
 	// @ConstructorBinding
 	public static class ErrorTranslator {
 
-		private final boolean disabled;
+		private final Boolean disabled;
 
 		private final HttpStatus httpStatus;
 
-		private final boolean debugInfoSupported;
+		private final Boolean debugInfoSupported;
 
-		private final int debugInfoMaxStackTraceCount;
+		private final Integer debugInfoMaxStackTraceCount;
 
 		public ErrorTranslator(Boolean disabled, HttpStatus httpStatus, Boolean debugInfoSupported,
 				Integer debugInfoMaxStackTraceCount) {
@@ -269,7 +354,7 @@ public class JimmerProperties {
 					: Integer.MAX_VALUE;
 		}
 
-		public boolean isDisabled() {
+		public Boolean isDisabled() {
 			return disabled;
 		}
 
@@ -277,11 +362,11 @@ public class JimmerProperties {
 			return httpStatus;
 		}
 
-		public boolean isDebugInfoSupported() {
+		public Boolean isDebugInfoSupported() {
 			return debugInfoSupported;
 		}
 
-		public int getDebugInfoMaxStackTraceCount() {
+		public Integer getDebugInfoMaxStackTraceCount() {
 			return debugInfoMaxStackTraceCount;
 		}
 
@@ -334,11 +419,11 @@ public class JimmerProperties {
 
 			private final String apiName;
 
-			private final int indent;
+			private final Integer indent;
 
-			private final boolean anonymous;
+			private final Boolean anonymous;
 
-			public TypeScript(String path, String apiName, int indent, boolean anonymous) {
+			public TypeScript(String path, String apiName, Integer indent, Boolean anonymous) {
 				if (path == null || path.isEmpty()) {
 					this.path = null;
 				}
@@ -366,11 +451,11 @@ public class JimmerProperties {
 				return apiName;
 			}
 
-			public int getIndent() {
+			public Integer getIndent() {
 				return indent;
 			}
 
-			public boolean isAnonymous() {
+			public Boolean isAnonymous() {
 				return anonymous;
 			}
 
@@ -388,11 +473,11 @@ public class JimmerProperties {
 
 			private final String apiName;
 
-			private final int indent;
+			private final Integer indent;
 
 			private final String basePackage;
 
-			public JavaFeign(String path, String apiName, int indent, String basePackage) {
+			public JavaFeign(String path, String apiName, Integer indent, String basePackage) {
 				if (path == null || path.isEmpty()) {
 					this.path = null;
 				}
@@ -425,7 +510,7 @@ public class JimmerProperties {
 				return apiName;
 			}
 
-			public int getIndent() {
+			public Integer getIndent() {
 				return indent;
 			}
 

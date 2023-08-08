@@ -22,6 +22,11 @@
 			<artifactId>solon.serialization.jackson</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>2.9.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.github.linpeilie</groupId>

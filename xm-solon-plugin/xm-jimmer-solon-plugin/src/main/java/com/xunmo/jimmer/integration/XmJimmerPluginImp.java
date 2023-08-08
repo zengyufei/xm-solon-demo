@@ -21,6 +21,7 @@ import org.noear.solon.Solon;
 import org.noear.solon.SolonApp;
 import org.noear.solon.Utils;
 import org.noear.solon.core.*;
+import org.noear.solon.core.event.AppLoadEndEvent;
 import org.noear.solon.core.event.EventBus;
 import org.noear.solon.core.handle.Context;
 import org.noear.solon.core.handle.RenderManager;
@@ -123,6 +124,11 @@ public class XmJimmerPluginImp implements Plugin {
 		app.enableCaching(false);
 		initJackson(app, context);
 
+		EventBus.subscribe(AppLoadEndEvent.class, event -> {
+			log.info("应用启动完成了");
+			JimmerAdapterManager.register();
+		});
+
 		// context.getBeanAsync(ObjectMapper.class, bean -> {
 		// // bean 获取后，可以做些后续处理。。。
 		// log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作",
@@ -136,9 +142,13 @@ public class XmJimmerPluginImp implements Plugin {
 			JimmerAdapterManager.add(bw);
 		});
 
-		context.lifecycle(-99, () -> {
-			JimmerAdapterManager.register();
-		});
+//		context.lifecycle(-99, () -> {
+//			context.getBeanAsync(ObjectMapper.class, bean -> {
+//				// bean 获取后，可以做些后续处理。。。
+//				log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作", XmPackageNameConstants.XM_JIMMER);
+//				JimmerAdapterManager.register();
+//			});
+//		});
 
 		// for new
 		context.beanBuilderAdd(Db.class, (clz, wrap, anno) -> {
