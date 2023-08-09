@@ -142,13 +142,14 @@ public class XmJimmerPluginImp implements Plugin {
 			JimmerAdapterManager.add(bw);
 		});
 
-//		context.lifecycle(-99, () -> {
-//			context.getBeanAsync(ObjectMapper.class, bean -> {
-//				// bean 获取后，可以做些后续处理。。。
-//				log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作", XmPackageNameConstants.XM_JIMMER);
-//				JimmerAdapterManager.register();
-//			});
-//		});
+		// context.lifecycle(-99, () -> {
+		// context.getBeanAsync(ObjectMapper.class, bean -> {
+		// // bean 获取后，可以做些后续处理。。。
+		// log.info("{} 异步订阅 ObjectMapper, 执行 jimmer 初始化动作",
+		// XmPackageNameConstants.XM_JIMMER);
+		// JimmerAdapterManager.register();
+		// });
+		// });
 
 		// for new
 		context.beanBuilderAdd(Db.class, (clz, wrap, anno) -> {

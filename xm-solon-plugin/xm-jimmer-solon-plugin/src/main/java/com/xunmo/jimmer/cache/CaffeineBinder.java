@@ -31,39 +31,30 @@ public class CaffeineBinder<K, V> implements LoadingBinder<K, V> {
 
 	@Override
 	public void initialize(CacheChain<K, V> chain) {
-		loadingCache = Caffeine
-				.newBuilder()
-				.maximumSize(maximumSize)
-				.expireAfterWrite(duration)
-				.build(
-						new CacheLoader<K, Ref<V>>() {
+		loadingCache = Caffeine.newBuilder()
+			.maximumSize(maximumSize)
+			.expireAfterWrite(duration)
+			.build(new CacheLoader<K, Ref<V>>() {
 
-							@Override
-							public Ref<V> load(K key) {
-								Map<K, V> map = chain.loadAll(Collections.singleton(key));
-								V value = map.get(key);
-								if (value != null || map.containsKey(key)) {
-									return Ref.of(value);
-								}
-								return null;
-							}
+				@Override
+				public Ref<V> load(K key) {
+					Map<K, V> map = chain.loadAll(Collections.singleton(key));
+					V value = map.get(key);
+					if (value != null || map.containsKey(key)) {
+						return Ref.of(value);
+					}
+					return null;
+				}
 
-							@SuppressWarnings("unchecked")
-							@Override
-							public Map<K, Ref<V>> loadAll(Iterable<? extends K> keys) {
-								Map<K, V> map = chain.loadAll((Collection<K>) keys);
-								return map
-										.entrySet()
-										.stream()
-										.collect(
-												Collectors.toMap(
-														Map.Entry::getKey,
-														e -> Ref.of(e.getValue())
-												)
-										);
-							}
-						}
-				);
+				@SuppressWarnings("unchecked")
+				@Override
+				public Map<K, Ref<V>> loadAll(Iterable<? extends K> keys) {
+					Map<K, V> map = chain.loadAll((Collection<K>) keys);
+					return map.entrySet()
+						.stream()
+						.collect(Collectors.toMap(Map.Entry::getKey, e -> Ref.of(e.getValue())));
+				}
+			});
 	}
 
 	@Override
@@ -82,4 +73,5 @@ public class CaffeineBinder<K, V> implements LoadingBinder<K, V> {
 			loadingCache.invalidateAll(keys);
 		}
 	}
+
 }

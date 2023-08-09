@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JimmerAdapterManager {
 
-	
 	private static List<BeanWrap> dsWraps = new ArrayList<>();
 
 	private static JimmerAdapterFactory adapterFactory = new JimmerAdapterFactoryDefault();
@@ -91,7 +90,8 @@ public class JimmerAdapterManager {
 		JimmerAdapter adapter;
 		if (Utils.isEmpty(bw.name())) {
 			adapter = adapterFactory.create(bw);
-		} else {
+		}
+		else {
 			adapter = adapterFactory.create(bw, Solon.cfg().getProp("jimmer." + bw.name()));
 		}
 

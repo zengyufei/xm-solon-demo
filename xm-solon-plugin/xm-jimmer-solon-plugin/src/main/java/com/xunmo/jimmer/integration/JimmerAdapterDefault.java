@@ -74,7 +74,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		this.dsWrap = dsWrap;
 		if (dsProps == null) {
 			this.dsProps = new Props();
-		} else {
+		}
+		else {
 			this.dsProps = dsProps;
 		}
 		final JimmerProperties properties = this.dsProps.getBean(JimmerProperties.class);
@@ -85,7 +86,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 	private void initProp(JimmerProperties properties) {
 		final JimmerProperties.DatabaseValidation databaseValidation = this.dsProps
-				.getBean(JimmerProperties.DatabaseValidation.class);
+			.getBean(JimmerProperties.DatabaseValidation.class);
 		properties.setDatabaseValidation(databaseValidation);
 
 		String language = properties.getLanguage();
@@ -98,7 +99,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		if (language == null) {
 			language = "java";
 			properties.setLanguage(language);
-		} else {
+		}
+		else {
 			if (!language.equals("java") && !language.equals("kotlin")) {
 				throw new IllegalArgumentException("`jimmer.language` must be \"java\" or \"kotlin\"");
 			}
@@ -106,11 +108,13 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		Dialect finalDialect;
 		if (dialect == null) {
 			finalDialect = DefaultDialect.INSTANCE;
-		} else {
+		}
+		else {
 			Class<?> clazz;
 			try {
 				clazz = Class.forName(dialect, true, Dialect.class.getClassLoader());
-			} catch (ClassNotFoundException ex) {
+			}
+			catch (ClassNotFoundException ex) {
 				throw new IllegalArgumentException(
 						"The class \"" + dialect + "\" specified by `jimmer.language` cannot be found");
 			}
@@ -120,11 +124,13 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 			}
 			try {
 				finalDialect = (Dialect) clazz.getConstructor().newInstance();
-			} catch (InvocationTargetException ex) {
+			}
+			catch (InvocationTargetException ex) {
 				throw new IllegalArgumentException(
 						"Create create instance for the class \"" + dialect + "\" specified by `jimmer.language`",
 						ex.getTargetException());
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				throw new IllegalArgumentException(
 						"Create create instance for the class \"" + dialect + "\" specified by `jimmer.language`", ex);
 			}
@@ -155,7 +161,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		final Integer offsetOptimizingThreshold = properties.getOffsetOptimizingThreshold();
 
 		properties
-				.setDefaultBatchSize(defaultBatchSize != null ? defaultBatchSize : JSqlClient.Builder.DEFAULT_BATCH_SIZE);
+			.setDefaultBatchSize(defaultBatchSize != null ? defaultBatchSize : JSqlClient.Builder.DEFAULT_BATCH_SIZE);
 
 		properties.setDefaultListBatchSize(
 				defaultListBatchSize != null ? defaultListBatchSize : JSqlClient.Builder.DEFAULT_LIST_BATCH_SIZE);
@@ -165,7 +171,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 		final Boolean isForeignKeyEnabledByDefault = properties.isForeignKeyEnabledByDefault();
 		properties
-				.setForeignKeyEnabledByDefault(isForeignKeyEnabledByDefault != null ? isForeignKeyEnabledByDefault : true);
+			.setForeignKeyEnabledByDefault(isForeignKeyEnabledByDefault != null ? isForeignKeyEnabledByDefault : true);
 
 		final String microServiceName = properties.getMicroServiceName();
 		properties.setMicroServiceName(microServiceName != null ? microServiceName : "");
@@ -254,9 +260,9 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		preCreateSqlClient(builder, context, properties, getDataSource(), context.getBean(SolonConnectionManager.class),
 				context.getBean(SolonTransientResolverProvider.class), context.getBean(EntityManager.class),
 				context.getBean(DatabaseNamingStrategy.class), context.getBean(Dialect.class), executor,
-				context.getBean(SqlFormatter.class), cacheFactory,
-				context.getBean(CacheOperator.class), context.getBean(MicroServiceExchange.class), callbacks, providers,
-				interceptors, javaFilters, javaCustomizers, javaInitializers);
+				context.getBean(SqlFormatter.class), cacheFactory, context.getBean(CacheOperator.class),
+				context.getBean(MicroServiceExchange.class), callbacks, providers, interceptors, javaFilters,
+				javaCustomizers, javaInitializers);
 
 		final JSqlClient sqlClient = builder.build();
 		postCreateSqlClient((JSqlClientImplementor) sqlClient);
@@ -304,21 +310,23 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 	}
 
 	private static void preCreateSqlClient(JSqlClient.Builder builder, AopContext ctx, JimmerProperties properties,
-										   DataSource dataSource, SolonConnectionManager connectionManager,
-										   SolonTransientResolverProvider transientResolverProvider, EntityManager entityManager,
-										   DatabaseNamingStrategy databaseNamingStrategy, Dialect dialect, Executor executor,
-										   SqlFormatter sqlFormatter, CacheFactory cacheFactory, CacheOperator cacheOperator,
-										   MicroServiceExchange exchange, List<CacheAbandonedCallback> callbacks, List<ScalarProvider<?, ?>> providers,
-										   List<DraftInterceptor<?>> interceptors, List<Filter<?>> filters, List<Customizer> customizers,
-										   List<Initializer> initializers) {
+			DataSource dataSource, SolonConnectionManager connectionManager,
+			SolonTransientResolverProvider transientResolverProvider, EntityManager entityManager,
+			DatabaseNamingStrategy databaseNamingStrategy, Dialect dialect, Executor executor,
+			SqlFormatter sqlFormatter, CacheFactory cacheFactory, CacheOperator cacheOperator,
+			MicroServiceExchange exchange, List<CacheAbandonedCallback> callbacks, List<ScalarProvider<?, ?>> providers,
+			List<DraftInterceptor<?>> interceptors, List<Filter<?>> filters, List<Customizer> customizers,
+			List<Initializer> initializers) {
 		if (connectionManager != null) {
 			builder.setConnectionManager(connectionManager);
-		} else if (dataSource != null) {
+		}
+		else if (dataSource != null) {
 			builder.setConnectionManager(new SolonConnectionManager(dataSource));
 		}
 		if (transientResolverProvider != null) {
 			builder.setTransientResolverProvider(transientResolverProvider);
-		} else {
+		}
+		else {
 			builder.setTransientResolverProvider(new SolonTransientResolverProvider(ctx));
 		}
 		if (entityManager != null) {
@@ -339,20 +347,22 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 		if (BooleanUtil.isTrue(properties.isShowSql())) {
 			builder.setExecutor(Executor.log(executor));
-		} else {
+		}
+		else {
 			builder.setExecutor(executor);
 		}
 		if (sqlFormatter != null) {
 			builder.setSqlFormatter(sqlFormatter);
-		} else if (BooleanUtil.isTrue(properties.isPrettySql())) {
+		}
+		else if (BooleanUtil.isTrue(properties.isPrettySql())) {
 			builder.setSqlFormatter(SqlFormatter.PRETTY);
 		}
 		builder.setDatabaseValidationMode(properties.getDatabaseValidation().getMode())
-				.setDatabaseValidationCatalog(properties.getDatabaseValidation().getCatalog())
-				.setDatabaseValidationSchema(properties.getDatabaseValidation().getSchema())
-				.setCacheFactory(cacheFactory)
-				.setCacheOperator(cacheOperator)
-				.addCacheAbandonedCallbacks(callbacks);
+			.setDatabaseValidationCatalog(properties.getDatabaseValidation().getCatalog())
+			.setDatabaseValidationSchema(properties.getDatabaseValidation().getSchema())
+			.setCacheFactory(cacheFactory)
+			.setCacheOperator(cacheOperator)
+			.addCacheAbandonedCallbacks(callbacks);
 
 		for (ScalarProvider<?, ?> provider : providers) {
 			builder.addScalarProvider(provider);
@@ -387,8 +397,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		}
 
 		Triggers[] triggersArr = sqlClient.getTriggerType() == TriggerType.BOTH
-				? new Triggers[]{sqlClient.getTriggers(), sqlClient.getTriggers(true)}
-				: new Triggers[]{sqlClient.getTriggers()};
+				? new Triggers[] { sqlClient.getTriggers(), sqlClient.getTriggers(true) }
+				: new Triggers[] { sqlClient.getTriggers() };
 		for (Triggers triggers : triggersArr) {
 			triggers.addEntityListener(EventBus::push);
 			triggers.addAssociationListener(EventBus::push);
