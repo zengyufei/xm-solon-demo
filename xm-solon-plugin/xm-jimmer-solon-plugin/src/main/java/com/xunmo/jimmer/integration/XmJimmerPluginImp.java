@@ -124,6 +124,11 @@ public class XmJimmerPluginImp implements Plugin {
 		app.enableCaching(false);
 		initJackson(app, context);
 
+
+		context.subWrapsOfType(DataSource.class, bw -> {
+			JimmerAdapterManager.add(bw);
+		});
+
 		EventBus.subscribe(AppLoadEndEvent.class, event -> {
 			log.info("应用启动完成了");
 			JimmerAdapterManager.register();
@@ -137,10 +142,6 @@ public class XmJimmerPluginImp implements Plugin {
 		// bean.registerModule(immutableModule);
 		// EventBus.push(immutableModule);
 		// });
-
-		context.subWrapsOfType(DataSource.class, bw -> {
-			JimmerAdapterManager.add(bw);
-		});
 
 		// context.lifecycle(-99, () -> {
 		// context.getBeanAsync(ObjectMapper.class, bean -> {

@@ -33,7 +33,8 @@ public class JimmerProperties {
 
 	private Integer transactionCacheOperatorFixedDelay;
 
-	private EnumType.Strategy defaultEnumStrategy;
+	private String defaultEnumStrategy;
+	private EnumType.Strategy finalDefaultEnumStrategy;
 
 	private Integer defaultBatchSize = 1000;
 
@@ -133,11 +134,6 @@ public class JimmerProperties {
 		return transactionCacheOperatorFixedDelay;
 	}
 
-	public JimmerProperties setDefaultEnumStrategy(EnumType.Strategy defaultEnumStrategy) {
-		this.defaultEnumStrategy = defaultEnumStrategy;
-		return this;
-	}
-
 	public JimmerProperties setDefaultBatchSize(Integer defaultBatchSize) {
 		this.defaultBatchSize = defaultBatchSize;
 		return this;
@@ -181,10 +177,6 @@ public class JimmerProperties {
 	public JimmerProperties setClients(Map<String, Client> clients) {
 		this.clients = clients;
 		return this;
-	}
-
-	public EnumType.Strategy getDefaultEnumStrategy() {
-		return defaultEnumStrategy;
 	}
 
 	public Integer getDefaultBatchSize() {
@@ -286,6 +278,40 @@ public class JimmerProperties {
 	public JimmerProperties setDatabaseValidationMode(DatabaseValidationMode databaseValidationMode) {
 		this.databaseValidationMode = databaseValidationMode;
 		return this;
+	}
+
+	public String getDefaultEnumStrategy() {
+		return defaultEnumStrategy;
+	}
+
+	public Boolean getShowSql() {
+		return showSql;
+	}
+
+	public Boolean getPrettySql() {
+		return prettySql;
+	}
+
+	public JimmerProperties setDefaultEnumStrategy(String defaultEnumStrategy) {
+		this.defaultEnumStrategy = defaultEnumStrategy;
+		return this;
+	}
+
+	public EnumType.Strategy getFinalDefaultEnumStrategy() {
+		return finalDefaultEnumStrategy;
+	}
+
+	public JimmerProperties setFinalDefaultEnumStrategy(EnumType.Strategy finalDefaultEnumStrategy) {
+		this.finalDefaultEnumStrategy = finalDefaultEnumStrategy;
+		return this;
+	}
+
+	public Boolean getForeignKeyEnabledByDefault() {
+		return isForeignKeyEnabledByDefault;
+	}
+
+	public Map<String, Client> getClients() {
+		return clients;
 	}
 
 	@Override

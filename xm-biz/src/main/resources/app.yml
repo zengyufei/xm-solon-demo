@@ -155,3 +155,7 @@ solon.serialization.json:
   nullNumberAsZero: false
   nullArrayAsEmpty: false
   nullAsWriteable: true #输出所有null值
+
+jimmer:
+  db:
+    default-enum-strategy: "ORIDNAL"

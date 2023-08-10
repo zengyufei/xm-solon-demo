@@ -37,29 +37,32 @@ public class JimmerAdapterManager {
 	 */
 	public synchronized static JimmerAdapter get(BeanWrap bw) {
 		final String named = bw.name();
-		JimmerAdapter db = dbMap.get(named);
+		JimmerAdapter adapter = dbMap.get(named);
 
-		if (db == null) {
+		if (adapter == null) {
 			synchronized (named.intern()) {
-				db = dbMap.get(named);
-				if (db == null) {
-					db = buildAdapter(bw);
+				adapter = dbMap.get(named);
+				if (adapter == null) {
+					adapter = buildAdapter(bw);
 
-					dbMap.put(named, db);
+					dbMap.put(named, adapter);
 
 					if (bw.typed()) {
-						dbMap.put("", db);
+						dbMap.put("", adapter);
 					}
+
+					Solon.context().wrapAndPut(JimmerAdapter.class, adapter);
 				}
 			}
 
 		}
 
-		return db;
+		return adapter;
 	}
 
 	/**
 	 * 注册数据源，并生成适配器
+	 *
 	 * @param bw 数据源的BW
 	 */
 	public static void add(BeanWrap bw) {
@@ -68,6 +71,7 @@ public class JimmerAdapterManager {
 
 	/**
 	 * 注册数据源，并生成适配器
+	 *
 	 * @param bw 数据源的BW
 	 */
 	public static void register(BeanWrap bw) {
@@ -90,12 +94,10 @@ public class JimmerAdapterManager {
 		JimmerAdapter adapter;
 		if (Utils.isEmpty(bw.name())) {
 			adapter = adapterFactory.create(bw);
-		}
-		else {
+		} else {
 			adapter = adapterFactory.create(bw, Solon.cfg().getProp("jimmer." + bw.name()));
 		}
 
-		Solon.context().wrapAndPut(JimmerAdapter.class, adapter);
 		return adapter;
 	}
 

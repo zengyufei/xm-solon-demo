@@ -1,6 +1,7 @@
 package com.xunmo.jimmer.integration;
 
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.EnumUtil;
 import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.Repository;
 import com.xunmo.jimmer.cfg.JimmerProperties;
@@ -86,12 +87,13 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 	private void initProp(JimmerProperties properties) {
 		final JimmerProperties.DatabaseValidation databaseValidation = this.dsProps
-			.getBean(JimmerProperties.DatabaseValidation.class);
+				.getBean(JimmerProperties.DatabaseValidation.class);
 		properties.setDatabaseValidation(databaseValidation);
 
 		String language = properties.getLanguage();
 		String dialect = properties.getDialect();
-		final EnumType.Strategy enumStrategy = properties.getDefaultEnumStrategy();
+		final String enumStrategy = properties.getDefaultEnumStrategy();
+
 		final DatabaseValidationMode databaseValidationMode = properties.getDatabaseValidationMode();
 		final TriggerType triggerType = properties.getTriggerType();
 		final Integer transactionCacheOperatorFixedDelay = properties.getTransactionCacheOperatorFixedDelay();
@@ -99,8 +101,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		if (language == null) {
 			language = "java";
 			properties.setLanguage(language);
-		}
-		else {
+		} else {
 			if (!language.equals("java") && !language.equals("kotlin")) {
 				throw new IllegalArgumentException("`jimmer.language` must be \"java\" or \"kotlin\"");
 			}
@@ -152,9 +153,9 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		properties.setTransactionCacheOperatorFixedDelay(
 				transactionCacheOperatorFixedDelay != null ? transactionCacheOperatorFixedDelay : 5000);
 
-		EnumType.Strategy defaultEnumStrategy = enumStrategy != null ? enumStrategy : EnumType.Strategy.NAME;
+		EnumType.Strategy defaultEnumStrategy = EnumUtil.equalsIgnoreCase(EnumType.Strategy.ORDINAL, enumStrategy) ? EnumType.Strategy.ORDINAL : EnumType.Strategy.NAME;
 
-		properties.setDefaultEnumStrategy(defaultEnumStrategy);
+		properties.setFinalDefaultEnumStrategy(defaultEnumStrategy);
 
 		final Integer defaultBatchSize = properties.getDefaultBatchSize();
 		final Integer defaultListBatchSize = properties.getDefaultListBatchSize();
@@ -338,7 +339,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 		builder.setDialect(dialect != null ? dialect : properties.getFinalDialect());
 		builder.setTriggerType(properties.getTriggerType());
-		builder.setDefaultEnumStrategy(properties.getDefaultEnumStrategy());
+		builder.setDefaultEnumStrategy(properties.getFinalDefaultEnumStrategy());
 		builder.setDefaultBatchSize(properties.getDefaultBatchSize());
 		builder.setDefaultListBatchSize(properties.getDefaultListBatchSize());
 		builder.setOffsetOptimizingThreshold(properties.getOffsetOptimizingThreshold());
