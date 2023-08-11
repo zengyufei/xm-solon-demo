@@ -124,7 +124,6 @@ public class XmJimmerPluginImp implements Plugin {
 		app.enableCaching(false);
 		initJackson(app, context);
 
-
 		context.subWrapsOfType(DataSource.class, bw -> {
 			JimmerAdapterManager.add(bw);
 		});

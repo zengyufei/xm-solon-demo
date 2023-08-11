@@ -34,6 +34,7 @@ public class JimmerProperties {
 	private Integer transactionCacheOperatorFixedDelay;
 
 	private String defaultEnumStrategy;
+
 	private EnumType.Strategy finalDefaultEnumStrategy;
 
 	private Integer defaultBatchSize = 1000;

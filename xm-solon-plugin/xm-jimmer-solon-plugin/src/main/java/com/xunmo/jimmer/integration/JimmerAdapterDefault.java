@@ -87,7 +87,7 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 
 	private void initProp(JimmerProperties properties) {
 		final JimmerProperties.DatabaseValidation databaseValidation = this.dsProps
-				.getBean(JimmerProperties.DatabaseValidation.class);
+			.getBean(JimmerProperties.DatabaseValidation.class);
 		properties.setDatabaseValidation(databaseValidation);
 
 		String language = properties.getLanguage();
@@ -101,7 +101,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		if (language == null) {
 			language = "java";
 			properties.setLanguage(language);
-		} else {
+		}
+		else {
 			if (!language.equals("java") && !language.equals("kotlin")) {
 				throw new IllegalArgumentException("`jimmer.language` must be \"java\" or \"kotlin\"");
 			}
@@ -153,7 +154,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		properties.setTransactionCacheOperatorFixedDelay(
 				transactionCacheOperatorFixedDelay != null ? transactionCacheOperatorFixedDelay : 5000);
 
-		EnumType.Strategy defaultEnumStrategy = EnumUtil.equalsIgnoreCase(EnumType.Strategy.ORDINAL, enumStrategy) ? EnumType.Strategy.ORDINAL : EnumType.Strategy.NAME;
+		EnumType.Strategy defaultEnumStrategy = EnumUtil.equalsIgnoreCase(EnumType.Strategy.ORDINAL, enumStrategy)
+				? EnumType.Strategy.ORDINAL : EnumType.Strategy.NAME;
 
 		properties.setFinalDefaultEnumStrategy(defaultEnumStrategy);
 
