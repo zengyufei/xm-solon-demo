@@ -158,4 +158,4 @@ solon.serialization.json:
 
 jimmer:
   db:
-    default-enum-strategy: "ORIDNAL"
+    default-enum-strategy: "ORDINAL"

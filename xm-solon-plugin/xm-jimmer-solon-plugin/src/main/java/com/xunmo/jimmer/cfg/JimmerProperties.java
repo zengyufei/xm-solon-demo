@@ -25,9 +25,13 @@ public class JimmerProperties {
 
 	private DatabaseValidation databaseValidation;
 
-	private DatabaseValidationMode databaseValidationMode;
+	private String databaseValidationMode;
 
-	private TriggerType triggerType;
+	private DatabaseValidationMode finalDatabaseValidationMode;
+
+	private String triggerType;
+
+	private TriggerType finalTriggerType;
 
 	// private IdOnlyTargetCheckingLevel idOnlyTargetCheckingLevel;
 
@@ -97,8 +101,22 @@ public class JimmerProperties {
 		return databaseValidation;
 	}
 
-	public TriggerType getTriggerType() {
+	public String getTriggerType() {
 		return triggerType;
+	}
+
+	public JimmerProperties setTriggerType(String triggerType) {
+		this.triggerType = triggerType;
+		return this;
+	}
+
+	public TriggerType getFinalTriggerType() {
+		return finalTriggerType;
+	}
+
+	public JimmerProperties setFinalTriggerType(TriggerType finalTriggerType) {
+		this.finalTriggerType = finalTriggerType;
+		return this;
 	}
 
 	//
@@ -118,11 +136,6 @@ public class JimmerProperties {
 
 	public JimmerProperties setPrettySql(Boolean prettySql) {
 		this.prettySql = prettySql;
-		return this;
-	}
-
-	public JimmerProperties setTriggerType(TriggerType triggerType) {
-		this.triggerType = triggerType;
 		return this;
 	}
 
@@ -272,12 +285,21 @@ public class JimmerProperties {
 		return client;
 	}
 
-	public DatabaseValidationMode getDatabaseValidationMode() {
+	public String getDatabaseValidationMode() {
 		return databaseValidationMode;
 	}
 
-	public JimmerProperties setDatabaseValidationMode(DatabaseValidationMode databaseValidationMode) {
+	public JimmerProperties setDatabaseValidationMode(String databaseValidationMode) {
 		this.databaseValidationMode = databaseValidationMode;
+		return this;
+	}
+
+	public DatabaseValidationMode getFinalDatabaseValidationMode() {
+		return finalDatabaseValidationMode;
+	}
+
+	public JimmerProperties setFinalDatabaseValidationMode(DatabaseValidationMode finalDatabaseValidationMode) {
+		this.finalDatabaseValidationMode = finalDatabaseValidationMode;
 		return this;
 	}
 

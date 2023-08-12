@@ -2,6 +2,7 @@ package com.xunmo.jimmer.integration;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.EnumUtil;
+import cn.hutool.core.util.StrUtil;
 import com.xunmo.jimmer.JimmerAdapter;
 import com.xunmo.jimmer.Repository;
 import com.xunmo.jimmer.cfg.JimmerProperties;
@@ -94,8 +95,8 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		String dialect = properties.getDialect();
 		final String enumStrategy = properties.getDefaultEnumStrategy();
 
-		final DatabaseValidationMode databaseValidationMode = properties.getDatabaseValidationMode();
-		final TriggerType triggerType = properties.getTriggerType();
+		final String databaseValidationMode = properties.getDatabaseValidationMode();
+		final String triggerType = properties.getTriggerType();
 		final Integer transactionCacheOperatorFixedDelay = properties.getTransactionCacheOperatorFixedDelay();
 
 		if (language == null) {
@@ -145,19 +146,27 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 							+ "\"jimmer.database-validation-mode(deprecated)\"");
 		}
 		if (databaseValidation == null) {
+
+			final DatabaseValidationMode finalDatabaseValidationMode = EnumUtil.fromString(DatabaseValidationMode.class,
+					databaseValidationMode);
 			properties.setDatabaseValidation(new JimmerProperties.DatabaseValidation(
-					databaseValidationMode != null ? databaseValidationMode : DatabaseValidationMode.NONE, null, null));
+					finalDatabaseValidationMode == null ? DatabaseValidationMode.NONE : finalDatabaseValidationMode,
+					null, null));
 		}
 
-		properties.setTriggerType(triggerType != null ? triggerType : TriggerType.BINLOG_ONLY);
+		if (StrUtil.isNotBlank(triggerType)) {
+			final TriggerType finalTriggerType = EnumUtil.fromString(TriggerType.class, triggerType);
+			properties.setFinalTriggerType(finalTriggerType != null ? finalTriggerType : TriggerType.BINLOG_ONLY);
+		}
 
 		properties.setTransactionCacheOperatorFixedDelay(
 				transactionCacheOperatorFixedDelay != null ? transactionCacheOperatorFixedDelay : 5000);
 
-		EnumType.Strategy defaultEnumStrategy = EnumUtil.equalsIgnoreCase(EnumType.Strategy.ORDINAL, enumStrategy)
-				? EnumType.Strategy.ORDINAL : EnumType.Strategy.NAME;
-
-		properties.setFinalDefaultEnumStrategy(defaultEnumStrategy);
+		if (StrUtil.isNotBlank(enumStrategy)) {
+			final EnumType.Strategy finalEnumStrategy = EnumUtil.fromString(EnumType.Strategy.class, enumStrategy);
+			properties
+				.setFinalDefaultEnumStrategy(finalEnumStrategy == null ? EnumType.Strategy.NAME : finalEnumStrategy);
+		}
 
 		final Integer defaultBatchSize = properties.getDefaultBatchSize();
 		final Integer defaultListBatchSize = properties.getDefaultListBatchSize();
@@ -340,7 +349,11 @@ public class JimmerAdapterDefault implements JimmerAdapter {
 		}
 
 		builder.setDialect(dialect != null ? dialect : properties.getFinalDialect());
-		builder.setTriggerType(properties.getTriggerType());
+		final String triggerType = properties.getTriggerType();
+		if (StrUtil.isNotBlank(triggerType)) {
+			final TriggerType finalTriggerType = EnumUtil.fromString(TriggerType.class, triggerType);
+			builder.setTriggerType(finalTriggerType);
+		}
 		builder.setDefaultEnumStrategy(properties.getFinalDefaultEnumStrategy());
 		builder.setDefaultBatchSize(properties.getDefaultBatchSize());
 		builder.setDefaultListBatchSize(properties.getDefaultListBatchSize());
