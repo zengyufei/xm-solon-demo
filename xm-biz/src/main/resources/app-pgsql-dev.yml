@@ -31,10 +31,10 @@ xm:
     password: "*xun13@mo14!154RConf!*"
   datasource.db:
     type: "com.zaxxer.hikari.HikariDataSource"
-    driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://vat:3306/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified&allowMultiQueries=true
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://vat:5432/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
     username: root
-    password: "root"
+    password: "*xun13@mo14!154RConf!*"
 
 jimmer:
   db:

@@ -5,7 +5,7 @@ server.port: 8667
 server.contextPath: "/xunmo-TEST"
 
 #应用环境配置（主要用于切换包内不同的配置文件）
-solon.env: mysql-dev
+solon.env: pgsql-dev
 
 #应用元信息输出开启（输出每个插件的信息）
 solon.output.meta: 1
