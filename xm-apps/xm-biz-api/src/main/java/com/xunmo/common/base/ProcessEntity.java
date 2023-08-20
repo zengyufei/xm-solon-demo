@@ -1,7 +1,7 @@
 package com.xunmo.common.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.users.entity.Users;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public interface ProcessEntity {
 	@ManyToOne
 	@Nullable
 	@JoinColumn(name = Columns.approverId)
-	User approver();
+	Users approver();
 
 	/**
 	 * 审批意见

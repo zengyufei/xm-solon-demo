@@ -1,8 +1,8 @@
-package com.xunmo.webs.user.service;
+package com.xunmo.webs.users.service;
 
 import org.noear.solon.annotation.ProxyComponent;
 
 @ProxyComponent
-public class UserService {
+public class UsersService {
 
 }

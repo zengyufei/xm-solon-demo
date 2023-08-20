@@ -1,4 +1,4 @@
-package com.xunmo.webs.user.query;
+package com.xunmo.webs.users.query;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @since 2023-06-29 11:07:50
  */
 @Data
-public class UserQuery {
+public class UsersQuery {
 
 	/**
 	 * 用户ID

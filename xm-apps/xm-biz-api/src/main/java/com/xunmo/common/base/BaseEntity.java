@@ -1,7 +1,7 @@
 package com.xunmo.common.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.users.entity.Users;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public interface BaseEntity {
 	@Nullable
 	@ManyToOne
 	@JoinColumn(name = Columns.createId)
-	User create();
+	Users create();
 
 	/**
 	 * 修改人ID
@@ -37,7 +37,7 @@ public interface BaseEntity {
 	@ManyToOne
 	@Nullable
 	@JoinColumn(name = Columns.updateId)
-	User update();
+	Users update();
 
 	/**
 	 * 创建时间

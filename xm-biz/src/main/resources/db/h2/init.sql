@@ -25,11 +25,11 @@ CREATE TABLE `organization`(
 )  COMMENT = '组织表' ;
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for users
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`  (
-  `user_id` varchar(20) NOT NULL COMMENT '用户ID',
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users`  (
+  `users_id` varchar(20) NOT NULL COMMENT '用户ID',
   `user_name` varchar(100) NULL DEFAULT NULL COMMENT '用户名',
   `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -45,17 +45,17 @@ CREATE TABLE `user`  (
   `tenant_id` varchar(20) NULL DEFAULT NULL COMMENT '租户id',
   `version` int(0) NULL DEFAULT NULL COMMENT '乐观锁版本号',
   `status` varchar(100) NULL DEFAULT NULL COMMENT '状态',
-  PRIMARY KEY (`user_id`),
-  INDEX `idx_user_create_time`(`create_time`)
+  PRIMARY KEY (`users_id`),
+  INDEX `idx_users_create_time`(`create_time`)
 ) COMMENT = '用户表';
 
 -- ----------------------------
--- Table structure for user_organization
+-- Table structure for users_organization
 -- ----------------------------
-DROP TABLE IF EXISTS `user_organization`;
-CREATE TABLE `user_organization`  (
-  `user_id` varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
+DROP TABLE IF EXISTS `users_organization`;
+CREATE TABLE `users_organization`  (
+  `users_id` varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
   `organization_id` varchar(20) NULL DEFAULT NULL COMMENT '组织ID',
-  INDEX `idx_user_organization_user_id`(`user_id`),
-  INDEX `idx_user_organization_organization_id`(`organization_id`)
+  INDEX `idx_users_organization_users_id`(`users_id`),
+  INDEX `idx_users_organization_organization_id`(`organization_id`)
 ) COMMENT = '用户-组织关联表';

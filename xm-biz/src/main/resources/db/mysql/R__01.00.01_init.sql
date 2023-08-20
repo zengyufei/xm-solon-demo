@@ -13,17 +13,17 @@ CREATE TABLE IF NOT EXISTS `t_exception_record`
     `params`                longtext COMMENT '请求参数',
     `ip`                    varchar(50)   DEFAULT NULL COMMENT 'IP',
     `reqId`                 varchar(36)   DEFAULT NULL COMMENT '日志追踪id',
-    `user_id`               varchar(36)   DEFAULT NULL COMMENT '用户ID',
+    `users_id`               varchar(36)   DEFAULT NULL COMMENT '用户ID',
     `happen_time`           datetime      DEFAULT NULL COMMENT '发生时间',
     `stack_trace`           longtext COMMENT '异常堆栈消息',
     `disabled`              tinyint(1)    DEFAULT '0' COMMENT '是否有效:0-有效 1-禁用',
     `tenant_id`             varchar(36)   DEFAULT NULL COMMENT '租户ID',
     `app_id`                varchar(100)  DEFAULT NULL COMMENT 'appId',
     `create_time`           datetime      DEFAULT NULL COMMENT '创建时间',
-    `create_user`           varchar(36)   DEFAULT NULL COMMENT '创建人',
+    `create_users`           varchar(36)   DEFAULT NULL COMMENT '创建人',
     `create_user_name`      varchar(255)  DEFAULT NULL COMMENT '创建人昵称',
     `last_update_time`      datetime      DEFAULT NULL COMMENT '更新时间',
-    `last_update_user`      varchar(36)   DEFAULT NULL COMMENT '更新人',
+    `last_update_users`      varchar(36)   DEFAULT NULL COMMENT '更新人',
     `last_update_user_name` varchar(255)  DEFAULT NULL COMMENT '更新人创建人昵称',
     `source_type`           varchar(50)   DEFAULT NULL COMMENT '数据来源',
     `remark`                varchar(255)  DEFAULT NULL COMMENT '说明',
@@ -65,12 +65,12 @@ CREATE TABLE IF NOT EXISTS `organization`
 
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for users
 -- ----------------------------
--- DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS `user`
+-- DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users`
 (
-    `user_id`           varchar(20)  NOT NULL COMMENT '用户ID',
+    `users_id`           varchar(20)  NOT NULL COMMENT '用户ID',
     `user_name`         varchar(100) NULL DEFAULT NULL COMMENT '用户名',
     `create_time`       datetime(0)  NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `update_time`       datetime(0)  NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -86,8 +86,8 @@ CREATE TABLE IF NOT EXISTS `user`
     `tenant_id`         varchar(20)  NULL DEFAULT NULL COMMENT '租户id',
     `version`           int       NULL DEFAULT NULL COMMENT '乐观锁版本号',
     `status`            varchar(100) NULL DEFAULT NULL COMMENT '状态',
-    PRIMARY KEY (`user_id`),
-    INDEX `idx_user_create_time` (`create_time`)
+    PRIMARY KEY (`users_id`),
+    INDEX `idx_users_create_time` (`create_time`)
 ) ENGINE = InnoDB
 
  COMMENT = '用户表'
@@ -162,17 +162,17 @@ CREATE TABLE IF NOT EXISTS `permission`
 
 
 -- ----------------------------
--- Table structure for user_organization
+-- Table structure for users_organization
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_organization`;
-CREATE TABLE IF NOT EXISTS `user_organization`
+-- DROP TABLE IF EXISTS `users_organization`;
+CREATE TABLE IF NOT EXISTS `users_organization`
 (
-    `user_id`         varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
+    `users_id`         varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
     `organization_id` varchar(20) NULL DEFAULT NULL COMMENT '组织ID',
-    INDEX `idx_user_organization_user_id` (`user_id`),
-    INDEX `idx_user_organization_organization_id` (`organization_id`),
-    CONSTRAINT `user_organization_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `user_organization_ibfk_2` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`organization_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    INDEX `idx_users_organization_users_id` (`users_id`),
+    INDEX `idx_users_organization_organization_id` (`organization_id`),
+    CONSTRAINT `users_organization_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`users_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `users_organization_ibfk_2` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`organization_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
 
  COMMENT = '用户-组织关联表'
@@ -180,17 +180,17 @@ CREATE TABLE IF NOT EXISTS `user_organization`
 
 
 -- ----------------------------
--- Table structure for user_role
+-- Table structure for users_role
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_role`;
-CREATE TABLE IF NOT EXISTS `user_role`
+-- DROP TABLE IF EXISTS `users_role`;
+CREATE TABLE IF NOT EXISTS `users_role`
 (
-    `user_id` varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
+    `users_id` varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
     `role_id` varchar(20) NULL DEFAULT NULL COMMENT '角色ID',
-    INDEX `idx_user_role_user_id` (`user_id`),
-    INDEX `idx_user_role_role_id` (`role_id`),
-    CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    INDEX `idx_users_role_users_id` (`users_id`),
+    INDEX `idx_users_role_role_id` (`role_id`),
+    CONSTRAINT `users_role_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`users_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `users_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
 
  COMMENT = '用户组-角色关联表'
@@ -263,13 +263,13 @@ CREATE TABLE IF NOT EXISTS `organization_role`
 
 
 -- ----------------------------
--- Table structure for user_group
+-- Table structure for users_group
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_group`;
-CREATE TABLE IF NOT EXISTS `user_group`
+-- DROP TABLE IF EXISTS `users_group`;
+CREATE TABLE IF NOT EXISTS `users_group`
 (
-    `user_group_id`     varchar(20)  NOT NULL COMMENT '用户组ID',
-    `user_group_name`   varchar(100) NULL DEFAULT NULL COMMENT '用户组名称',
+    `users_group_id`     varchar(20)  NOT NULL COMMENT '用户组ID',
+    `users_group_name`   varchar(100) NULL DEFAULT NULL COMMENT '用户组名称',
     `create_time`       datetime(0)  NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `update_time`       datetime(0)  NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `create_id`         varchar(20)  NULL DEFAULT NULL COMMENT '创建人ID',
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `user_group`
     `tenant_id`         varchar(20)  NULL DEFAULT NULL COMMENT '租户id',
     `version`           int       NULL DEFAULT NULL COMMENT '乐观锁版本号',
     `status`            varchar(100) NULL DEFAULT NULL COMMENT '状态',
-    PRIMARY KEY (`user_group_id`)
+    PRIMARY KEY (`users_group_id`)
 ) ENGINE = InnoDB
 
  COMMENT = '用户组表'
@@ -292,17 +292,17 @@ CREATE TABLE IF NOT EXISTS `user_group`
 
 
 -- ----------------------------
--- Table structure for user_group_role
+-- Table structure for users_group_role
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_group_role`;
-CREATE TABLE IF NOT EXISTS `user_group_role`
+-- DROP TABLE IF EXISTS `users_group_role`;
+CREATE TABLE IF NOT EXISTS `users_group_role`
 (
     `role_id`       varchar(20) NULL DEFAULT NULL COMMENT '角色ID',
-    `user_group_id` varchar(20) NULL DEFAULT NULL COMMENT '用户组ID',
-    INDEX `idx_user_group_role_role_id` (`role_id`),
-    INDEX `idx_user_group_role_user_group_id` (`user_group_id`),
-    CONSTRAINT `user_group_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `user_group_role_ibfk_2` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    `users_group_id` varchar(20) NULL DEFAULT NULL COMMENT '用户组ID',
+    INDEX `idx_users_group_role_role_id` (`role_id`),
+    INDEX `idx_users_group_role_users_group_id` (`users_group_id`),
+    CONSTRAINT `users_group_role_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `users_group_role_ibfk_2` FOREIGN KEY (`users_group_id`) REFERENCES `users_group` (`users_group_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
 
 
@@ -310,17 +310,17 @@ CREATE TABLE IF NOT EXISTS `user_group_role`
 
 
 -- ----------------------------
--- Table structure for user_user_group
+-- Table structure for users_users_group
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_user_group`;
-CREATE TABLE IF NOT EXISTS `user_user_group`
+-- DROP TABLE IF EXISTS `users_users_group`;
+CREATE TABLE IF NOT EXISTS `users_users_group`
 (
-    `user_id`       varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
-    `user_group_id` varchar(20) NULL DEFAULT NULL COMMENT '用户组ID',
-    INDEX `user_id` (`user_id`),
-    INDEX `user_group_id` (`user_group_id`),
-    CONSTRAINT `user_user_group_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `user_user_group_ibfk_2` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    `users_id`       varchar(20) NULL DEFAULT NULL COMMENT '用户ID',
+    `users_group_id` varchar(20) NULL DEFAULT NULL COMMENT '用户组ID',
+    INDEX `users_id` (`users_id`),
+    INDEX `users_group_id` (`users_group_id`),
+    CONSTRAINT `users_users_group_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `users` (`users_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `users_users_group_ibfk_2` FOREIGN KEY (`users_group_id`) REFERENCES `users_group` (`users_group_id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
 
  COMMENT = '用户-用户组关联表'

@@ -1,4 +1,4 @@
-package com.xunmo.webs.user.controller;
+package com.xunmo.webs.users.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -12,12 +12,12 @@ import com.xunmo.jimmer.page.PageRequest;
 import com.xunmo.webs.organization.entity.OrganizationFetcher;
 import com.xunmo.webs.permission.entity.PermissionFetcher;
 import com.xunmo.webs.role.entity.RoleFetcher;
-import com.xunmo.webs.user.UserRepository;
-import com.xunmo.webs.user.entity.User;
-import com.xunmo.webs.user.entity.UserFetcher;
-import com.xunmo.webs.user.entity.UserTable;
-import com.xunmo.webs.user.input.UserInput;
-import com.xunmo.webs.user.query.UserQuery;
+import com.xunmo.webs.users.UsersRepository;
+import com.xunmo.webs.users.entity.Users;
+import com.xunmo.webs.users.entity.UsersFetcher;
+import com.xunmo.webs.users.entity.UsersTable;
+import com.xunmo.webs.users.input.UsersInput;
+import com.xunmo.webs.users.query.UsersQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.DeleteResult;
@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 用户表(User)表控制层
+ * 用户表(Users)表控制层
  *
  * @author zengyufei
  * @since 2023-06-29 11:07:50
@@ -45,30 +45,30 @@ import java.util.List;
 @Slf4j
 @Valid
 @Controller
-@Mapping("/user")
-public class UserController extends BaseController {
+@Mapping("/users")
+public class UsersController extends BaseController {
 
-	private final static UserTable TABLE = UserTable.$;
+	private final static UsersTable TABLE = UsersTable.$;
 
-	private final static UserFetcher FETCHER = UserFetcher.$;
+	private final static UsersFetcher FETCHER = UsersFetcher.$;
 
 	@Db
 	private JSqlClient sqlClient;
 
 	@Db
-	private UserRepository userRepository;
+	private UsersRepository usersRepository;
 
 	/**
 	 * 分页查询
 	 *
-	 * @param input       筛选条件
+	 * @param query       筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */
 	@Post
 	@Mapping("/list")
-//	@Cache(tags = "user", seconds = 10)
-	public ResponseEntity<Page<User>> list(@Validated UserQuery query, PageRequest pageRequest) throws Exception {
+//	@Cache(tags = "users", seconds = 10)
+	public ResponseEntity<Page<Users>> list(@Validated UsersQuery query, PageRequest pageRequest) throws Exception {
 		final String userId = query.getUserId();
 		final String userName = query.getUserName();
 		final LocalDateTime beginCreateTime = query.getBeginCreateTime();
@@ -79,9 +79,9 @@ public class UserController extends BaseController {
 		final String roleName = query.getRoleName();
 		final String permissionId = query.getPermissionId();
 		final String permissionName = query.getPermissionName();
-		final Page<User> page = pager(pageRequest).execute(sqlClient.createQuery(TABLE)
+		final Page<Users> page = pager(pageRequest).execute(sqlClient.createQuery(TABLE)
 				// 根据 用户id 查询
-				.whereIf(StrUtil.isNotBlank(userId), () -> TABLE.userId().eq(userId))
+				.whereIf(StrUtil.isNotBlank(userId), () -> TABLE.usersId().eq(userId))
 				// 根据 用户名称 模糊查询
 				.whereIf(StrUtil.isNotBlank(userName), () -> TABLE.userName().like(userName))
 				// 根据 组织机构id 查询
@@ -108,9 +108,9 @@ public class UserController extends BaseController {
 						// 查询 用户表 所有属性（非对象）
 						FETCHER.allScalarFields()
 								// 查询 创建者 对象，只显示 姓名
-								.create(UserFetcher.$.userName())
+								.create(UsersFetcher.$.userName())
 								// 查询 修改者 对象，只显示 姓名
-								.update(UserFetcher.$.userName())
+								.update(UsersFetcher.$.userName())
 								// 查询 组织机构者 对象，只显示 姓名
 								.organization(OrganizationFetcher.$.organizationName())
 								.roles(RoleFetcher.$.parentRoleId()
@@ -127,8 +127,8 @@ public class UserController extends BaseController {
 	 */
 	@Post
 	@Mapping("/getById")
-	public ResponseEntity<User> getById(@NotNull @NotBlank String id) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(User.class, id));
+	public ResponseEntity<Users> getById(@NotNull @NotBlank String id) throws Exception {
+		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(Users.class, id));
 	}
 
 	/**
@@ -139,8 +139,8 @@ public class UserController extends BaseController {
 	 */
 	@Post
 	@Mapping("/add")
-	public ResponseEntity<User> add(@Validated UserInput input) throws Exception {
-		final SimpleSaveResult<User> result = this.sqlClient.getEntities().save(input);
+	public ResponseEntity<Users> add(@Validated UsersInput input) throws Exception {
+		final SimpleSaveResult<Users> result = this.sqlClient.getEntities().save(input);
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getModifiedEntity());
 	}
 
@@ -152,8 +152,8 @@ public class UserController extends BaseController {
 	 */
 	@Post
 	@Mapping("/update")
-	public ResponseEntity<User> update(@Validated UserInput input) throws Exception {
-		final SimpleSaveResult<User> result = this.sqlClient.update(input);
+	public ResponseEntity<Users> update(@Validated UsersInput input) throws Exception {
+		final SimpleSaveResult<Users> result = this.sqlClient.update(input);
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getModifiedEntity());
 	}
 
@@ -167,7 +167,7 @@ public class UserController extends BaseController {
 	@Mapping("/deleteByIds")
 	@Tran
 	public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
-		final DeleteResult result = this.sqlClient.deleteByIds(User.class, ids);
+		final DeleteResult result = this.sqlClient.deleteByIds(Users.class, ids);
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, result.getTotalAffectedRowCount());
 	}
 
@@ -176,7 +176,7 @@ public class UserController extends BaseController {
 	 */
 	@Get
 	@Mapping("/exception")
-	@CacheRemove(tags = "user")
+	@CacheRemove(tags = "users")
 	public ResponseEntity<Boolean> exception(PageRequest pageRequest) throws Exception {
 		throw new NullPointerException("主动抛出异常 - 用于测试 " + DateUtil.now());
 	}
@@ -184,15 +184,15 @@ public class UserController extends BaseController {
 	/**
 	 * 分页查询
 	 *
-	 * @param input       筛选条件
+	 * @param query       筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */
 	@Post
 	@Mapping("/testRepository")
-	public ResponseEntity<Page<User>> testRepository(@Validated UserQuery query, PageRequest pageRequest)
+	public ResponseEntity<Page<Users>> testRepository(@Validated UsersQuery query, PageRequest pageRequest)
 			throws Exception {
-		final long count = userRepository.count();
+		final long count = usersRepository.count();
 		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, count);
 	}
 

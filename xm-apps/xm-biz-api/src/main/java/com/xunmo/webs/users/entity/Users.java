@@ -1,4 +1,4 @@
-package com.xunmo.webs.user.entity;
+package com.xunmo.webs.users.entity;
 
 import com.xunmo.common.base.BaseEntity;
 import com.xunmo.common.base.ProcessEntity;
@@ -14,19 +14,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 用户表(User)实体类
+ * 用户表(Users)实体类
  *
  * @author zengyufei
- * @since 2023-06-29 11:07:51
+ * @since 2023-08-17 20:36:05
  */
 @Entity
-@Table(name = User.TABLE_NAME)
-public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEntity {
+@Table(name = Users.TABLE_NAME)
+public interface Users extends BaseEntity, ProcessEntity, TenantEntity, VersionEntity {
 
 	/**
 	 * 表名
 	 */
-	String TABLE_NAME = "user";
+	String TABLE_NAME = "users";
 
 	// ---------- 表中字段 ----------
 
@@ -35,7 +35,7 @@ public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	 */
 	@Id
 	@GeneratedValue(generatorType = SnowflakeIdGenerator.class)
-	String userId();
+	String usersId();
 
 	/**
 	 * 用户名
@@ -73,12 +73,12 @@ public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	String status();
 
 	@ManyToOne
-	@JoinTable(name = "user_organization")
+	@JoinTable(name = "users_organization")
 	@Nullable
 	Organization organization();
 
 	@ManyToMany
-	@JoinTable(name = "user_role")
+	@JoinTable(name = "users_role")
 	List<Role> roles();
 
 	/**
@@ -86,7 +86,7 @@ public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	 */
 	interface Columns {
 
-		String userId = "user_id"; // 用户ID
+		String usersId = "users_id"; // 用户ID
 
 		String userName = "user_name"; // 用户名
 
@@ -131,7 +131,7 @@ public interface User extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	 */
 	interface FieldNames {
 
-		String userId = "userId"; // 用户ID
+		String usersId = "usersId"; // 用户ID
 
 		String userName = "userName"; // 用户名
 

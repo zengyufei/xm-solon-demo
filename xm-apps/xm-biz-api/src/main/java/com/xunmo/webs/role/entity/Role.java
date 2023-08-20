@@ -6,7 +6,7 @@ import com.xunmo.common.base.TenantEntity;
 import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
 import com.xunmo.webs.permission.entity.Permission;
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.users.entity.Users;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ public interface Role extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	String status();
 
 	@ManyToMany(mappedBy = "roles")
-	List<User> users();
+	List<Users> users();
 
 	@OneToMany(mappedBy = "role")
 	List<Permission> permissions();

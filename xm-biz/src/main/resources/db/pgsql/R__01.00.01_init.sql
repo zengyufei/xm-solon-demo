@@ -10,18 +10,18 @@ CREATE TABLE IF NOT EXISTS t_exception_record
     params                text,
     ip                    text DEFAULT NULL,
     reqId                 text DEFAULT NULL,
-    user_id               text DEFAULT NULL,
+    users_id               text DEFAULT NULL,
     happen_time           text DEFAULT NULL,
     stack_trace           text,
     disabled              text DEFAULT '0',
     tenant_id             text DEFAULT NULL,
     app_id                text DEFAULT NULL,
     create_time           text DEFAULT NULL,
-    create_user           text DEFAULT NULL,
-    create_user_name      text DEFAULT NULL,
+    create_users           text DEFAULT NULL,
+    create_users_name      text DEFAULT NULL,
     last_update_time      text DEFAULT NULL,
-    last_update_user      text DEFAULT NULL,
-    last_update_user_name text DEFAULT NULL,
+    last_update_users      text DEFAULT NULL,
+    last_update_users_name text DEFAULT NULL,
     source_type           text DEFAULT NULL,
     remark                text DEFAULT NULL,
     PRIMARY KEY (id)
@@ -33,18 +33,18 @@ COMMENT ON COLUMN t_exception_record.method IS '请求方法';
 COMMENT ON COLUMN t_exception_record.params IS '请求参数';
 COMMENT ON COLUMN t_exception_record.ip IS 'IP';
 COMMENT ON COLUMN t_exception_record.reqId IS '日志追踪id';
-COMMENT ON COLUMN t_exception_record.user_id IS '用户ID';
+COMMENT ON COLUMN t_exception_record.users_id IS '用户ID';
 COMMENT ON COLUMN t_exception_record.happen_time IS '发生时间';
 COMMENT ON COLUMN t_exception_record.stack_trace IS '异常堆栈消息';
 COMMENT ON COLUMN t_exception_record.disabled IS '是否有效:0-有效 1-禁用';
 COMMENT ON COLUMN t_exception_record.tenant_id IS '租户ID';
 COMMENT ON COLUMN t_exception_record.app_id IS 'appId';
 COMMENT ON COLUMN t_exception_record.create_time IS '创建时间';
-COMMENT ON COLUMN t_exception_record.create_user IS '创建人';
-COMMENT ON COLUMN t_exception_record.create_user_name IS '创建人昵称';
+COMMENT ON COLUMN t_exception_record.create_users IS '创建人';
+COMMENT ON COLUMN t_exception_record.create_users_name IS '创建人昵称';
 COMMENT ON COLUMN t_exception_record.last_update_time IS '更新时间';
-COMMENT ON COLUMN t_exception_record.last_update_user IS '更新人';
-COMMENT ON COLUMN t_exception_record.last_update_user_name IS '更新人创建人昵称';
+COMMENT ON COLUMN t_exception_record.last_update_users IS '更新人';
+COMMENT ON COLUMN t_exception_record.last_update_users_name IS '更新人创建人昵称';
 COMMENT ON COLUMN t_exception_record.source_type IS '数据来源';
 COMMENT ON COLUMN t_exception_record.remark IS '说明';
 
@@ -97,12 +97,12 @@ COMMENT ON TABLE organization IS '组织表';
 
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for users
 -- ----------------------------
--- DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS "user"
+-- DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS users
 (
-    user_id             text PRIMARY KEY,
+    users_id             text PRIMARY KEY,
     user_name           text NULL DEFAULT NULL,
     create_time         text DEFAULT CURRENT_TIMESTAMP,
     update_time         text DEFAULT NULL,
@@ -120,24 +120,24 @@ CREATE TABLE IF NOT EXISTS "user"
     status              text DEFAULT NULL
 );
 
-COMMENT ON COLUMN "user".user_id IS '用户ID';
-COMMENT ON COLUMN "user".user_name IS '用户名';
-COMMENT ON COLUMN "user".create_time IS '创建时间';
-COMMENT ON COLUMN "user".update_time IS '修改时间';
-COMMENT ON COLUMN "user".create_id IS '创建人ID';
-COMMENT ON COLUMN "user".update_id IS '修改人ID';
-COMMENT ON COLUMN "user".approval_status IS '审批状态';
-COMMENT ON COLUMN "user".approver_id IS '审批人id';
-COMMENT ON COLUMN "user".approval_comment IS '审批意见';
-COMMENT ON COLUMN "user".approval_time IS '审批时间';
-COMMENT ON COLUMN "user".is_imported IS '是否导入';
-COMMENT ON COLUMN "user".import_time IS '导入时间';
-COMMENT ON COLUMN "user".is_system_default IS '是否系统默认';
-COMMENT ON COLUMN "user".tenant_id IS '租户id';
-COMMENT ON COLUMN "user".version IS '乐观锁版本号';
-COMMENT ON COLUMN "user".status IS '状态';
+COMMENT ON COLUMN users.users_id IS '用户ID';
+COMMENT ON COLUMN users.user_name IS '用户名';
+COMMENT ON COLUMN users.create_time IS '创建时间';
+COMMENT ON COLUMN users.update_time IS '修改时间';
+COMMENT ON COLUMN users.create_id IS '创建人ID';
+COMMENT ON COLUMN users.update_id IS '修改人ID';
+COMMENT ON COLUMN users.approval_status IS '审批状态';
+COMMENT ON COLUMN users.approver_id IS '审批人id';
+COMMENT ON COLUMN users.approval_comment IS '审批意见';
+COMMENT ON COLUMN users.approval_time IS '审批时间';
+COMMENT ON COLUMN users.is_imported IS '是否导入';
+COMMENT ON COLUMN users.import_time IS '导入时间';
+COMMENT ON COLUMN users.is_system_default IS '是否系统默认';
+COMMENT ON COLUMN users.tenant_id IS '租户id';
+COMMENT ON COLUMN users.version IS '乐观锁版本号';
+COMMENT ON COLUMN users.status IS '状态';
 
-COMMENT ON TABLE "user" IS '用户表';
+COMMENT ON TABLE users IS '用户表';
 
 
 -- ----------------------------
@@ -255,70 +255,70 @@ COMMENT ON TABLE "permission" IS '权限表';
 
 
 -- ----------------------------
--- Table structure for user_organization
+-- Table structure for users_organization
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_organization`;
-CREATE TABLE IF NOT EXISTS "user_organization"
+-- DROP TABLE IF EXISTS `users_organization`;
+CREATE TABLE IF NOT EXISTS "users_organization"
 (
-    "user_id"         text  NULL DEFAULT NULL,
+    "users_id"         text  NULL DEFAULT NULL,
     "organization_id" text  NULL DEFAULT NULL
 );
 
-COMMENT ON COLUMN "user_organization"."user_id" IS '用户ID';
-COMMENT ON COLUMN "user_organization"."organization_id" IS '组织ID';
+COMMENT ON COLUMN "users_organization"."users_id" IS '用户ID';
+COMMENT ON COLUMN "users_organization"."organization_id" IS '组织ID';
 
 -- 添加主键和外键的约束
-ALTER TABLE "user_organization"
-    ADD CONSTRAINT pk_user_organization PRIMARY KEY ("user_id", "organization_id");
+ALTER TABLE "users_organization"
+    ADD CONSTRAINT pk_users_organization PRIMARY KEY ("users_id", "organization_id");
 
 -- 添加外键约束
-ALTER TABLE "user_organization"
-    ADD CONSTRAINT fk_user_organization_user_id
-    FOREIGN KEY ("user_id") REFERENCES "user" ("user_id")
+ALTER TABLE "users_organization"
+    ADD CONSTRAINT fk_users_organization_users_id
+    FOREIGN KEY ("users_id") REFERENCES users ("users_id")
     ON DELETE CASCADE
     ON UPDATE RESTRICT;
 
-ALTER TABLE "user_organization"
-    ADD CONSTRAINT fk_user_organization_organization_id
+ALTER TABLE "users_organization"
+    ADD CONSTRAINT fk_users_organization_organization_id
     FOREIGN KEY ("organization_id") REFERENCES "organization" ("organization_id")
     ON DELETE CASCADE
     ON UPDATE RESTRICT;
 
-COMMENT ON TABLE "user_organization" IS '用户-组织关联表';
+COMMENT ON TABLE "users_organization" IS '用户-组织关联表';
 
 
 
 -- ----------------------------
--- Table structure for user_role
+-- Table structure for users_role
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_role`;
-CREATE TABLE IF NOT EXISTS "user_role"
+-- DROP TABLE IF EXISTS `users_role`;
+CREATE TABLE IF NOT EXISTS "users_role"
 (
-    "user_id" text  NULL DEFAULT NULL,
+    "users_id" text  NULL DEFAULT NULL,
     "role_id" text  NULL DEFAULT NULL
 );
 
-COMMENT ON COLUMN "user_role"."user_id" IS '用户ID';
-COMMENT ON COLUMN "user_role"."role_id" IS '角色ID';
+COMMENT ON COLUMN "users_role"."users_id" IS '用户ID';
+COMMENT ON COLUMN "users_role"."role_id" IS '角色ID';
 
 -- 添加主键和外键的约束
-ALTER TABLE "user_role"
-    ADD CONSTRAINT pk_user_role PRIMARY KEY ("user_id", "role_id");
+ALTER TABLE "users_role"
+    ADD CONSTRAINT pk_users_role PRIMARY KEY ("users_id", "role_id");
 
 -- 添加外键约束
-ALTER TABLE "user_role"
-    ADD CONSTRAINT fk_user_role_user_id
-    FOREIGN KEY ("user_id") REFERENCES "user" ("user_id")
+ALTER TABLE "users_role"
+    ADD CONSTRAINT fk_users_role_users_id
+    FOREIGN KEY ("users_id") REFERENCES users ("users_id")
     ON DELETE CASCADE
     ON UPDATE RESTRICT;
 
-ALTER TABLE "user_role"
-    ADD CONSTRAINT fk_user_role_role_id
+ALTER TABLE "users_role"
+    ADD CONSTRAINT fk_users_role_role_id
     FOREIGN KEY ("role_id") REFERENCES "role" ("role_id")
     ON DELETE CASCADE
     ON UPDATE RESTRICT;
 
-COMMENT ON TABLE "user_role" IS '用户-角色关联表';
+COMMENT ON TABLE "users_role" IS '用户-角色关联表';
 
 
 
@@ -437,13 +437,13 @@ COMMENT ON TABLE "organization_role" IS '组织-角色关联表';
 
 
 -- ----------------------------
--- Table structure for user_group
+-- Table structure for users_group
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_group`;
-CREATE TABLE IF NOT EXISTS "user_group"
+-- DROP TABLE IF EXISTS `users_group`;
+CREATE TABLE IF NOT EXISTS "users_group"
 (
-    "user_group_id"     text NOT NULL,
-    "user_group_name"   text NULL DEFAULT NULL,
+    "users_group_id"     text NOT NULL,
+    "users_group_name"   text NULL DEFAULT NULL,
     "create_time"       text  NULL DEFAULT CURRENT_TIMESTAMP,
     "update_time"       text  NULL DEFAULT NULL,
     "create_id"         text NULL DEFAULT NULL,
@@ -458,59 +458,59 @@ CREATE TABLE IF NOT EXISTS "user_group"
     "tenant_id"         text NULL DEFAULT NULL,
     "version"           text NULL DEFAULT NULL,
     "status"            text NULL DEFAULT NULL,
-    PRIMARY KEY ("user_group_id")
+    PRIMARY KEY ("users_group_id")
 );
 
-COMMENT ON COLUMN "user_group"."user_group_id" IS '用户组ID';
-COMMENT ON COLUMN "user_group"."user_group_name" IS '用户组名称';
-COMMENT ON COLUMN "user_group"."create_time" IS '创建时间';
-COMMENT ON COLUMN "user_group"."update_time" IS '修改时间';
-COMMENT ON COLUMN "user_group"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "user_group"."update_id" IS '修改人ID';
-COMMENT ON COLUMN "user_group"."approval_status" IS '审批状态';
-COMMENT ON COLUMN "user_group"."approver_id" IS '审批人id';
-COMMENT ON COLUMN "user_group"."approval_comment" IS '审批意见';
-COMMENT ON COLUMN "user_group"."approval_time" IS '审批时间';
-COMMENT ON COLUMN "user_group"."is_imported" IS '是否导入';
-COMMENT ON COLUMN "user_group"."import_time" IS '导入时间';
-COMMENT ON COLUMN "user_group"."is_system_default" IS '是否系统默认';
-COMMENT ON COLUMN "user_group"."tenant_id" IS '租户id';
-COMMENT ON COLUMN "user_group"."version" IS '乐观锁版本号';
-COMMENT ON COLUMN "user_group"."status" IS '状态';
+COMMENT ON COLUMN "users_group"."users_group_id" IS '用户组ID';
+COMMENT ON COLUMN "users_group"."users_group_name" IS '用户组名称';
+COMMENT ON COLUMN "users_group"."create_time" IS '创建时间';
+COMMENT ON COLUMN "users_group"."update_time" IS '修改时间';
+COMMENT ON COLUMN "users_group"."create_id" IS '创建人ID';
+COMMENT ON COLUMN "users_group"."update_id" IS '修改人ID';
+COMMENT ON COLUMN "users_group"."approval_status" IS '审批状态';
+COMMENT ON COLUMN "users_group"."approver_id" IS '审批人id';
+COMMENT ON COLUMN "users_group"."approval_comment" IS '审批意见';
+COMMENT ON COLUMN "users_group"."approval_time" IS '审批时间';
+COMMENT ON COLUMN "users_group"."is_imported" IS '是否导入';
+COMMENT ON COLUMN "users_group"."import_time" IS '导入时间';
+COMMENT ON COLUMN "users_group"."is_system_default" IS '是否系统默认';
+COMMENT ON COLUMN "users_group"."tenant_id" IS '租户id';
+COMMENT ON COLUMN "users_group"."version" IS '乐观锁版本号';
+COMMENT ON COLUMN "users_group"."status" IS '状态';
 
-COMMENT ON TABLE "user_group" IS '用户组表';
+COMMENT ON TABLE "users_group" IS '用户组表';
 
 
 
 -- ----------------------------
--- Table structure for user_group_role
+-- Table structure for users_group_role
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_group_role`;
-CREATE TABLE IF NOT EXISTS "user_group_role"
+-- DROP TABLE IF EXISTS `users_group_role`;
+CREATE TABLE IF NOT EXISTS "users_group_role"
 (
     "role_id"       text NULL DEFAULT NULL,
-    "user_group_id" text NULL DEFAULT NULL,
-    CONSTRAINT "pk_user_group_role" PRIMARY KEY ("role_id", "user_group_id"),
-    CONSTRAINT "fk_user_group_role_role_id" FOREIGN KEY ("role_id") REFERENCES "role" ("role_id") ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT "fk_user_group_role_user_group_id" FOREIGN KEY ("user_group_id") REFERENCES "user_group" ("user_group_id") ON DELETE CASCADE ON UPDATE RESTRICT
+    "users_group_id" text NULL DEFAULT NULL,
+    CONSTRAINT "pk_users_group_role" PRIMARY KEY ("role_id", "users_group_id"),
+    CONSTRAINT "fk_users_group_role_role_id" FOREIGN KEY ("role_id") REFERENCES "role" ("role_id") ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT "fk_users_group_role_users_group_id" FOREIGN KEY ("users_group_id") REFERENCES "users_group" ("users_group_id") ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
-COMMENT ON COLUMN "user_group_role"."role_id" IS '角色ID';
-COMMENT ON COLUMN "user_group_role"."user_group_id" IS '用户组ID';
-COMMENT ON TABLE "user_group_role" IS '用户组-角色关联表';
+COMMENT ON COLUMN "users_group_role"."role_id" IS '角色ID';
+COMMENT ON COLUMN "users_group_role"."users_group_id" IS '用户组ID';
+COMMENT ON TABLE "users_group_role" IS '用户组-角色关联表';
 
 -- ----------------------------
--- Table structure for user_user_group
+-- Table structure for users_users_group
 -- ----------------------------
--- DROP TABLE IF EXISTS `user_user_group`;
-CREATE TABLE IF NOT EXISTS "user_user_group"
+-- DROP TABLE IF EXISTS `users_users_group`;
+CREATE TABLE IF NOT EXISTS "users_users_group"
 (
-    "user_id"       text NULL DEFAULT NULL,
-    "user_group_id" text NULL DEFAULT NULL,
-    CONSTRAINT "fk_user_user_group_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT "fk_user_user_group_user_group_id" FOREIGN KEY ("user_group_id") REFERENCES "user_group" ("user_group_id") ON DELETE CASCADE ON UPDATE RESTRICT
+    "users_id"       text NULL DEFAULT NULL,
+    "users_group_id" text NULL DEFAULT NULL,
+    CONSTRAINT "fk_users_users_group_users_id" FOREIGN KEY ("users_id") REFERENCES users ("users_id") ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT "fk_users_users_group_users_group_id" FOREIGN KEY ("users_group_id") REFERENCES "users_group" ("users_group_id") ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
-COMMENT ON COLUMN "user_user_group"."user_id" IS '用户ID';
-COMMENT ON COLUMN "user_user_group"."user_group_id" IS '用户组ID';
-COMMENT ON TABLE "user_user_group" IS '用户-用户组关联表';
+COMMENT ON COLUMN "users_users_group"."users_id" IS '用户ID';
+COMMENT ON COLUMN "users_users_group"."users_group_id" IS '用户组ID';
+COMMENT ON TABLE "users_users_group" IS '用户-用户组关联表';

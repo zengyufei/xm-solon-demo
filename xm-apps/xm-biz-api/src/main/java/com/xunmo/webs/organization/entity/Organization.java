@@ -5,7 +5,7 @@ import com.xunmo.common.base.ProcessEntity;
 import com.xunmo.common.base.TenantEntity;
 import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.users.entity.Users;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,7 +79,7 @@ public interface Organization extends BaseEntity, ProcessEntity, TenantEntity, V
 	String status();
 
 	@OneToMany(mappedBy = "organization")
-	List<User> users();
+	List<Users> users();
 
 	/**
 	 * 表字段名

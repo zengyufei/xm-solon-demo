@@ -17,7 +17,7 @@
 	<modules>
 		<module>xm-constant</module>
 		<module>xm-common</module>
-		<module>xm-apps</module>
+<!--		<module>xm-apps</module>-->
 <!--		<module>xm-biz</module>-->
 		<module>xm-solon-plugin</module>
 	</modules>

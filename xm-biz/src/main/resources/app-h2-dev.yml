@@ -1,0 +1,64 @@
+solon.app:
+  name: xm-biz
+  group: com.xunmo
+server.port: 8667
+server.websocket.port: 18080
+server.contextPath: "/xunmo-TEST"
+
+sa-token-dao: #名字可以随意取
+  redis:
+    server: "vat:6379"
+    password: "*xun13@mo14!154RConf!*"
+    db: 3
+    maxTotal: 200
+
+xm:
+  web:
+    cache:
+      enable: true
+      driverType: "redis"
+      db: 3 #默认为 0，可不配置
+      server: "vat:6379"
+      password: "*xun13@mo14!154RConf!*"
+  exception:
+    enable: true
+  mq:
+    enable: true
+    host: vat
+    #port: 5672
+    port: 32701
+    username: root
+    password: "*xun13@mo14!154RConf!*"
+  datasource.db:
+    type: "com.zaxxer.hikari.HikariDataSource"
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://vat:5432/xunmo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai&stringtype=unspecified
+    username: root
+    password: "*xun13@mo14!154RConf!*"
+
+jimmer:
+  db:
+    language: java
+    defaultBatchSize: 1000
+    dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect
+
+flyway:
+  db:
+    enable: true
+    # flyway 的 clean 命令会删除指定 schema 下的所有 table, 生产务必禁掉。这个默认值是 false 理论上作为默认配置是不科学的。
+    clean-disabled: true
+    # SQL 脚本的目录,多个路径使用逗号分隔 默认值 classpath:db/pgsql
+    locations: classpath:db/pgsql
+    #  metadata 版本控制信息表 默认 flyway_schema_history
+    table: flyway_schema_history
+    # 如果没有 flyway_schema_history 这个 metadata 表， 在执行 flyway migrate 命令之前, 必须先执行 flyway baseline 命令
+    # 设置为 true 后 flyway 将在需要 baseline 的时候, 自动执行一次 baseline。
+    baseline-on-migrate: true
+    # 指定 baseline 的版本号,默认值为 1, 低于该版本号的 SQL 文件, migrate 时会被忽略
+    baseline-version: 1
+    # 字符编码 默认 UTF-8
+    encoding: UTF-8
+    # 是否允许不按顺序迁移 开发建议 true  生产建议 false
+    out-of-order: false
+    # 执行迁移时是否自动调用验证   当你的 版本不符合逻辑 比如 你先执行了 DML 而没有 对应的DDL 会抛出异常
+    validate-on-migrate: false

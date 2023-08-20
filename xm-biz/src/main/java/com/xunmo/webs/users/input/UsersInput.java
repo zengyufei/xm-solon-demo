@@ -1,6 +1,6 @@
-package com.xunmo.webs.user.input;
+package com.xunmo.webs.users.input;
 
-import com.xunmo.webs.user.entity.User;
+import com.xunmo.webs.users.entity.Users;
 import lombok.Data;
 import org.babyfish.jimmer.Input;
 import org.mapstruct.BeanMapping;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * @since 2023-06-29 11:07:50
  */
 @Data
-public class UserInput implements Input<User> {
+public class UsersInput implements Input<Users> {
 
 	private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
@@ -135,15 +135,15 @@ public class UserInput implements Input<User> {
 	// ---------- 转换方法 ----------
 
 	@Override
-	public User toEntity() {
-		return CONVERTER.toUser(this);
+	public Users toEntity() {
+		return CONVERTER.toUsers(this);
 	}
 
 	@Mapper
 	interface Converter {
 
 		@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-		User toUser(UserInput input);
+		Users toUsers(UsersInput input);
 
 	}
 

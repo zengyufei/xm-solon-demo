@@ -216,8 +216,8 @@
 		<profile>
 			<id>mysql</id>
 			<activation>
-<!--				<activeByDefault>true</activeByDefault>-->
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
+<!--				<activeByDefault>false</activeByDefault>-->
 			</activation>
 			<dependencies>
 				<dependency>
@@ -229,8 +229,8 @@
 		<profile>
 			<id>pgsql</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
-<!--				<activeByDefault>false</activeByDefault>-->
+<!--				<activeByDefault>true</activeByDefault>-->
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
