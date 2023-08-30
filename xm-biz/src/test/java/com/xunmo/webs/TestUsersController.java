@@ -22,7 +22,7 @@ import org.noear.solon.test.SolonTest;
 public class TestUsersController extends HttpTester {
 
 	@Test
-	public void test_001_GetList() throws Exception {
+	public void test_001_list() throws Exception {
 		HttpUtils httpUtils = path("/users/list?size=10&page=1")
 				// .bodyJson("{\"orgName\": \"Organization 2\"}")
 				// .bodyJson("{\"roleName\": \"Role 10\"}")
@@ -33,7 +33,7 @@ public class TestUsersController extends HttpTester {
 	}
 
 	@Test
-	public void test_002_Add() throws Exception {
+	public void test_002_adds() throws Exception {
 		final String data = "["
 				+ "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
 //				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
@@ -52,7 +52,7 @@ public class TestUsersController extends HttpTester {
 	}
 
 	@Test
-	public void test_003_Update() throws Throwable {
+	public void test_003_updates() throws Throwable {
 		final String data = "[{\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"我修改了名字"
 				+ (RandomUtil.randomString(15)) + "\",\n" + "  \"createTime\": \"2023-06-29 11:49:40\",\n"
 				+ "  \"updateTime\": \"2023-06-29 13:32:46\",\n" + "  \"createId\": \"user_2450\",\n"
@@ -71,13 +71,13 @@ public class TestUsersController extends HttpTester {
 	}
 
 	@Test
-	public void test_004_GetById() throws Exception {
+	public void test_004_getByIds() throws Exception {
 		HttpUtils httpUtils = path("/users/getByIds").bodyJson("[\"user_77009\"]");
 		httpUtils.post();
 	}
 
 	@Test
-	public void test_005_Del() throws Exception {
+	public void test_005_delByIds() throws Exception {
 		HttpUtils httpUtils = path("/users/delByIds").bodyJson("[\"user_77009\"]");
 		httpUtils.post();
 	}

@@ -26,6 +26,7 @@ import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Get;
 import org.noear.solon.annotation.Mapping;
 import org.noear.solon.annotation.Post;
+import org.noear.solon.data.annotation.Cache;
 import org.noear.solon.data.annotation.CacheRemove;
 import org.noear.solon.data.annotation.Tran;
 import org.noear.solon.validation.annotation.NotNull;
@@ -71,7 +72,7 @@ public class UsersController extends BaseController {
 	 */
 	@Post
 	@Mapping("/list")
-//	@Cache(tags = "users", seconds = 10)
+	@Cache(tags = "users", seconds = 10)
 	public ResponseEntity<Page<Users>> list(@Validated UsersQuery query, PageRequest pageRequest) throws Exception {
 		final String usersId = query.getUsersId();
 		final String userName = query.getUserName();
@@ -131,7 +132,8 @@ public class UsersController extends BaseController {
 	 */
 	@Post
 	@Mapping("/adds")
-	public ResponseEntity<Users> add(@Validated List<UsersInput> inputs) throws Exception {
+	@Tran
+	public ResponseEntity<Users> adds(@Validated List<UsersInput> inputs) throws Exception {
 		final List<Users> users = inputs.stream()
 				.map(UsersInput::toEntity)
 				.collect(Collectors.toList());
@@ -150,7 +152,8 @@ public class UsersController extends BaseController {
 	 */
 	@Post
 	@Mapping("/updates")
-	public ResponseEntity<Users> update(@Validated List<UsersInput> inputs) throws Exception {
+	@Tran
+	public ResponseEntity<Users> updates(@Validated List<UsersInput> inputs) throws Exception {
 		final List<Users> usersModifieds = new ArrayList<>(inputs.size());
 		for (UsersInput input : inputs) {
 			final SimpleSaveResult<Users> result = this.sqlClient.update(input);
@@ -185,7 +188,7 @@ public class UsersController extends BaseController {
 	@Post
 	@Mapping("/delByIds")
 	@Tran
-	public ResponseEntity<Boolean> deleteByIds(@NotNull List<String> ids) throws Exception {
+	public ResponseEntity<Boolean> delByIds(@NotNull List<String> ids) throws Exception {
 		if (CollUtil.isEmpty(ids)) {
 			return R.out(IS_SUCCESS, Collections.emptyList());
 		}
