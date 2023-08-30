@@ -34,6 +34,7 @@ public interface Users extends BaseEntity, ProcessEntity, TenantEntity, VersionE
 	 * 用户ID
 	 */
 	@Id
+	@Column(name = Columns.usersId)
 	@GeneratedValue(generatorType = SnowflakeIdGenerator.class)
 	String usersId();
 

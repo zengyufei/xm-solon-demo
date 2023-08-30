@@ -1,5 +1,7 @@
 package com.xunmo.webs.users.input;
 
+import com.xunmo.webs.organization.entity.Organization;
+import com.xunmo.webs.role.entity.Role;
 import com.xunmo.webs.users.entity.Users;
 import lombok.Data;
 import org.babyfish.jimmer.Input;
@@ -9,6 +11,7 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户表(User)输入类
@@ -24,7 +27,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 用户ID
 	 */
-	private String userId;
+	private String usersId;
 
 	/**
 	 * 用户名
@@ -146,5 +149,8 @@ public class UsersInput implements Input<Users> {
 		Users toUsers(UsersInput input);
 
 	}
+
+	Organization organization;
+	List<Role> roles;
 
 }

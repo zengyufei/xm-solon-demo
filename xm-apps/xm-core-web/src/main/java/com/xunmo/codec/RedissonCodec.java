@@ -1,4 +1,4 @@
-package com.xunmo.config;
+package com.xunmo.codec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;

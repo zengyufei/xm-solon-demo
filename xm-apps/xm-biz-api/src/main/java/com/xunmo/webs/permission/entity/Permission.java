@@ -30,6 +30,7 @@ public interface Permission extends BaseEntity, ProcessEntity, TenantEntity, Ver
 	 * 权限ID
 	 */
 	@Id
+	@Column(name = Columns.permissionId)
 	@GeneratedValue(generatorType = SnowflakeIdGenerator.class)
 	String permissionId();
 

@@ -179,7 +179,7 @@ public interface User {
     String TABLE_NAME = "user";
     
     @Id
-    String userId();
+    String usersId();
     
     @Nullable
     @Column(name = Columns.userName)
@@ -229,7 +229,7 @@ public interface User {
     LocalDateTime updateTime();
     
     interface Columns {
-        String userId = "user_id"; // 用户ID
+        String usersId = "user_id"; // 用户ID
         String userName = "user_name"; // 用户名
         String createTime = "create_time"; // 创建时间
         String updateTime = "update_time"; // 修改时间
@@ -242,7 +242,7 @@ public interface User {
     }
     
     interface FieldNames {
-        String userId = "userId"; // 用户ID
+        String usersId = "usersId"; // 用户ID
         String userName = "userName"; // 用户名
         String createTime = "createTime"; // 创建时间
         String updateTime = "updateTime"; // 修改时间
@@ -266,7 +266,7 @@ public interface User {
 @Data
 public class UserQuery {
 
-    private String userId;
+    private String usersId;
     private String userName;
 
     private LocalDateTime createTime;
@@ -312,7 +312,7 @@ public class UserInput implements Input<User> {
 
     private static final Converter CONVERTER = Mappers.getMapper(Converter.class);
 
-    private String userId;
+    private String usersId;
     private String userName;
 
     private String createId;
@@ -383,14 +383,14 @@ public class UserController {
     @Post
     @Mapping("/list")
     public Page<User> list(@Validated UserQuery query, PageRequest pageRequest) throws Exception {
-        final String userId = query.getUserId();
+        final String usersId = query.getUserId();
         final String userName = query.getUserName();
         final LocalDateTime beginCreateTime = query.getBeginCreateTime();
         final LocalDateTime endCreateTime = query.getEndCreateTime();
         return userRepository.pager(pageRequest)
                 .execute(sqlClient.createQuery(TABLE)
                         // 根据 用户id 查询
-                        .whereIf(StrUtil.isNotBlank(userId), () -> TABLE.userId().eq(userId))
+                        .whereIf(StrUtil.isNotBlank(usersId), () -> TABLE.usersId().eq(usersId))
                         // 根据 用户名称 模糊查询
                         .whereIf(StrUtil.isNotBlank(userName), () -> TABLE.userName().like(userName))
                         // 根据 创建时间 大于等于查询

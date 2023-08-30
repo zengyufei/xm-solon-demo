@@ -66,7 +66,7 @@ public class ExceptionRecordInput implements Input<ExceptionRecord>, Serializabl
 	/**
 	 * 用户ID
 	 */
-	private String userId;
+	private String usersId;
 
 	/**
 	 * 发生时间(时间戳)

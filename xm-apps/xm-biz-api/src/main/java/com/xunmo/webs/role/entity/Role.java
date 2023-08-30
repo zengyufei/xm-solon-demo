@@ -32,6 +32,7 @@ public interface Role extends BaseEntity, ProcessEntity, TenantEntity, VersionEn
 	 * 角色ID
 	 */
 	@Id
+	@Column(name = Columns.roleId)
 	@GeneratedValue(generatorType = SnowflakeIdGenerator.class)
 	String roleId();
 

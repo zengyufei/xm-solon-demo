@@ -16,7 +16,7 @@ public class UsersQuery {
 	/**
 	 * 用户ID
 	 */
-	private String userId;
+	private String usersId;
 
 	/**
 	 * 用户名

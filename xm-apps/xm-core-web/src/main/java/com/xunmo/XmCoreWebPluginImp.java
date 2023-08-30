@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.xunmo.annotations.valid.IsDate;
 import com.xunmo.annotations.valid.IsEnum;
 import com.xunmo.annotations.valid.IsNumber;
-import com.xunmo.config.RedissonCodec;
+import com.xunmo.codec.RedissonCodec;
 import com.xunmo.jackson.DoubleDeserializer;
 import com.xunmo.jackson.IntegerDeserializer;
 import com.xunmo.jackson.LongDeserializer;

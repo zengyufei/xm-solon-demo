@@ -11,14 +11,12 @@ import org.noear.solon.core.handle.Context;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by LinDexing on 2017/6/6 0006.
- */
 @Slf4j
-public class ResponseUtil {
+public class R {
 
 	/**
 	 * 获得响应对象实体
+	 *
 	 * @param code
 	 * @param success
 	 * @param msg
@@ -27,7 +25,7 @@ public class ResponseUtil {
 	 * @author : LinDexing
 	 * @date : 2017/6/6 0006
 	 */
-	public static Object genResponse(int code, boolean success, String msg, Object contentPojo) {
+	public static Object out(int code, boolean success, String msg, Object contentPojo) {
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setCode(code);
 		responseEntity.setSuccess(success);
@@ -42,6 +40,7 @@ public class ResponseUtil {
 
 	/**
 	 * 获得响应对象实体
+	 *
 	 * @param code
 	 * @param success
 	 * @param msg
@@ -49,7 +48,7 @@ public class ResponseUtil {
 	 * @author : LinDexing
 	 * @date : 2017/6/6 0006
 	 */
-	public static Object genResponse(int code, boolean success, String msg) {
+	public static Object out(int code, boolean success, String msg) {
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setCode(code);
 		responseEntity.setSuccess(success);
@@ -63,13 +62,15 @@ public class ResponseUtil {
 
 	/**
 	 * 获得响应对象实体
+	 *
 	 * @param status
 	 * @param content
 	 * @return
 	 * @author : LinDexing
 	 * @date : 2017/6/9 0009
 	 */
-	public static ResponseEntity genResponse(ISystemStatus status, Object content) {
+	@SuppressWarnings("all")
+	public static ResponseEntity out(ISystemStatus status, Object content) {
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setCode(status.getCode());
 		responseEntity.setSuccess(status.isSuccess());
@@ -119,12 +120,13 @@ public class ResponseUtil {
 
 	/**
 	 * 获得响应对象实体
+	 *
 	 * @param status
 	 * @return
 	 * @author : LinDexing
 	 * @date : 2017/6/9 0009
 	 */
-	public static ResponseEntity genResponse(ISystemStatus status) {
+	public static ResponseEntity out(ISystemStatus status) {
 		ResponseEntity responseEntity = new ResponseEntity();
 		responseEntity.setCode(status.getCode());
 		responseEntity.setSuccess(status.isSuccess());
@@ -139,12 +141,13 @@ public class ResponseUtil {
 
 	/**
 	 * 获得响应对象实体
+	 *
 	 * @param responseStatus
 	 * @return
 	 * @author : LinDexing
 	 * @date : 2017/6/9 0009
 	 */
-	public static Object genResponse(Status responseStatus) {
+	public static Object out(Status responseStatus) {
 		ResponseEntity responseEntity = new ResponseEntity();
 		ISystemStatus status = responseStatus.getStatus();
 		responseEntity.setCode(status.getCode());

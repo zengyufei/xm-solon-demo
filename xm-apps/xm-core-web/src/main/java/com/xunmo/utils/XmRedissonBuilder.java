@@ -1,6 +1,6 @@
 package com.xunmo.utils;
 
-import com.xunmo.config.RedissonCodec;
+import com.xunmo.codec.RedissonCodec;
 import org.noear.solon.Utils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

@@ -31,6 +31,7 @@ public interface Organization extends BaseEntity, ProcessEntity, TenantEntity, V
 	 * 组织ID
 	 */
 	@Id
+	@Column(name = Columns.organizationId)
 	@GeneratedValue(generatorType = SnowflakeIdGenerator.class)
 	String organizationId();
 

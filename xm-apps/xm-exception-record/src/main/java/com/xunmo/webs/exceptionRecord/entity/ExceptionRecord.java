@@ -1,6 +1,5 @@
 package com.xunmo.webs.exceptionRecord.entity;
 
-import java.time.LocalDateTime;
 import com.xunmo.common.base.BaseEntity;
 import com.xunmo.common.base.ProcessEntity;
 import com.xunmo.common.base.TenantEntity;
@@ -8,6 +7,8 @@ import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.LocalDateTime;
 
 /**
  * 异常记录表(ExceptionRecord)实体类
@@ -41,7 +42,7 @@ public interface ExceptionRecord extends BaseEntity, ProcessEntity, TenantEntity
 
 		String reqid = "reqId"; // 日志追踪id
 
-		String userId = "user_id"; // 用户ID
+		String usersId = "user_id"; // 用户ID
 
 		String happenTime = "happen_time"; // 发生时间(时间戳)
 
@@ -88,7 +89,7 @@ public interface ExceptionRecord extends BaseEntity, ProcessEntity, TenantEntity
 
 		String reqid = "reqid"; // 日志追踪id
 
-		String userId = "userId"; // 用户ID
+		String usersId = "usersId"; // 用户ID
 
 		String happenTime = "happenTime"; // 发生时间(时间戳)
 
@@ -166,8 +167,8 @@ public interface ExceptionRecord extends BaseEntity, ProcessEntity, TenantEntity
 	 * 用户ID
 	 */
 	@Nullable
-	@Column(name = Columns.userId)
-	String userId();
+	@Column(name = Columns.usersId)
+	String usersId();
 
 	/**
 	 * 发生时间(时间戳)

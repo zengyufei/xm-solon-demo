@@ -2,7 +2,7 @@ package com.xunmo.webs.permission.controller;
 
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
-import com.xunmo.common.utils.ResponseUtil;
+import com.xunmo.common.utils.R;
 import com.xunmo.enums.SystemStatus;
 import com.xunmo.jimmer.annotation.Db;
 import com.xunmo.jimmer.page.Page;
@@ -53,11 +53,11 @@ public class PermissionController extends BaseController {
 			throws Exception {
 		final LocalDateTime beginCreateTime = input.getBeginCreateTime();
 		final LocalDateTime endCreateTime = input.getEndCreateTime();
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS,
+		return R.out(SystemStatus.IS_SUCCESS,
 				pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-					.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-					.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-					.select(TABLE.fetch(FETCHER.allScalarFields()))));
+						.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+						.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+						.select(TABLE.fetch(FETCHER.allScalarFields()))));
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class PermissionController extends BaseController {
 	@Post
 	@Mapping("/getById")
 	public ResponseEntity<Permission> getById(@NotNull @NotBlank String id) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(Permission.class, id));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.findById(Permission.class, id));
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class PermissionController extends BaseController {
 	@Post
 	@Mapping("/add")
 	public ResponseEntity<Permission> add(@Validated PermissionInput input) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class PermissionController extends BaseController {
 	@Post
 	@Mapping("/update")
 	public ResponseEntity<Permission> update(@Validated PermissionInput input) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class PermissionController extends BaseController {
 	@Post
 	@Mapping("/deleteByIds")
 	public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(Permission.class, ids));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(Permission.class, ids));
 	}
 
 }

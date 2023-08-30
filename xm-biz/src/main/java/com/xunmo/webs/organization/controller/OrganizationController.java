@@ -2,7 +2,7 @@ package com.xunmo.webs.organization.controller;
 
 import com.xunmo.common.base.BaseController;
 import com.xunmo.common.entity.ResponseEntity;
-import com.xunmo.common.utils.ResponseUtil;
+import com.xunmo.common.utils.R;
 import com.xunmo.enums.SystemStatus;
 import com.xunmo.jimmer.annotation.Db;
 import com.xunmo.jimmer.page.Page;
@@ -53,11 +53,11 @@ public class OrganizationController extends BaseController {
 			@Param PageRequest pageRequest) throws Exception {
 		final LocalDateTime beginCreateTime = input.getBeginCreateTime();
 		final LocalDateTime endCreateTime = input.getEndCreateTime();
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS,
+		return R.out(SystemStatus.IS_SUCCESS,
 				pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-					.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-					.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-					.select(TABLE.fetch(FETCHER.allScalarFields()))));
+						.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+						.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+						.select(TABLE.fetch(FETCHER.allScalarFields()))));
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class OrganizationController extends BaseController {
 	@Post
 	@Mapping("/getById")
 	public ResponseEntity<Organization> getById(@NotNull @NotBlank String id) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.findById(Organization.class, id));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.findById(Organization.class, id));
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class OrganizationController extends BaseController {
 	@Post
 	@Mapping("/add")
 	public ResponseEntity<Organization> add(@Validated OrganizationInput input) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.save(input));
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class OrganizationController extends BaseController {
 	@Post
 	@Mapping("/update")
 	public ResponseEntity<Organization> update(@Validated OrganizationInput input) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.update(input));
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class OrganizationController extends BaseController {
 	@Post
 	@Mapping("/deleteByIds")
 	public ResponseEntity<Boolean> deleteByIds(List<String> ids) throws Exception {
-		return ResponseUtil.genResponse(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(Organization.class, ids));
+		return R.out(SystemStatus.IS_SUCCESS, this.sqlClient.deleteByIds(Organization.class, ids));
 	}
 
 }
