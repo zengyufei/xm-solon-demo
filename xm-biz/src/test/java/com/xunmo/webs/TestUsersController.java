@@ -38,11 +38,11 @@ public class TestUsersController extends HttpTester {
 				+ "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
 //				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
 				+ "  \"createId\": \"user_2450\",\n" + "  \"updateId\": \"user_9427\",\n"
-				+ "  \"approvalStatus\": \"1\",\n" + "  \"approverId\": \"user_1009\",\n"
+				+ "  \"approvalStatus\": null,\n" + "  \"approverId\": \"user_1009\",\n"
 				+ "  \"approvalComment\": \"审批通过\",\n" + "  \"approvalTime\": \"2023-06-29 11:49:36\",\n"
-				+ "  \"isImported\": 0,\n" + "  \"importTime\": \"2023-06-29 11:49:36\",\n"
-				+ "  \"isSystemDefault\": 0,\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n"
-				+ "  \"status\": \"active\",\n"
+				+ "  \"isImported\": \"3\",\n" + "  \"importTime\": \"2023-06-29 11:49:36\",\n"
+				+ "  \"isSystemDefault\": \"6\",\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n"
+				+ "  \"status\": \"6\",\n"
 				+ "  \"organization\": {organizationId: \"org_12\"},\n"
 				+ "  \"roles\": [{roleId: \"role_4\"}]\n"
 				+ "  }"
@@ -56,13 +56,12 @@ public class TestUsersController extends HttpTester {
 		final String data = "[{\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"我修改了名字"
 				+ (RandomUtil.randomString(15)) + "\",\n" + "  \"createTime\": \"2023-06-29 11:49:40\",\n"
 				+ "  \"updateTime\": \"2023-06-29 13:32:46\",\n" + "  \"createId\": \"user_2450\",\n"
-				+ "  \"updateId\": \"user_9427\",\n" + "  \"approvalStatus\": \"1\",\n"
+				+ "  \"updateId\": \"user_9427\",\n" + "  \"approvalStatus\": \"6\",\n"
 				+ "  \"approverId\": \"user_1009\",\n" + "  \"approvalComment\": \"审批通过\",\n"
-				+ "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" + "  \"isImported\": 0,\n"
-				+ "  \"importTime\": \"2023-06-29 11:49:36\",\n" + "  \"isSystemDefault\": 0,\n"
+				+ "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" + "  \"isImported\": \"3\",\n"
+				+ "  \"importTime\": \"2023-06-29 11:49:36\",\n" + "  \"isSystemDefault\": \"3\",\n"
 				+ "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n" +
-				// " \"status\": \"active\"\n" +
-				"  \"status\": null,\n"
+				"  \"status\": \"12\",\n"
 				+ "  \"organization\": {organizationId: \"org_0\"},\n"
 				+ "  \"roles\": [{roleId: \"role_9\"}]\n"
 				+ "}]";
@@ -82,4 +81,22 @@ public class TestUsersController extends HttpTester {
 		httpUtils.post();
 	}
 
+	@Test
+	public void test_006_test_adds() throws Exception {
+		final String data = ""
+				+ "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
+//				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
+				+ "  \"createId\": \"user_2450\",\n" + "  \"updateId\": \"user_9427\",\n"
+				+ "  \"approvalStatus\": null,\n" + "  \"approverId\": \"user_1009\",\n"
+				+ "  \"approvalComment\": \"审批通过\",\n" + "  \"approvalTime\": \"2023-06-29 11:49:36\",\n"
+				+ "  \"isImported\": \"3\",\n" + "  \"importTime\": \"2023-06-29 11:49:36\",\n"
+				+ "  \"isSystemDefault\": \"6\",\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n"
+				+ "  \"status\": \"6\",\n"
+				+ "  \"organization\": {organizationId: \"org_12\"},\n"
+				+ "  \"roles\": [{roleId: \"role_4\"}]\n"
+				+ "  }"
+				+ "";
+		HttpUtils httpUtils = path("/users/test/adds").bodyJson(data);
+		httpUtils.post();
+	}
 }

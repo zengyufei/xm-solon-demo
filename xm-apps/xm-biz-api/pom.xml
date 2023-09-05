@@ -26,9 +26,13 @@
 			<groupId>vip.xunmo</groupId>
 			<artifactId>xm-jimmer-solon-plugin</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>vip.xunmo</groupId>
+            <artifactId>xm-annotation</artifactId>
+        </dependency>
 
 
-	</dependencies>
+    </dependencies>
 
 
 	<build>

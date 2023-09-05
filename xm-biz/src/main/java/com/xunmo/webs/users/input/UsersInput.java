@@ -104,7 +104,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 是否导入
 	 */
-	private Integer isImported;
+	private String isImported;
 
 	/**
 	 * 导入时间
@@ -118,7 +118,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 是否系统默认
 	 */
-	private Integer isSystemDefault;
+	private String isSystemDefault;
 
 	/**
 	 * 租户id

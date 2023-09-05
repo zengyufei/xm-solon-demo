@@ -5,6 +5,9 @@ import com.xunmo.common.base.ProcessEntity;
 import com.xunmo.common.base.TenantEntity;
 import com.xunmo.common.base.VersionEntity;
 import com.xunmo.config.jimmer.SnowflakeIdGenerator;
+import com.xunmo.enums.IsImported;
+import com.xunmo.enums.IsSystem;
+import com.xunmo.enums.UsersStatus;
 import com.xunmo.webs.organization.entity.Organization;
 import com.xunmo.webs.role.entity.Role;
 import org.babyfish.jimmer.sql.*;
@@ -50,7 +53,7 @@ public interface Users extends BaseEntity, ProcessEntity, TenantEntity, VersionE
 	 */
 	@Nullable
 	@Column(name = Columns.isImported)
-	Integer isImported();
+	IsImported isImported();
 
 	/**
 	 * 导入时间
@@ -64,14 +67,14 @@ public interface Users extends BaseEntity, ProcessEntity, TenantEntity, VersionE
 	 */
 	@Nullable
 	@Column(name = Columns.isSystemDefault)
-	Integer isSystemDefault();
+	IsSystem isSystemDefault();
 
 	/**
 	 * 状态
 	 */
 	@Nullable
 	@Column(name = Columns.status)
-	String status();
+	UsersStatus status();
 
 	@ManyToOne
 	@JoinTable(name = "users_organization")

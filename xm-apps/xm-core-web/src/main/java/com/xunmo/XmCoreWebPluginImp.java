@@ -3,6 +3,8 @@ package com.xunmo;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.xunmo.annotations.valid.IsDate;
@@ -96,12 +98,15 @@ public class XmCoreWebPluginImp implements Plugin {
 		Solon.context().getBeanAsync(ObjectMapper.class, objectMapper -> {
 			// bean 获取后，可以做些后续处理。。。
 			log.info("{} 异步订阅 ObjectMapper, 执行 反序列化超长处理 动作", XmPackageNameConstants.XM_CORE_WEB);
-
 			final SimpleModule simpleModule = new SimpleModule();
 			simpleModule.addDeserializer(Double.class, new DoubleDeserializer());
 			simpleModule.addDeserializer(Long.class, new LongDeserializer());
 			simpleModule.addDeserializer(Integer.class, new IntegerDeserializer());
 			objectMapper.registerModule(simpleModule);
+
+			objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+//			objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+			objectMapper.configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false);
 		});
 
 		// 注册自定义验证器

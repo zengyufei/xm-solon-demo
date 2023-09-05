@@ -1,6 +1,7 @@
 package com.xunmo.common.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.xunmo.enums.ApprovalStatus;
 import com.xunmo.webs.users.entity.Users;
 import org.babyfish.jimmer.sql.*;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ public interface ProcessEntity {
 	 */
 	@Nullable
 	@Column(name = Columns.approvalStatus)
-	String approvalStatus();
+	ApprovalStatus approvalStatus();
 
 	/**
 	 * 审批人id

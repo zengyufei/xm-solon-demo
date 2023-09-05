@@ -86,7 +86,6 @@ public class XmJimmerPluginImp implements Plugin {
 	}
 
 	private static void getObjectMapper(ObjectMapper objectMapper) {
-		objectMapper.registerModule(new ImmutableModule());
 		objectMapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -116,6 +115,7 @@ public class XmJimmerPluginImp implements Plugin {
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		// 反序列化的时候如果是无效子类型,不抛出异常
 		objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+		objectMapper.registerModule(new ImmutableModule());
 	}
 
 	@Override

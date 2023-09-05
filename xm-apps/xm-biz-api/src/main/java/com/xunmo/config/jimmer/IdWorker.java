@@ -52,19 +52,14 @@ public class IdWorker {
 	private final int maxWorkerId = ~(-1 << workerIdBits);
 
 	/**
-	 * business meaning: machine ID (0 ~ 1023)
-	 * actual layout in memory:
-	 * highest 1 bit: 0
-	 * middle 10 bit: workerId
-	 * lowest 53 bit: all 0
+	 * business meaning: machine ID (0 ~ 1023) actual layout in memory: highest 1 bit: 0
+	 * middle 10 bit: workerId lowest 53 bit: all 0
 	 */
 	private long workerId;
 
 	/**
-	 * timestamp and sequence mix in one Long
-	 * highest 11 bit: not used
-	 * middle  41 bit: timestamp
-	 * lowest  12 bit: sequence
+	 * timestamp and sequence mix in one Long highest 11 bit: not used middle 41 bit:
+	 * timestamp lowest 12 bit: sequence
 	 */
 	private AtomicLong timestampAndSequence;
 
@@ -75,7 +70,6 @@ public class IdWorker {
 
 	/**
 	 * instantiate an IdWorker using given workerId
-	 *
 	 * @param workerId if null, then will auto assign one
 	 */
 	public IdWorker(Long workerId) {
@@ -94,7 +88,6 @@ public class IdWorker {
 
 	/**
 	 * init workerId
-	 *
 	 * @param workerId if null, then auto generate one
 	 */
 	private void initWorkerId(Long workerId) {
@@ -109,12 +102,8 @@ public class IdWorker {
 	}
 
 	/**
-	 * get next UUID(base on snowflake algorithm), which look like:
-	 * highest 1 bit: always 0
-	 * next   10 bit: workerId
-	 * next   41 bit: timestamp
-	 * lowest 12 bit: sequence
-	 *
+	 * get next UUID(base on snowflake algorithm), which look like: highest 1 bit: always
+	 * 0 next 10 bit: workerId next 41 bit: timestamp lowest 12 bit: sequence
 	 * @return UUID
 	 */
 	public long nextId() {
@@ -125,8 +114,8 @@ public class IdWorker {
 	}
 
 	/**
-	 * block current thread if the QPS of acquiring UUID is too high
-	 * that current sequence space is exhausted
+	 * block current thread if the QPS of acquiring UUID is too high that current sequence
+	 * space is exhausted
 	 */
 	private void waitIfNecessary() {
 		long currentWithSequence = timestampAndSequence.get();
@@ -135,7 +124,8 @@ public class IdWorker {
 		if (current >= newest) {
 			try {
 				Thread.sleep(5);
-			} catch (InterruptedException ignore) {
+			}
+			catch (InterruptedException ignore) {
 				// don't care
 			}
 		}
@@ -150,20 +140,19 @@ public class IdWorker {
 
 	/**
 	 * auto generate workerId, try using mac first, if failed, then randomly generate one
-	 *
 	 * @return workerId
 	 */
 	private long generateWorkerId() {
 		try {
 			return generateWorkerIdBaseOnMac();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return generateRandomWorkerId();
 		}
 	}
 
 	/**
 	 * use lowest 10 bit of available MAC as workerId
-	 *
 	 * @return workerId
 	 * @throws Exception when there is no available mac found
 	 */
@@ -184,10 +173,10 @@ public class IdWorker {
 
 	/**
 	 * randomly generate one as workerId
-	 *
 	 * @return workerId
 	 */
 	private long generateRandomWorkerId() {
 		return new Random().nextInt(maxWorkerId + 1);
 	}
+
 }
