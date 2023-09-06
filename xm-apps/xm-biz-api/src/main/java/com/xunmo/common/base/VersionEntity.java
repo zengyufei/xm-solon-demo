@@ -15,7 +15,7 @@ public interface VersionEntity {
 	 */
 	@Nullable
 	@Column(name = Columns.version)
-	Integer version();
+	String version();
 
 	/**
 	 * 表字段名

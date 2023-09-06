@@ -6,39 +6,44 @@ import com.xunmo.common.BaseEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.babyfish.jimmer.sql.EnumItem;
+import org.babyfish.jimmer.sql.EnumType;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 @Getter
+@EnumType(value = EnumType.Strategy.NAME)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ApprovalStatus implements BaseEnum<String> {
 
-	DRAFT("3", ""),
-	WAIT("6", ""),
-	SUCCESS("9", ""),
-	FAIL("12", ""),
-	;
+	@EnumItem(name = "3")
+	DRAFT("3", "草稿"), @EnumItem(name = "6")
+	WAIT("6", "审核中"), @EnumItem(name = "9")
+	SUCCESS("9", "审核通过"), @EnumItem(name = "12")
+	FAIL("12", "审核失败"),;
 
 	@JsonValue
 	private final String code;
+
 	private final String description;
 
+	public static final Map<String, ApprovalStatus> codeMappings;
 
-	private static final Map<String, ApprovalStatus> mappings;
+	public static final Map<String, ApprovalStatus> descMappings;
 
 	static {
-		Map<String, ApprovalStatus> temp = new HashMap<>();
-		for (ApprovalStatus courseType : values()) {
-			temp.put(courseType.code, courseType);
-		}
-		mappings = Collections.unmodifiableMap(temp);
+		codeMappings = Collections
+			.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(BaseEnum::getCode, e -> e)));
+		descMappings = Collections
+			.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(BaseEnum::getDescription, e -> e)));
 	}
 
 	@JsonCreator(mode = JsonCreator.Mode.DELEGATING) // 支持post请求转换枚举
 	public static ApprovalStatus create(Object code) {
-		return mappings.get(code.toString());
+		return codeMappings.get(code.toString());
 	}
+
 }

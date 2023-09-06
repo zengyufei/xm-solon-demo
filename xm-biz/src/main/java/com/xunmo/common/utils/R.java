@@ -16,7 +16,6 @@ public class R {
 
 	/**
 	 * 获得响应对象实体
-	 *
 	 * @param code
 	 * @param success
 	 * @param msg
@@ -40,7 +39,6 @@ public class R {
 
 	/**
 	 * 获得响应对象实体
-	 *
 	 * @param code
 	 * @param success
 	 * @param msg
@@ -62,7 +60,6 @@ public class R {
 
 	/**
 	 * 获得响应对象实体
-	 *
 	 * @param status
 	 * @param content
 	 * @return
@@ -120,7 +117,6 @@ public class R {
 
 	/**
 	 * 获得响应对象实体
-	 *
 	 * @param status
 	 * @return
 	 * @author : LinDexing
@@ -141,7 +137,6 @@ public class R {
 
 	/**
 	 * 获得响应对象实体
-	 *
 	 * @param responseStatus
 	 * @return
 	 * @author : LinDexing

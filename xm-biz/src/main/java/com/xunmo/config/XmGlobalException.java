@@ -170,14 +170,14 @@ public class XmGlobalException {
 				String stackTrace = ExceptionUtil.stacktraceToString(throwable);
 				String usersId = "admin";
 				ExceptionRecordInput record = ExceptionRecordInput.of()
-						.uri(uri)
-						.method(method)
-						.params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
-						.ip(ip)
-						.usersId(usersId)
-						.happenTime(LocalDateTime.now())
-						.stackTrace(stackTrace)
-						.build();
+					.uri(uri)
+					.method(method)
+					.params(Objects.isNull(params) ? null : JSONUtil.toJsonStr(params))
+					.ip(ip)
+					.usersId(usersId)
+					.happenTime(LocalDateTime.now())
+					.stackTrace(stackTrace)
+					.build();
 				mqSendService.send(record);
 			}
 		}

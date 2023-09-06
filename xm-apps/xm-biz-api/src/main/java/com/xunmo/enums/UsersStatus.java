@@ -6,37 +6,44 @@ import com.xunmo.common.BaseEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.babyfish.jimmer.sql.EnumItem;
+import org.babyfish.jimmer.sql.EnumType;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
+@EnumType(value = EnumType.Strategy.NAME)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum UsersStatus implements BaseEnum<String> {
 
-	NONE("3", ""),
-	ACTIVE("6", ""),
-	VALID("9", ""),
-	STOP("12", ""),
-	;
+	@EnumItem(name = "3")
+	NONE("3", "默认"), @EnumItem(name = "6")
+	ACTIVE("6", "生效"), @EnumItem(name = "9")
+	VALID("9", "等待验证"), @EnumItem(name = "12")
+	STOP("12", "禁用"),;
 
 	@JsonValue
 	private final String code;
+
 	private final String description;
 
-	private static final Map<String, UsersStatus> mappings;
+	public static final Map<String, UsersStatus> codeMappings;
+
+	public static final Map<String, UsersStatus> descMappings;
 
 	static {
-		Map<String, UsersStatus> temp = new HashMap<>();
-		for (UsersStatus courseType : values()) {
-			temp.put(courseType.code, courseType);
-		}
-		mappings = Collections.unmodifiableMap(temp);
+		codeMappings = Collections
+			.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(BaseEnum::getCode, e -> e)));
+		descMappings = Collections
+			.unmodifiableMap(Arrays.stream(values()).collect(Collectors.toMap(BaseEnum::getDescription, e -> e)));
 	}
 
 	@JsonCreator(mode = JsonCreator.Mode.DELEGATING) // 支持post请求转换枚举
 	public static UsersStatus create(Object code) {
-		return mappings.get(code.toString());
+		return codeMappings.get(code.toString());
 	}
+
 }

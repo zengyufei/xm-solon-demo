@@ -77,7 +77,7 @@ xm:
         - "move"
         - "change"
   exception:
-    enable: true
+    enable: false
   mq:
     host: localhost
     port: 5672

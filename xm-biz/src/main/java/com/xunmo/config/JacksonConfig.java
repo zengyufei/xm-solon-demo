@@ -47,11 +47,9 @@ public class JacksonConfig {
 		simpleModule.addSerializer(LocalTime.class,
 				new LocalTimeSerializer(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN)));
 		// yyyy
-		simpleModule.addSerializer(Year.class,
-				new YearSerializer(DateTimeFormatter.ofPattern("yyyy")));
+		simpleModule.addSerializer(Year.class, new YearSerializer(DateTimeFormatter.ofPattern("yyyy")));
 		// MM
-		simpleModule.addSerializer(YearMonth.class,
-				new YearMonthSerializer(DateTimeFormatter.ofPattern("yyyy-MM")));
+		simpleModule.addSerializer(YearMonth.class, new YearMonthSerializer(DateTimeFormatter.ofPattern("yyyy-MM")));
 
 		// Instant 类型序列化
 		simpleModule.addSerializer(Instant.class, InstantSerializer.INSTANCE);
@@ -67,8 +65,7 @@ public class JacksonConfig {
 		simpleModule.addDeserializer(LocalTime.class,
 				new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN)));
 		// yyyy
-		simpleModule.addDeserializer(Year.class,
-				new YearDeserializer(DateTimeFormatter.ofPattern("yyyy")));
+		simpleModule.addDeserializer(Year.class, new YearDeserializer(DateTimeFormatter.ofPattern("yyyy")));
 		// MM
 		simpleModule.addDeserializer(YearMonth.class,
 				new YearMonthDeserializer(DateTimeFormatter.ofPattern("yyyy-MM")));

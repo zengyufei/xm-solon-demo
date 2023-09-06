@@ -65,8 +65,7 @@ public class UsersController extends BaseController {
 
 	/**
 	 * 分页查询
-	 *
-	 * @param query       筛选条件
+	 * @param query 筛选条件
 	 * @param pageRequest 分页对象
 	 * @return 查询结果
 	 */
@@ -85,48 +84,47 @@ public class UsersController extends BaseController {
 		final String permissionId = query.getPermissionId();
 		final String permissionName = query.getPermissionName();
 		final Page<Users> page = pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-				// 根据 用户id 查询
-				.whereIf(StrUtil.isNotBlank(usersId), () -> TABLE.usersId().eq(usersId))
-				// 根据 用户名称 模糊查询
-				.whereIf(StrUtil.isNotBlank(userName), () -> TABLE.userName().like(userName))
-				// 根据 组织机构id 查询
-				.whereIf(StrUtil.isNotBlank(orgId), () -> TABLE.organization().organizationId().eq(orgId))
-				// 根据 组织机构名称 模糊查询
-				.whereIf(StrUtil.isNotBlank(orgName), () -> TABLE.organization().organizationName().like(orgName))
-				// 根据 角色id 查询
-				.whereIf(StrUtil.isNotBlank(roleId), () -> TABLE.asTableEx().roles().roleId().eq(roleId))
-				// 根据 角色名称 模糊查询
-				.whereIf(StrUtil.isNotBlank(roleName), () -> TABLE.asTableEx().roles().roleName().like(roleName))
-				// 根据 权限id 查询
-				.whereIf(StrUtil.isNotBlank(permissionId),
-						() -> TABLE.asTableEx().roles().permissions().permissionId().like(permissionId))
-				// 根据 权限名称 模糊查询
-				.whereIf(StrUtil.isNotBlank(permissionName),
-						() -> TABLE.asTableEx().roles().permissions().permissionName().like(permissionName))
-				// 根据 创建时间 大于等于查询
-				.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-				// 根据 创建时间 小于等于查询
-				.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-				// 默认排序 创建时间 倒排
-				.orderBy(TABLE.createTime().desc())
-				.select(TABLE.fetch(
-						// 查询 用户表 所有属性（非对象）
-						FETCHER.allScalarFields()
-								// 查询 创建者 对象，只显示 姓名
-								.create(UsersFetcher.$.userName())
-								// 查询 修改者 对象，只显示 姓名
-								.update(UsersFetcher.$.userName())
-								// 查询 组织机构者 对象，只显示 姓名
-								.organization(OrganizationFetcher.$.organizationName())
-								.roles(RoleFetcher.$.parentRoleId()
-										.roleName()
-										.permissions(PermissionFetcher.$.permissionName())))));
+			// 根据 用户id 查询
+			.whereIf(StrUtil.isNotBlank(usersId), () -> TABLE.usersId().eq(usersId))
+			// 根据 用户名称 模糊查询
+			.whereIf(StrUtil.isNotBlank(userName), () -> TABLE.userName().like(userName))
+			// 根据 组织机构id 查询
+			.whereIf(StrUtil.isNotBlank(orgId), () -> TABLE.organization().organizationId().eq(orgId))
+			// 根据 组织机构名称 模糊查询
+			.whereIf(StrUtil.isNotBlank(orgName), () -> TABLE.organization().organizationName().like(orgName))
+			// 根据 角色id 查询
+			.whereIf(StrUtil.isNotBlank(roleId), () -> TABLE.asTableEx().roles().roleId().eq(roleId))
+			// 根据 角色名称 模糊查询
+			.whereIf(StrUtil.isNotBlank(roleName), () -> TABLE.asTableEx().roles().roleName().like(roleName))
+			// 根据 权限id 查询
+			.whereIf(StrUtil.isNotBlank(permissionId),
+					() -> TABLE.asTableEx().roles().permissions().permissionId().like(permissionId))
+			// 根据 权限名称 模糊查询
+			.whereIf(StrUtil.isNotBlank(permissionName),
+					() -> TABLE.asTableEx().roles().permissions().permissionName().like(permissionName))
+			// 根据 创建时间 大于等于查询
+			.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+			// 根据 创建时间 小于等于查询
+			.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+			// 默认排序 创建时间 倒排
+			.orderBy(TABLE.createTime().desc())
+			.select(TABLE.fetch(
+					// 查询 用户表 所有属性（非对象）
+					FETCHER.allScalarFields()
+						// 查询 创建者 对象，只显示 姓名
+						.create(UsersFetcher.$.userName())
+						// 查询 修改者 对象，只显示 姓名
+						.update(UsersFetcher.$.userName())
+						// 查询 组织机构者 对象，只显示 姓名
+						.organization(OrganizationFetcher.$.organizationName())
+						.roles(RoleFetcher.$.parentRoleId()
+							.roleName()
+							.permissions(PermissionFetcher.$.permissionName())))));
 		return R.out(IS_SUCCESS, page);
 	}
 
 	/**
 	 * 新增数据
-	 *
 	 * @param inputs 实体s
 	 * @return 新增结果
 	 */
@@ -134,19 +132,18 @@ public class UsersController extends BaseController {
 	@Mapping("/adds")
 	@Tran
 	public ResponseEntity<Users> adds(@Validated List<UsersInput> inputs) throws Exception {
-		final List<Users> users = inputs.stream()
-				.map(UsersInput::toEntity)
-				.collect(Collectors.toList());
-		final List<SimpleSaveResult<Users>> simpleResults = this.sqlClient.getEntities().batchSave(users).getSimpleResults();
+		final List<Users> users = inputs.stream().map(UsersInput::toEntity).collect(Collectors.toList());
+		final List<SimpleSaveResult<Users>> simpleResults = this.sqlClient.getEntities()
+			.batchSave(users)
+			.getSimpleResults();
 		final List<Users> usersModifieds = simpleResults.stream()
-				.map(SimpleSaveResult::getModifiedEntity)
-				.collect(Collectors.toList());
+			.map(SimpleSaveResult::getModifiedEntity)
+			.collect(Collectors.toList());
 		return R.out(IS_SUCCESS, usersModifieds);
 	}
 
 	/**
 	 * 编辑数据
-	 *
 	 * @param inputs 实体s
 	 * @return 编辑结果
 	 */
@@ -164,7 +161,6 @@ public class UsersController extends BaseController {
 
 	/**
 	 * 通过主键查询单条数据
-	 *
 	 * @param ids 主键s
 	 * @return 单条数据
 	 */
@@ -174,14 +170,13 @@ public class UsersController extends BaseController {
 		if (CollUtil.isEmpty(ids)) {
 			return R.out(IS_SUCCESS, Collections.emptyList());
 		}
-//		final List<Users> usersList = this.sqlClient.findByIds(Users.class, ids);
+		// final List<Users> usersList = this.sqlClient.findByIds(Users.class, ids);
 		final List<Users> usersList = usersRepository.findByIds(ids);
 		return R.out(IS_SUCCESS, usersList);
 	}
 
 	/**
 	 * 删除数据
-	 *
 	 * @param ids 主键集合
 	 * @return 删除是否成功
 	 */

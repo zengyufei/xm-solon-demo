@@ -1,5 +1,9 @@
 package com.xunmo.webs.users.input;
 
+import com.xunmo.enums.ApprovalStatus;
+import com.xunmo.enums.IsImported;
+import com.xunmo.enums.IsSystem;
+import com.xunmo.enums.UsersStatus;
 import com.xunmo.webs.organization.entity.Organization;
 import com.xunmo.webs.role.entity.Role;
 import com.xunmo.webs.users.entity.Users;
@@ -75,7 +79,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 审批状态
 	 */
-	private String approvalStatus;
+	private ApprovalStatus approvalStatus;
 
 	/**
 	 * 审批人id
@@ -104,7 +108,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 是否导入
 	 */
-	private String isImported;
+	private IsImported isImported;
 
 	/**
 	 * 导入时间
@@ -118,7 +122,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 是否系统默认
 	 */
-	private String isSystemDefault;
+	private IsSystem isSystemDefault;
 
 	/**
 	 * 租户id
@@ -133,7 +137,7 @@ public class UsersInput implements Input<Users> {
 	/**
 	 * 状态
 	 */
-	private String status;
+	private UsersStatus status;
 
 	// ---------- 转换方法 ----------
 
@@ -151,6 +155,7 @@ public class UsersInput implements Input<Users> {
 	}
 
 	Organization organization;
+
 	List<Role> roles;
 
 }

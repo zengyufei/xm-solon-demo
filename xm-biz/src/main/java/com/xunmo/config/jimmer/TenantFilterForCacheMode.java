@@ -28,8 +28,7 @@ import java.util.TreeMap;
 // to support multi-view caching together.
 // -----------------------------
 @Component
-public class TenantFilterForCacheMode
-		extends TenantFilterForNonCacheMode
+public class TenantFilterForCacheMode extends TenantFilterForNonCacheMode
 		implements CacheableFilter<TenantEntityProps> {
 
 	@Override
@@ -47,4 +46,5 @@ public class TenantFilterForCacheMode
 	public boolean isAffectedBy(EntityEvent<?> e) {
 		return e.isChanged(TenantEntityProps.TENANT_ID);
 	}
+
 }

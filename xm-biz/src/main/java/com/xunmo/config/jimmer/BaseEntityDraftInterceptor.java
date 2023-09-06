@@ -1,6 +1,5 @@
 package com.xunmo.config.jimmer;
 
-
 import com.xunmo.common.base.BaseEntityDraft;
 import com.xunmo.common.base.BaseEntityProps;
 import org.babyfish.jimmer.ImmutableObjects;
@@ -23,4 +22,5 @@ public class BaseEntityDraftInterceptor implements DraftInterceptor<BaseEntityDr
 			}
 		}
 	}
+
 }

@@ -24,4 +24,5 @@ public class TenantFilterForNonCacheMode implements Filter<TenantEntityProps> {
 			args.where(args.getTable().tenantId().eq(tenant));
 		}
 	}
+
 }

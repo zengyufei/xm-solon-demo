@@ -34,19 +34,16 @@ public class TestUsersController extends HttpTester {
 
 	@Test
 	public void test_002_adds() throws Exception {
-		final String data = "["
-				+ "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
-//				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
+		final String data = "[" + "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
+				// + " \"createTime\": \"2023-06-29 11:49:40\",\n" + " \"updateTime\":
+				// \"2023-06-29 13:32:46\",\n"
 				+ "  \"createId\": \"user_2450\",\n" + "  \"updateId\": \"user_9427\",\n"
-				+ "  \"approvalStatus\": null,\n" + "  \"approverId\": \"user_1009\",\n"
+				+ "  \"approvalStatus\": \"3\",\n" + "  \"approverId\": \"user_1009\",\n"
 				+ "  \"approvalComment\": \"审批通过\",\n" + "  \"approvalTime\": \"2023-06-29 11:49:36\",\n"
 				+ "  \"isImported\": \"3\",\n" + "  \"importTime\": \"2023-06-29 11:49:36\",\n"
-				+ "  \"isSystemDefault\": \"6\",\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n"
-				+ "  \"status\": \"6\",\n"
-				+ "  \"organization\": {organizationId: \"org_12\"},\n"
-				+ "  \"roles\": [{roleId: \"role_4\"}]\n"
-				+ "  }"
-				+ "]";
+				+ "  \"isSystemDefault\": \"6\",\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": \"1\",\n"
+				+ "  \"status\": \"6\",\n" + "  \"organization\": {organizationId: \"org_12\"},\n"
+				+ "  \"roles\": [{roleId: \"role_4\"}]\n" + "  }" + "]";
 		HttpUtils httpUtils = path("/users/adds").bodyJson(data);
 		httpUtils.post();
 	}
@@ -60,11 +57,8 @@ public class TestUsersController extends HttpTester {
 				+ "  \"approverId\": \"user_1009\",\n" + "  \"approvalComment\": \"审批通过\",\n"
 				+ "  \"approvalTime\": \"2023-06-29 11:49:36\",\n" + "  \"isImported\": \"3\",\n"
 				+ "  \"importTime\": \"2023-06-29 11:49:36\",\n" + "  \"isSystemDefault\": \"3\",\n"
-				+ "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n" +
-				"  \"status\": \"12\",\n"
-				+ "  \"organization\": {organizationId: \"org_0\"},\n"
-				+ "  \"roles\": [{roleId: \"role_9\"}]\n"
-				+ "}]";
+				+ "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n" + "  \"status\": \"12\",\n"
+				+ "  \"organization\": {organizationId: \"org_0\"},\n" + "  \"roles\": [{roleId: \"role_9\"}]\n" + "}]";
 		HttpUtils httpUtils = path("/users/updates").timeout(5, -1, -1).bodyJson(data);
 		httpUtils.post();
 	}
@@ -81,22 +75,4 @@ public class TestUsersController extends HttpTester {
 		httpUtils.post();
 	}
 
-	@Test
-	public void test_006_test_adds() throws Exception {
-		final String data = ""
-				+ "  {\n" + "  \"usersId\": \"user_77009\",\n" + "  \"userName\": \"User 1008\",\n"
-//				+ "  \"createTime\": \"2023-06-29 11:49:40\",\n" + "  \"updateTime\": \"2023-06-29 13:32:46\",\n"
-				+ "  \"createId\": \"user_2450\",\n" + "  \"updateId\": \"user_9427\",\n"
-				+ "  \"approvalStatus\": null,\n" + "  \"approverId\": \"user_1009\",\n"
-				+ "  \"approvalComment\": \"审批通过\",\n" + "  \"approvalTime\": \"2023-06-29 11:49:36\",\n"
-				+ "  \"isImported\": \"3\",\n" + "  \"importTime\": \"2023-06-29 11:49:36\",\n"
-				+ "  \"isSystemDefault\": \"6\",\n" + "  \"tenantId\": \"tenant1\",\n" + "  \"version\": 1,\n"
-				+ "  \"status\": \"6\",\n"
-				+ "  \"organization\": {organizationId: \"org_12\"},\n"
-				+ "  \"roles\": [{roleId: \"role_4\"}]\n"
-				+ "  }"
-				+ "";
-		HttpUtils httpUtils = path("/users/test/adds").bodyJson(data);
-		httpUtils.post();
-	}
 }

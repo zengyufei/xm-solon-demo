@@ -55,9 +55,9 @@ public class OrganizationController extends BaseController {
 		final LocalDateTime endCreateTime = input.getEndCreateTime();
 		return R.out(SystemStatus.IS_SUCCESS,
 				pager(pageRequest).execute(sqlClient.createQuery(TABLE)
-						.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
-						.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
-						.select(TABLE.fetch(FETCHER.allScalarFields()))));
+					.whereIf(beginCreateTime != null, () -> TABLE.createTime().ge(beginCreateTime))
+					.whereIf(endCreateTime != null, () -> TABLE.createTime().le(endCreateTime))
+					.select(TABLE.fetch(FETCHER.allScalarFields()))));
 	}
 
 	/**
